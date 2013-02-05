@@ -1,5 +1,5 @@
 define(['js/data/Entity'], function(Entity){
-
+    var undefined;
     return Entity.inherit('text.entity.FlowElement', {
         defaults: {
             text: "",
@@ -11,7 +11,11 @@ define(['js/data/Entity'], function(Entity){
 
 
         text: function(relativeStart,relativeEnd,paragraphSeparator){
-            return this.$.text;
+            if(relativeEnd === -1){
+                relativeEnd = undefined;
+            }
+
+            return this.$.text.substring(relativeStart,relativeEnd);
         },
 
         textLength: function(){

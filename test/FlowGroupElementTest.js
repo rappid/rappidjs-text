@@ -115,7 +115,7 @@ describe('text.entity.FlowGroupElement', function () {
     });
 
     describe('#getNextLeaf', function () {
-        it('should find first leaf for a given textPosition', function () {
+        it('should find next leaf for a given leaf', function () {
             var paragraph = new C.FlowGroupElement(),
                 subElementA = new C.FlowGroupElement(),
                 subElementB = new C.FlowGroupElement();
@@ -135,6 +135,31 @@ describe('text.entity.FlowGroupElement', function () {
 
             expect(mySpan.getNextLeaf()).to.be.equal(mySpan2);
             expect(mySpan2.getNextLeaf()).to.be.equal(mySpan3);
+        });
+    });
+
+    describe('#getPreviousLeaf', function () {
+        it('should find previous leaf for a given leaf', function () {
+            var paragraph = new C.FlowGroupElement(),
+                subElementA = new C.FlowGroupElement(),
+                subElementB = new C.FlowGroupElement();
+
+            var mySpan = new C.Span({text: "paragraph."}),
+                mySpan2 = new C.Span({text: "And this is the "}),
+                mySpan3 = new C.Span({text: "second paragraph."});
+
+            subElementA.addChild(new C.Span({text: "This is the first "}));
+            subElementA.addChild(mySpan);
+
+            subElementB.addChild(mySpan2);
+            subElementB.addChild(mySpan3);
+
+            paragraph.addChild(subElementA);
+            paragraph.addChild(subElementB);
+
+            expect(mySpan2.getPreviousLeaf()).to.be.equal(mySpan);
+            expect(mySpan.getPreviousLeaf().getPreviousLeaf()).to.be.equal(null);
+            expect(mySpan3.getPreviousLeaf()).to.be.equal(mySpan2);
         });
     })
 

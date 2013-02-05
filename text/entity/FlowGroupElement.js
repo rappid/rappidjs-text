@@ -1,4 +1,4 @@
-define(['text/entity/FlowElement','js/core/List'], function(FlowElement, List){
+define(['text/entity/FlowElement','js/core/List', 'underscore'], function(FlowElement, List, _){
 
     var undefined;
 
@@ -41,7 +41,7 @@ define(['text/entity/FlowElement','js/core/List'], function(FlowElement, List){
                 if (!child.$isLeaf) {
                     var textLength = 0;
                     for(var i = 0; i < index; i++){
-                        textLength += this.$.children(i).textLength();
+                        textLength += this.$.children.at(i).textLength();
                     }
                     textPosition = textPosition - textLength;
 
@@ -170,8 +170,10 @@ define(['text/entity/FlowElement','js/core/List'], function(FlowElement, List){
         splitAtIndex: function(index){
             var length = this.$.children.size(), child, ret = null;
             if(index < length){
-                ret = new this.factory();
-                // TODO: implement
+                var attributes = _.clone(this.$);
+                attributes.children = new List();
+                ret = new this.factory(attributes);
+
                 for(var i = index; i < length; i++){
                     child = this.$.children.removeAt(i);
                     if(child){

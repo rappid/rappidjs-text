@@ -48,7 +48,11 @@ define(['text/entity/FlowElement'], function(FlowElement){
                     if(parent.$parent && parent !== limitElement){
                         element = getChildOfParent(parent.$parent, parent);
                         if(element){
-                            return element.getLastLeaf();
+                            if (element.$isLeaf) {
+                                return element;
+                            } else {
+                                return element.getLastLeaf();
+                            }
                         }
                     }
 
@@ -57,7 +61,7 @@ define(['text/entity/FlowElement'], function(FlowElement){
                     if (element.$isLeaf) {
                         return element;
                     } else {
-                        return element.getLastChild();
+                        return element.getLastLeaf();
                     }
                 }
 
