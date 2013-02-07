@@ -1,11 +1,9 @@
-define(['js/data/Entity'], function(Entity){
+define(['js/data/Entity','underscore'], function(Entity, _){
     var undefined;
     return Entity.inherit('text.entity.FlowElement', {
         defaults: {
             text: "",
-            fontSize: null,
-            fontWeight: null,
-            fontStyle: null
+            style: Object
         },
         $isLeaf: false,
 
@@ -20,7 +18,15 @@ define(['js/data/Entity'], function(Entity){
 
         textLength: function(){
             return this.$.text.length;
-        }.onChange("text")
+        }.onChange("text"),
+
+        hasSameStyle: function(flowElement){
+            return _.isEqual(flowElement.$.style,this.$.style);
+        },
+
+        applyStyle: function(style){
+            _.extend(this.$.style,style);
+        }
 
     });
 

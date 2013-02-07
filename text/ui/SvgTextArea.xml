@@ -1,0 +1,13 @@
+<ui:SvgTextAreaClass xmlns:ui="text.ui" xmlns="http://www.w3.org/2000/svg"
+                       xmlns:xlink="http://www.w3.org/1999/xlink"
+                       xmlns:js="js.core">
+    <text cid="textElement" visibility="hidden"/>
+    <rect cid="cursor" width="1" height="10" />
+    <rect cid="selection" width="0" height="10" />
+    <g cid="textContainer">
+
+    </g>
+    <js:Template name="tspan">
+        <tspan>{text}</tspan>
+    </js:Template>
+</ui:SvgTextAreaClass>
