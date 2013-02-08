@@ -65,7 +65,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                 var preText = element.text(0, leafPosition),
                     postText = element.text(leafPosition);
 
-                originalStyle = element.$.style.clone();
+                originalStyle = element.$.style ? element.$.style.clone() : null;
 
                 element.set('text', postText);
                 element.applyStyle(this.$style);
@@ -73,7 +73,11 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
 
                 if (preText) {
                     var childIndex = paragraph.getChildIndex(element);
-                    child = new element.factory({text: preText, style: originalStyle});
+                    child = new element.factory({
+                        text: preText,
+                        style: originalStyle
+                    });
+
                     changedLeaves.push(child);
                     paragraph.addChild(child, {index: childIndex});
                 }
