@@ -3,7 +3,7 @@ define(['js/data/Entity', 'text/type/Style', 'underscore'], function (Entity, St
     return Entity.inherit('text.entity.FlowElement', {
         defaults: {
             text: "",
-            style: Style
+            style: null
         },
 
         isLeaf: false,
@@ -25,20 +25,35 @@ define(['js/data/Entity', 'text/type/Style', 'underscore'], function (Entity, St
         },
 
         applyStyle: function (style) {
-            if (style instanceof Style) {
-                this.$.style.set(style.$);
-            } else {
-                this.$.style.set(style);
+
+            if (!style) {
+                return;
             }
+
+            if (!this.$.style) {
+                if (style instanceof Style) {
+                    this.set("style", style.clone());
+                } else {
+                    this.set("style", new Style(style));
+                }
+            } else {
+                if (style instanceof Style) {
+                    this.$.style.set(style.$);
+                } else {
+                    this.$.style.set(style);
+                }
+            }
+
+
         },
 
         composeStyle: function(){
-            return this.$.style ? this.$.style.compose() : {};
+            return this.$.style ? this.$.style.compose() : null;
         },
 
         getComputedStyle: function(){
             var parent = this.$parent,
-                style = this.composeStyle();
+                style = this.composeStyle() || {};
 
             while(parent){
                 _.defaults(style, parent.composeStyle());
