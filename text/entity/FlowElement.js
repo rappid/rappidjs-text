@@ -1,12 +1,12 @@
-define(['js/data/Entity', 'underscore'], function (Entity, _) {
+define(['js/data/Entity', 'text/type/Style'], function (Entity, Style) {
     var undefined;
     return Entity.inherit('text.entity.FlowElement', {
         defaults: {
             text: "",
-            style: Object
+            style: Style
         },
-        $isLeaf: false,
 
+        $isLeaf: false,
 
         text: function (relativeStart, relativeEnd, paragraphSeparator) {
             if (relativeEnd === -1) {
@@ -21,11 +21,11 @@ define(['js/data/Entity', 'underscore'], function (Entity, _) {
         }.onChange("text"),
 
         hasSameStyle: function (flowElement) {
-            return _.isEqual(flowElement.$.style, this.$.style);
+            return this.$.style.isEqual(flowElement.$.style);
         },
 
         applyStyle: function (style) {
-            _.extend(this.$.style, style);
+            this.$.style.set(style);
         }
 
     });
