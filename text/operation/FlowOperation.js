@@ -1,19 +1,19 @@
-define(["js/core/Base"], function(Base){
+define(["js/core/Base"], function (Base) {
 
-    return Base.inherit('text.operation.FlowOperation',{
-        ctor: function(textFlow){
+    return Base.inherit('text.operation.FlowOperation', {
+        ctor: function (textFlow) {
             this.$textFlow = textFlow;
         },
 
-        doOperation: function(){
+        doOperation: function () {
             // abstract method
         },
 
-        undo: function(){
+        undo: function () {
 
         },
 
-        redo: function(){
+        redo: function () {
 
         }
 

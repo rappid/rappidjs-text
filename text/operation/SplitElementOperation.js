@@ -1,11 +1,11 @@
-define(['text/operation/FlowOperation','text/entity/ParagraphElement', 'text/entity/SpanElement', 'text/entity/FlowGroupElement'], function(FlowOperation, ParagraphElement, SpanElement, FlowGroupElement){
+define(['text/operation/FlowOperation', 'text/entity/ParagraphElement', 'text/entity/SpanElement', 'text/entity/FlowGroupElement'], function (FlowOperation, ParagraphElement, SpanElement, FlowGroupElement) {
     var undefined;
 
     return FlowOperation.inherit('text.operation.SplitParagraphOperation', {
 
-        ctor: function(textRange, targetElement){
+        ctor: function (textRange, targetElement) {
             this.$textRange = textRange;
-            if(!(targetElement instanceof FlowGroupElement)){
+            if (!(targetElement instanceof FlowGroupElement)) {
                 throw new Error("Can only split FlowGroupElement");
             }
             this.$targetElement = targetElement;
@@ -13,18 +13,18 @@ define(['text/operation/FlowOperation','text/entity/ParagraphElement', 'text/ent
             this.callBase();
         },
 
-        doOperation: function(){
+        doOperation: function () {
             var activePosition = this.$textRange.$.activeIndex;
             this.$newElement = null;
 
-            if(activePosition !== undefined){
+            if (activePosition !== undefined) {
 
                 // find leaf for active position
                 var childIndex,
                     newParagraph = new ParagraphElement(),
                     leaf = this.$targetElement.findLeaf(activePosition);
 
-                if(leaf){
+                if (leaf) {
                     var paragraph = leaf.$parent,
                         previousParagraph = paragraph.getPreviousParagraph();
 

@@ -3,14 +3,14 @@ define(['text/entity/FlowGroupElement', 'js/core/List', 'text/entity/SpanElement
     var Paragraph = FlowGroupElement.inherit('text.entity.ParagraphElement', {
         getNextParagraph: function () {
             var parent = this.$parent;
-            while(parent.$parent){
+            while (parent.$parent) {
                 parent = parent.$parent;
             }
 
             var list = this._getParagraphsOfElement(parent);
             var index = list.indexOf(this);
-            if(index < list.size() - 1){
-                return list.at(index+1);
+            if (index < list.size() - 1) {
+                return list.at(index + 1);
             }
 
             return null;
@@ -58,7 +58,7 @@ define(['text/entity/FlowGroupElement', 'js/core/List', 'text/entity/SpanElement
 
     }, {
 
-        initializeFromText: function(text) {
+        initializeFromText: function (text) {
             text = text || "";
             var paragraph = new Paragraph();
 

@@ -1,13 +1,13 @@
-define(['text/operation/SplitElementOperation'], function(SplitElementOperation){
+define(['text/operation/SplitElementOperation'], function (SplitElementOperation) {
     return SplitElementOperation.inherit('text.operation.SplitParagraphOperation', {
 
-        ctor: function(textRange){
+        ctor: function (textRange) {
             this.callBase(textRange, textRange.$.textFlow);
         },
 
-        doOperation: function(){
+        doOperation: function () {
             this.callBase();
-            if(this.$newElement){
+            if (this.$newElement) {
                 var paragraphParent = this.$previousParagraph.$parent;
                 if (paragraphParent) {
                     var paragraphIndex = paragraphParent.getChildIndex(this.$previousParagraph);

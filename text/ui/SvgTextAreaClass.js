@@ -2,25 +2,24 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
     return SvgElement.inherit('SvgTextArea', {
 
-
         defaults: {
             tagName: 'g',
             $internalText: "",
             textFlow: null
         },
 
-        $classAttributes: ['textElement','textContainer','cursor', 'textFlow'],
+        $classAttributes: ['textElement', 'textContainer', 'cursor', 'textFlow'],
 
-        _onDomAdded: function(){
+        _onDomAdded: function () {
             this.callBase();
-            var self  = this;
-            this.$stage.$window.setInterval(function(){
-                self.$.cursor.set('visible',!self.$.cursor.$.visible);
-            },600);
+            var self = this;
+            this.$stage.$window.setInterval(function () {
+                self.$.cursor.set('visible', !self.$.cursor.$.visible);
+            }, 600);
         },
 
         _renderTextFlow: function (textFlow) {
-            if(textFlow){
+            if (textFlow) {
                 var self = this;
                 this.$.textContainer.removeAllChildren();
                 this.$currentLine = 1;
@@ -65,37 +64,37 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             var domEvent = e.domEvent,
                 target = e.target;
 
-            var pos = this._getCursorPositionForMousePosition({x: domEvent.clientX, y: domEvent.clientY},target);
-            if(pos){
+            var pos = this._getCursorPositionForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
+            if (pos) {
                 this.$.cursor.set(pos);
                 console.log(window.getSelection());
             }
             this.$mouseDown = false;
         },
 
-        _onTextMouseDown: function(e){
+        _onTextMouseDown: function (e) {
             var domEvent = e.domEvent,
                 target = e.target;
 
             e.preventDefault();
 
             var pos = this._getCursorPositionForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
-            if(pos){
+            if (pos) {
                 this.$mouseDown = true;
                 pos.width = 0;
                 this.$anchorPosition = pos;
             }
         },
 
-        _onTextMouseMove: function(e){
-            if(this.$mouseDown){
+        _onTextMouseMove: function (e) {
+            if (this.$mouseDown) {
                 var domEvent = e.domEvent,
                     target = e.target;
                 var pos = this._getCursorPositionForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
-                if(pos){
+                if (pos) {
                     this.$.cursor.set(pos);
                     var x, width;
-                    if(this.$anchorPosition.x <= this.$.cursor.$.x){
+                    if (this.$anchorPosition.x <= this.$.cursor.$.x) {
                         x = this.$anchorPosition.x;
                         width = this.$.cursor.$.x - this.$anchorPosition.x;
                     } else {
@@ -110,7 +109,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
         },
 
-        _getCursorPositionForMousePosition: function(mousePosition, target){
+        _getCursorPositionForMousePosition: function (mousePosition, target) {
             var svgRoot = target.getSvgRoot();
             if (svgRoot) {
                 var rootRect = this.$.textContainer.$el.getBoundingClientRect(),
@@ -261,9 +260,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
             this.$.textBlock.addChild(tspan);
         }
-
-
-
 
     });
 

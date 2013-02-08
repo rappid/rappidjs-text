@@ -1,4 +1,4 @@
-define(['text/entity/FlowElement','js/core/List', 'underscore'], function(FlowElement, List, _){
+define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (FlowElement, List, _) {
 
     var undefined;
 
@@ -9,8 +9,8 @@ define(['text/entity/FlowElement','js/core/List', 'underscore'], function(FlowEl
         defaults: {
             children: List
         },
-        addChild: function(child, options){
-            if(!(child instanceof FlowElement)){
+        addChild: function (child, options) {
+            if (!(child instanceof FlowElement)) {
                 throw new Error("Child not instanceof FlowElement");
             }
 
@@ -19,11 +19,11 @@ define(['text/entity/FlowElement','js/core/List', 'underscore'], function(FlowEl
             this.$.children.add(child, options);
         },
 
-        findChildIndexAtPosition: function(textPosition){
+        findChildIndexAtPosition: function (textPosition) {
             var textLength = 0, childLength, ret = -1;
-            this.$.children.each(function(child, index){
+            this.$.children.each(function (child, index) {
                 childLength = child.textLength();
-                if(textLength + childLength >= textPosition){
+                if (textLength + childLength >= textPosition) {
                     ret = index;
                     this["break"]();
                 }
@@ -33,14 +33,14 @@ define(['text/entity/FlowElement','js/core/List', 'underscore'], function(FlowEl
             return ret;
         },
 
-        findLeaf: function(textPosition){
+        findLeaf: function (textPosition) {
             var index = this.findChildIndexAtPosition(textPosition);
 
-            if(index > -1){
+            if (index > -1) {
                 var child = this.$.children.at(index);
                 if (!child.$isLeaf) {
                     var textLength = 0;
-                    for(var i = 0; i < index; i++){
+                    for (var i = 0; i < index; i++) {
                         textLength += this.$.children.at(i).textLength();
                     }
                     textPosition = textPosition - textLength;
@@ -54,15 +54,15 @@ define(['text/entity/FlowElement','js/core/List', 'underscore'], function(FlowEl
             return null;
         },
 
-        getChildAt: function(index){
+        getChildAt: function (index) {
             return this.$.children.at(index);
         },
 
-        getChildIndex: function(child){
+        getChildIndex: function (child) {
             return this.$.children.indexOf(child);
         },
 
-        getFirstLeaf: function(){
+        getFirstLeaf: function () {
             var length = this.$.children.size(),
                 child;
 
@@ -78,13 +78,13 @@ define(['text/entity/FlowElement','js/core/List', 'underscore'], function(FlowEl
             return null;
         },
 
-        getLastLeaf: function(){
+        getLastLeaf: function () {
             var length = this.$.children.size(),
                 child;
 
-            for(var i = length - 1; i >= 0; i--){
+            for (var i = length - 1; i >= 0; i--) {
                 child = this.$.children.at(i);
-                if(child.$isLeaf){
+                if (child.$isLeaf) {
                     return child;
                 } else {
                     return child.getLastLeaf();
@@ -94,7 +94,7 @@ define(['text/entity/FlowElement','js/core/List', 'underscore'], function(FlowEl
             return null;
         },
 
-        text: function(relativeStart, relativeEnd, paragraphSeparator){
+        text: function (relativeStart, relativeEnd, paragraphSeparator) {
             if (relativeStart === undefined) {
                 relativeStart = 0;
             }
@@ -106,16 +106,16 @@ define(['text/entity/FlowElement','js/core/List', 'underscore'], function(FlowEl
             }
 
             var text = "", textLength = 0, childLength, readText = false, startIndex;
-            this.$.children.each(function(child){
+            this.$.children.each(function (child) {
                 childLength = child.textLength();
-                if(!readText && textLength + childLength >= relativeStart){
+                if (!readText && textLength + childLength >= relativeStart) {
                     readText = true;
                     startIndex = relativeStart > textLength ? relativeStart - textLength : relativeStart;
                 }
 
                 textLength += childLength;
 
-                if(readText){
+                if (readText) {
                     if (child.$isLeaf) {
                         text += child.text(0, -1, paragraphSeparator);
                     } else {
@@ -123,7 +123,7 @@ define(['text/entity/FlowElement','js/core/List', 'underscore'], function(FlowEl
                     }
                 }
 
-                if(relativeEnd !== -1 && textLength > relativeEnd){
+                if (relativeEnd !== -1 && textLength > relativeEnd) {
                     text = text.substring(startIndex, startIndex + relativeEnd - relativeStart);
                     this["break"]();
                 }
@@ -132,19 +132,19 @@ define(['text/entity/FlowElement','js/core/List', 'underscore'], function(FlowEl
             return text;
         },
 
-        textLength: function(){
+        textLength: function () {
             var textLength = 0;
-            this.$.children.each(function(child){
+            this.$.children.each(function (child) {
                 textLength += child.textLength();
             });
             return textLength;
         },
 
-        removeChild: function(child, options){
+        removeChild: function (child, options) {
             this.$.children.remove(child, options);
         },
 
-        removeChildAt: function(index, options){
+        removeChildAt: function (index, options) {
             this.$.children.removeAt(index, options);
         },
         /***
@@ -153,11 +153,11 @@ define(['text/entity/FlowElement','js/core/List', 'underscore'], function(FlowEl
          * @param {Number} endChildIndex
          * @param [FlowElement] children
          */
-        replaceChildren: function(beginChildIndex, endChildIndex, children){
-            var newChildren = Array.prototype.slice.call(arguments,2);
+        replaceChildren: function (beginChildIndex, endChildIndex, children) {
+            var newChildren = Array.prototype.slice.call(arguments, 2);
 
             var k = 0;
-            for(var i = beginChildIndex; i <= endChildIndex; i++){
+            for (var i = beginChildIndex; i <= endChildIndex; i++) {
                 this.removeChildAt(i);
                 this.addChild(newChildren[k]);
                 k++;
@@ -167,16 +167,16 @@ define(['text/entity/FlowElement','js/core/List', 'underscore'], function(FlowEl
          * Splits this object at the position specified by the childIndex parameter.
          * @param index
          */
-        splitAtIndex: function(index){
+        splitAtIndex: function (index) {
             var length = this.$.children.size(), child, ret = null;
-            if(index < length){
+            if (index < length) {
                 var attributes = _.clone(this.$);
                 attributes.children = new List();
                 ret = new this.factory(attributes);
 
-                for(var i = index; i < length; i++){
+                for (var i = index; i < length; i++) {
                     child = this.$.children.removeAt(i);
-                    if(child){
+                    if (child) {
                         ret.addChild(child);
                     }
                 }
@@ -185,16 +185,10 @@ define(['text/entity/FlowElement','js/core/List', 'underscore'], function(FlowEl
             return ret;
         },
 
-        numChildren: function(){
+        numChildren: function () {
             return this.$.children.size();
-        }.on(["children","*"])
+        }.on(["children", "*"])
 
     });
-
-
-
-
-
-
 
 });

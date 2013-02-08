@@ -26,7 +26,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
             if (!endElement.$isLeaf) {
                 if (absoluteEnd > -1) {
                     endElement = endElement.findLeaf(absoluteEnd);
-                    if(!endElement){
+                    if (!endElement) {
                         endElement = endElement.getLastLeaf();
                     }
                 } else {
@@ -112,7 +112,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                 endElement.set('text', preEndText);
                 endElement.applyStyle(this.$style);
 
-                if(lastLeaf && lastLeaf.$parent === endElement.$parent && lastLeaf.hasSameStyle(endElement)){
+                if (lastLeaf && lastLeaf.$parent === endElement.$parent && lastLeaf.hasSameStyle(endElement)) {
                     lastLeaf.set('text', lastLeaf.$.text + preEndText);
                     lastLeaf.$parent.removeChild(endElement);
                     endElement = lastLeaf;
@@ -129,11 +129,11 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                 }
             }
 
-            for(var i = 0; i < changedLeaves.length; i++){
+            for (var i = 0; i < changedLeaves.length; i++) {
                 child = changedLeaves[i];
-                if(child.$parent.numChildren() === 1){
+                if (child.$parent.numChildren() === 1) {
                     child.$parent.applyStyle(child.$.style);
-                    child.set('style',{});
+                    child.set('style', {});
                 }
             }
         }

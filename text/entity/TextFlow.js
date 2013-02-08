@@ -1,9 +1,9 @@
-define(['text/entity/FlowGroupElement', 'text/entity/DivElement', 'text/entity/ParagraphElement'], function(FlowGroupElement, DivElement, ParagraphElement){
+define(['text/entity/FlowGroupElement', 'text/entity/DivElement', 'text/entity/ParagraphElement'], function (FlowGroupElement, DivElement, ParagraphElement) {
 
     var TextFlow = FlowGroupElement.inherit('text.entity.TextFlow', {
 
-        addChild: function(child, options){
-            if(!(child instanceof DivElement) && !(child instanceof ParagraphElement)){
+        addChild: function (child, options) {
+            if (!(child instanceof DivElement) && !(child instanceof ParagraphElement)) {
                 throw new Error("Can only add DivElement and ParagraphElement to TextFlow");
             }
 
@@ -14,7 +14,7 @@ define(['text/entity/FlowGroupElement', 'text/entity/DivElement', 'text/entity/P
 
     }, {
 
-        initializeFromText: function(text) {
+        initializeFromText: function (text) {
             text = text || "";
 
             var textFlow = new TextFlow();

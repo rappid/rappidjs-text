@@ -1,14 +1,14 @@
-define(["js/core/Bindable"], function(Bindable){
+define(["js/core/Bindable"], function (Bindable) {
 
 
     var TextRange = Bindable.inherit('text.entity.TextRange', {
-        _commitChangedAttributes: function($){
+        _commitChangedAttributes: function ($) {
             this.callBase($);
-            if (this._hasSome($,["anchorIndex","activeIndex"])) {
-                if((this.$.activeIndex === null || this.$.activeIndex === -1)){
+            if (this._hasSome($, ["anchorIndex", "activeIndex"])) {
+                if ((this.$.activeIndex === null || this.$.activeIndex === -1)) {
                     this.$.activeIndex = this.$.anchorIndex;
                 }
-                if(this.$.anchorIndex < this.$.activeIndex){
+                if (this.$.anchorIndex < this.$.activeIndex) {
                     this.set({
                         absoluteEnd: this.$.activeIndex,
                         absoluteStart: this.$.anchorIndex
@@ -22,8 +22,8 @@ define(["js/core/Bindable"], function(Bindable){
             }
         }
 
-    },{
-        createTextRange: function(textFlow, anchorIndex, activeIndex){
+    }, {
+        createTextRange: function (textFlow, anchorIndex, activeIndex) {
             return new TextRange({textFlow: textFlow, anchorIndex: anchorIndex, activeIndex: activeIndex});
         }
     });
