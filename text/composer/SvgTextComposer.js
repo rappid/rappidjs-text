@@ -37,7 +37,7 @@ define(["text/composer/Composer", "text/entity/ParagraphElement", "js/svg/SvgEle
                     self._composeElement(child);
                 });
                 this.$currentLine++;
-            } else if (element.$isLeaf) {
+            } else if (element.isLeaf) {
                 var tspan = this.$svgElement.createComponent(SvgElement, {tagName: "tspan", lineHeight: this._getLineHeightForElement(element)});
                 tspan.set(this._composeStyle(element));
                 // apply style

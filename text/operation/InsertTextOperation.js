@@ -17,7 +17,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore",
                 newElementText,
                 changedLeaves = [];
 
-            if (!element.$isLeaf) {
+            if (!element.isLeaf) {
                 element = element.findLeaf(absoluteStart);
                 if (!element && this.$targetElement instanceof ParagraphElement) {
                     element = new SpanElement();
@@ -29,7 +29,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore",
             var endElement;
             if (absoluteEnd !== absoluteStart) {
                 endElement = this.$targetElement;
-                if (!endElement.$isLeaf) {
+                if (!endElement.isLeaf) {
                     endElement = endElement.findLeaf(absoluteEnd);
                 } else {
                     endElement = endElement.getLastLeaf();
@@ -40,7 +40,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore",
             var paragraph = element.$parent,
                 textLength = 0;
 
-            if (this.$targetElement !== paragraph && !this.$targetElement.$isLeaf) {
+            if (this.$targetElement !== paragraph && !this.$targetElement.isLeaf) {
                 var previousParagraph = paragraph.getPreviousParagraph();
                 while (previousParagraph) {
                     textLength += previousParagraph.textLength();

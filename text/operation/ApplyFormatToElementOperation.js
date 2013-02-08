@@ -19,12 +19,12 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                 changedLeaves = [],
                 child;
 
-            if (!element.$isLeaf) {
+            if (!element.isLeaf) {
                 element = element.findLeaf(absoluteStart);
             }
 
             var endElement = this.$targetElement;
-            if (!endElement.$isLeaf) {
+            if (!endElement.isLeaf) {
                 if (absoluteEnd > -1) {
                     endElement = endElement.findLeaf(absoluteEnd);
                     if (!endElement) {
@@ -39,7 +39,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
             var paragraph = element.$parent,
                 textLength = 0;
 
-            if (this.$targetElement !== paragraph && !this.$targetElement.$isLeaf) {
+            if (this.$targetElement !== paragraph && !this.$targetElement.isLeaf) {
                 var previousParagraph = paragraph.getPreviousParagraph();
                 while (previousParagraph) {
                     textLength += previousParagraph.textLength();

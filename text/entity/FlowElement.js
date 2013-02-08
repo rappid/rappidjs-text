@@ -6,7 +6,7 @@ define(['js/data/Entity', 'text/type/Style'], function (Entity, Style) {
             style: Style
         },
 
-        $isLeaf: false,
+        isLeaf: false,
 
         text: function (relativeStart, relativeEnd, paragraphSeparator) {
             if (relativeEnd === -1) {

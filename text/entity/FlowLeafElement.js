@@ -1,7 +1,7 @@
 define(['text/entity/FlowElement'], function (FlowElement) {
 
     return FlowElement.inherit('text.entity.FlowElement', {
-        $isLeaf: true,
+        isLeaf: true,
 
 
         getText: function () {
@@ -17,7 +17,7 @@ define(['text/entity/FlowElement'], function (FlowElement) {
                     if (parent.$parent && parent !== limitElement) {
                         element = getChildOfParent(parent.$parent, parent);
                         if (element) {
-                            if (element.$isLeaf) {
+                            if (element.isLeaf) {
                                 return element;
                             } else {
                                 return element.getFirstLeaf();
@@ -27,7 +27,7 @@ define(['text/entity/FlowElement'], function (FlowElement) {
 
                 } else {
                     element = parent.getChildAt(index + 1);
-                    if (element.$isLeaf) {
+                    if (element.isLeaf) {
                         return element;
                     } else {
                         return element.getFirstLeaf();
@@ -48,7 +48,7 @@ define(['text/entity/FlowElement'], function (FlowElement) {
                     if (parent.$parent && parent !== limitElement) {
                         element = getChildOfParent(parent.$parent, parent);
                         if (element) {
-                            if (element.$isLeaf) {
+                            if (element.isLeaf) {
                                 return element;
                             } else {
                                 return element.getLastLeaf();
@@ -58,7 +58,7 @@ define(['text/entity/FlowElement'], function (FlowElement) {
 
                 } else {
                     element = parent.getChildAt(index - 1);
-                    if (element.$isLeaf) {
+                    if (element.isLeaf) {
                         return element;
                     } else {
                         return element.getLastLeaf();

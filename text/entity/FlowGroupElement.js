@@ -38,7 +38,7 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
 
             if (index > -1) {
                 var child = this.$.children.at(index);
-                if (!child.$isLeaf) {
+                if (!child.isLeaf) {
                     var textLength = 0;
                     for (var i = 0; i < index; i++) {
                         textLength += this.$.children.at(i).textLength();
@@ -68,7 +68,7 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
 
             for (var i = 0; i < length; i++) {
                 child = this.$.children.at(i);
-                if (child.$isLeaf) {
+                if (child.isLeaf) {
                     return child;
                 } else {
                     return child.getLastLeaf();
@@ -84,7 +84,7 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
 
             for (var i = length - 1; i >= 0; i--) {
                 child = this.$.children.at(i);
-                if (child.$isLeaf) {
+                if (child.isLeaf) {
                     return child;
                 } else {
                     return child.getLastLeaf();
@@ -116,7 +116,7 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
                 textLength += childLength;
 
                 if (readText) {
-                    if (child.$isLeaf) {
+                    if (child.isLeaf) {
                         text += child.text(0, -1, paragraphSeparator);
                     } else {
                         text += child.text(0, -1, paragraphSeparator) + paragraphSeparator;

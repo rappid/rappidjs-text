@@ -47,7 +47,7 @@ define(['text/entity/FlowGroupElement', 'js/core/List', 'text/entity/SpanElement
         },
 
         addChild: function (child, options) {
-            if (!child.$isLeaf) {
+            if (!child.isLeaf) {
                 // TODO: allow LinkElements etc..
                 throw new Error("Only FlowLeafElements can be added to paragraph");
             }

@@ -45,7 +45,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 textElement.bind('on:mousemove', this._onTextMouseMove, this);
                 textContainer.addChild(textElement);
                 this.$currentLine++;
-            } else if (element.$isLeaf) {
+            } else if (element.isLeaf) {
                 var tspan = this.$templates["tspan"].createInstance({text: element.text()});
                 tspan.$textElement = element;
                 if (this.$newLine) {
