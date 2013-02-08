@@ -25,13 +25,11 @@ define(['js/data/Entity', 'text/type/Style'], function (Entity, Style) {
         },
 
         applyStyle: function (style) {
-
             if (style instanceof Style) {
                 this.$.style.set(style.$);
             } else {
                 this.$.style.set(style);
             }
-
         }
 
     });
