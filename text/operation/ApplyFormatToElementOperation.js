@@ -5,6 +5,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
             if (!(flowElement instanceof FlowElement)) {
                 throw new Error("Only elements of FlowElement allowed");
             }
+
             this.$targetElement = flowElement;
             this.$textRange = textRange;
             this.$style = style || {};
@@ -64,7 +65,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                 var preText = element.text(0, leafPosition),
                     postText = element.text(leafPosition);
 
-                originalStyle = _.clone(element.$.style);
+                originalStyle = element.$.style.clone();
 
                 element.set('text', postText);
                 element.applyStyle(this.$style);
@@ -107,7 +108,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                 var preEndText = endElement.text(0, relativeEnd),
                     postEndText = endElement.text(relativeEnd);
 
-                originalStyle = _.clone(endElement.$.style);
+                originalStyle = element.$.style.clone();
 
                 endElement.set('text', preEndText);
                 endElement.applyStyle(this.$style);
@@ -133,7 +134,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                 child = changedLeaves[i];
                 if (child.$parent.numChildren() === 1) {
                     child.$parent.applyStyle(child.$.style);
-                    child.set('style', {});
+                    child.$.style.clear();
                 }
             }
         }

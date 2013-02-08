@@ -21,11 +21,17 @@ define(['js/data/Entity', 'text/type/Style'], function (Entity, Style) {
         }.onChange("text"),
 
         hasSameStyle: function (flowElement) {
-            return this.$.style.isEqual(flowElement.$.style);
+            return this.$.style.isDeepEqual(flowElement.$.style);
         },
 
         applyStyle: function (style) {
-            this.$.style.set(style);
+
+            if (style instanceof Style) {
+                this.$.style.set(style.$);
+            } else {
+                this.$.style.set(style);
+            }
+
         }
 
     });
