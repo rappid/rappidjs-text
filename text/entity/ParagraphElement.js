@@ -1,7 +1,6 @@
-define(['text/entity/FlowGroupElement', 'js/core/List'], function (FlowGroupElement, List) {
+define(['text/entity/FlowGroupElement', 'js/core/List', 'text/entity/SpanElement'], function (FlowGroupElement, List, SpanElement) {
 
     var Paragraph = FlowGroupElement.inherit('text.entity.ParagraphElement', {
-
         getNextParagraph: function () {
             var parent = this.$parent;
             while(parent.$parent){
@@ -56,6 +55,19 @@ define(['text/entity/FlowGroupElement', 'js/core/List'], function (FlowGroupElem
             this.callBase(child, options);
         }
 
+
+    }, {
+
+        initializeFromText: function(text) {
+            text = text || "";
+            var paragraph = new Paragraph();
+
+            paragraph.addChild(new SpanElement({
+                text: text
+            }));
+
+            return paragraph;
+        }
 
     });
 
