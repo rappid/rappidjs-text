@@ -9,9 +9,6 @@ define(['text/entity/FlowGroupElement', 'text/entity/DivElement', 'text/entity/P
 
             this.callBase(child, options);
         }
-
-
-
     }, {
 
         initializeFromText: function (text) {
