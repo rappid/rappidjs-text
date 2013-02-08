@@ -1,4 +1,4 @@
-define(['js/data/Entity', 'text/type/Style'], function (Entity, Style) {
+define(['js/data/Entity', 'text/type/Style', 'underscore'], function (Entity, Style, _) {
     var undefined;
     return Entity.inherit('text.entity.FlowElement', {
         defaults: {
@@ -30,6 +30,22 @@ define(['js/data/Entity', 'text/type/Style'], function (Entity, Style) {
             } else {
                 this.$.style.set(style);
             }
+        },
+
+        composeStyle: function(){
+            return this.$.style ? this.$.style.compose() : {};
+        },
+
+        getComputedStyle: function(){
+            var parent = this.$parent,
+                style = this.composeStyle();
+
+            while(parent){
+                _.defaults(style, parent.composeStyle());
+                parent = parent.$parent;
+            }
+
+            return style;
         }
 
     });
