@@ -83,6 +83,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 this.$mouseDown = true;
                 pos.width = 0;
                 this.$anchorPosition = pos;
+                this.$.selection.set({
+                    width: 0
+                });
             }
         },
 
