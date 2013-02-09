@@ -6,6 +6,6 @@
 
     </g>
     <js:Template name="tspan">
-        <tspan>{text}</tspan>
+        <tspan>{$text}</tspan>
     </js:Template>
 </ui:SvgTextAreaClass>

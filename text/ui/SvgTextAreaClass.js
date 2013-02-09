@@ -5,16 +5,35 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         defaults: {
             tagName: 'g',
             $internalText: "",
-            textFlow: null
+            textFlow: null,
+            width: 100,
+            height: 100
         },
 
-        $classAttributes: ['textElement', 'textContainer', 'cursor', 'textFlow'],
+        $tSpanTransformMap: {
+            "fontFamily": "font-family",
+            "fontWeight": "font-weight",
+            "fontStyle": "font-style",
+            "fontSize": "font-size",
+            "color": "fill"
+        },
+
+        $textTransformMap: {
+            "fontFamily": "font-family",
+            "fontWeight": "font-weight",
+            "fontStyle": "font-style",
+            "fontSize": "font-size",
+            "color": "fill",
+            "textAnchor": "text-anchor"
+        },
+
+        $classAttributes: ['textElement', 'textContainer', 'cursor', 'textFlow', 'width', 'height'],
 
         _onDomAdded: function () {
             this.callBase();
             var self = this;
             this.$stage.$window.setInterval(function () {
-                self.$.cursor.set('visible', !self.$.cursor.$.visible);
+//                self.$.cursor.set('visible', !self.$.cursor.$.visible);
             }, 600);
         },
 
@@ -22,7 +41,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             if (textFlow) {
                 var self = this;
                 this.$.textContainer.removeAllChildren();
-                this.$currentLine = 1;
+                this.$currentLine = 0;
                 textFlow.$.children.each(function (child) {
                     self._renderElement(child, self.$.textContainer);
                 });
@@ -33,9 +52,31 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
             if (element instanceof ParagraphElement) {
                 var self = this;
-                this.$newLine = true;
-                var textElement = this.createComponent(SvgElement, {tagName: "text", y: this.$currentLine * 16});
+
+                // TODO: use correct line height -> can only be determinated after composing
+                var textElement = this.createComponent(SvgElement, {
+                    tagName: "text",
+                    y: this.$currentLine * 16
+                });
+
                 textElement.$textElement = element;
+                var x = 0,
+                    transformedStyle = this._transformStyle(element.getComputedStyle(), this.$textTransformMap);
+
+                switch (transformedStyle["text-anchor"]) {
+                    case "middle":
+                        x = this.$.width / 2;
+                        break;
+                    case "end":
+                        x = this.$.width
+                }
+
+                transformedStyle.x = x;
+                transformedStyle["text-rendering"] = "geometricprecision";
+
+                textElement.set(transformedStyle);
+
+
                 element.$.children.each(function (child) {
                     self._renderElement(child, textElement);
                 });
@@ -43,23 +84,39 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 textElement.bind('on:mouseup', this._onTextMouseUp, this);
                 textElement.bind('on:mousedown', this._onTextMouseDown, this);
                 textElement.bind('on:mousemove', this._onTextMouseMove, this);
+
                 textContainer.addChild(textElement);
                 this.$currentLine++;
             } else if (element.isLeaf) {
-                var tspan = this.$templates["tspan"].createInstance({text: element.text()});
-                tspan.$textElement = element;
-                if (this.$newLine) {
-                    tspan.set({x: 0});
-                    this.$newLine = false;
-                }
+                var tspan = this.$templates["tspan"].createInstance({
+                    $text: element.text()
+                });
 
-                // apply style
-                // tspan.set(this._composeStyle(element));
+                tspan.$textElement = element;
+                var style = this._transformStyle(element.getComputedStyle(), this.$tSpanTransformMap);
+
+                style["alignment-baseline"] = "before-edge";
+
+                tspan.set(style);
 
                 textContainer.addChild(tspan);
             }
 
         },
+
+        _transformStyle: function(style, map) {
+
+            var ret = {};
+
+            for (var key in style) {
+                if (style.hasOwnProperty(key) && map.hasOwnProperty(key)) {
+                    ret[map[key]] = style[key];
+                }
+            }
+
+            return ret;
+        },
+
         _onTextMouseUp: function (e) {
             var domEvent = e.domEvent,
                 target = e.target;
@@ -76,6 +133,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             var domEvent = e.domEvent,
                 target = e.target;
 
+            e.stopPropagation();
             e.preventDefault();
 
             var pos = this._getCursorPositionForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
