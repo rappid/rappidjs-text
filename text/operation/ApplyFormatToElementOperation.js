@@ -84,7 +84,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
             }
 
             var currentElement = element,
-                lastLeaf;
+                lastLeaf = null;
             textLength = 0;
             while (currentElement !== endElement) {
 
