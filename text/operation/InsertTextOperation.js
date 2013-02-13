@@ -44,31 +44,42 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore",
                 var previousParagraph = paragraph.getPreviousParagraph();
                 while (previousParagraph) {
                     textLength += previousParagraph.textLength();
+                    previousParagraph = previousParagraph.getPreviousParagraph();
                 }
             }
 
             var relativePosition = absoluteStart - textLength;
 
+            // last element
+//            if(relativePosition === element.textLength()) {
+//                var nextLeaf = element.getNextLeaf(this.$targetElement);
+//                if(nextLeaf){
+//                    relativePosition = 0;
+//                    element = nextLeaf;
+//                }
+//            } else {
+                var previousLeaf = paragraph.findLeaf(relativePosition - 1);
+                if (previousLeaf === element) {
+                    textLength = 0;
+                    // split the leaf up!
+                    previousLeaf = element.getPreviousLeaf(paragraph);
 
-            var previousLeaf = paragraph.findLeaf(relativePosition - 1);
-            if (previousLeaf === element) {
-                textLength = 0;
-                // split the leaf up!
-                previousLeaf = element.getPreviousLeaf(paragraph);
+                    while (previousLeaf) {
+                        textLength += previousLeaf.textLength();
+                        previousLeaf = previousLeaf.getPreviousLeaf(paragraph);
+                    }
 
-                while (previousLeaf) {
-                    textLength += previousLeaf.textLength();
-                    previousLeaf = previousLeaf.getPreviousLeaf(paragraph);
+                    relativePosition = relativePosition - textLength;
                 }
+//            }
 
-                var leafPosition = relativePosition - textLength;
 
-                var preText = element.text(0, leafPosition),
-                    postText = endElement ? "" : element.text(leafPosition);
+            var preText = element.text(0, relativePosition),
+                postText = endElement ? "" : element.text(relativePosition);
 
-                newElementText = preText + this.$text + postText;
-                changedLeaves.push(element);
-            }
+            newElementText = preText + this.$text + postText;
+            changedLeaves.push(element);
+
 
             if (absoluteEnd !== absoluteStart) {
                 var currentElement = element,
