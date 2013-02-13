@@ -1,6 +1,6 @@
 var expect = require('chai').expect,
     _ = require('underscore'),
-    testRunner = require('rAppid.js').TestRunner.setup();
+    testRunner = require('rAppid').TestRunner.setup();
 
 var C = {};
 
@@ -112,6 +112,41 @@ describe('text.entity.FlowGroupElement', function () {
 
             expect(paragraph.findLeaf(20)).to.be.equal(mySpan);
         });
+    });
+
+    describe('#findChildIndexAtPosition', function(){
+
+        it('should return 0 for textPosition 0', function(){
+            var paragraph = new C.FlowGroupElement(),
+                mySpan = new C.Span();
+
+            paragraph.addChild(mySpan);
+
+            expect(paragraph.findChildIndexAtPosition(0)).to.be.equal(0);
+        });
+
+        it('should return last index for textPosition outside of elements', function () {
+            var paragraph = new C.FlowGroupElement(),
+                mySpan = new C.Span();
+
+            paragraph.addChild(mySpan);
+
+            expect(paragraph.findChildIndexAtPosition(1)).to.be.equal(0);
+        });
+
+        it('should return the element with the bigger index', function(){
+            var paragraph = new C.FlowGroupElement(),
+                mySpan = new C.Span({text: "abc"}),
+                mySpan2 = new C.Span({text: "def"});
+
+            paragraph.addChild(mySpan);
+            paragraph.addChild(mySpan2);
+
+            var index = paragraph.findChildIndexAtPosition(3);
+
+            expect(index).to.be.equal(1);
+        });
+
     });
 
     describe('#getNextLeaf', function () {
