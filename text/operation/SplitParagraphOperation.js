@@ -1,8 +1,8 @@
 define(['text/operation/SplitElementOperation'], function (SplitElementOperation) {
     return SplitElementOperation.inherit('text.operation.SplitParagraphOperation', {
 
-        ctor: function (textRange) {
-            this.callBase(textRange, textRange.$.textFlow);
+        ctor: function (textRange, target) {
+            this.callBase(textRange, target || textRange.$.textFlow);
         },
 
         doOperation: function () {
