@@ -112,6 +112,34 @@ describe('text.operation.InsertTextOperation', function () {
             expect(textFlow.text()).to.be.equal("This is a new Text ");
             expect(textFlow.getChildAt(0).numChildren()).to.be.equal(2);
         });
+
+        it('should delete text', function(){
+            var textFlow = new C.TextFlow(),
+                paragraph = new C.Paragraph(),
+                span1 = new C.Span({text: "This is a"}),
+                span2 = new C.Span({text: "awesome "}),
+                span3 = new C.Span({text: "splitted Text"}),
+                textRange;
+
+            paragraph.addChild(span1);
+            paragraph.addChild(span2);
+            paragraph.addChild(span3);
+            textFlow.addChild(paragraph);
+
+            textRange = new C.TextRange({
+                textFlow: textFlow,
+                anchorIndex: 4,
+                activeIndex: 25
+            });
+
+            var operation = new C.InsertTextOperation(textRange, textFlow, "");
+            operation.doOperation();
+
+            expect(textFlow.text()).to.be.equal("This Text ");
+            expect(textFlow.getChildAt(0).numChildren()).to.be.equal(2);
+
+
+        });
     });
 
 });

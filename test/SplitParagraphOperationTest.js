@@ -1,6 +1,6 @@
 var expect = require('chai').expect,
     _ = require('underscore'),
-    testRunner = require('rAppid.js').TestRunner.setup();
+    testRunner = require('rAppid').TestRunner.setup();
 
 var C = {};
 
@@ -56,7 +56,7 @@ describe('text.operation.SplitParagraphOperation', function () {
 
             textRange = new C.TextRange({
                 textFlow: textFlow,
-                activeIndex: 6
+                activeIndex: 5
             });
 
             var operation = new C.SplitParagraphOperation(textRange);

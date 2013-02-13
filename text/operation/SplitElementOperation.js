@@ -21,7 +21,6 @@ define(['text/operation/FlowOperation', 'text/entity/ParagraphElement', 'text/en
 
                 // find leaf for active position
                 var childIndex,
-                    newParagraph = new ParagraphElement(),
                     leaf = this.$targetElement.findLeaf(activePosition);
 
                 if (leaf) {
@@ -53,29 +52,14 @@ define(['text/operation/FlowOperation', 'text/entity/ParagraphElement', 'text/en
 
                     childIndex = paragraph.getChildIndex(leaf);
 
-                    // create new leafs
-                    var preSpan = new SpanElement({text: preText}),
-                        postSpan = new SpanElement({text: postText});
-
-                    // remove old
-                    paragraph.removeChild(leaf);
-
-                    // place in paragraph
-                    paragraph.addChild(preSpan, {index: childIndex});
-                    paragraph.addChild(postSpan, {index: childIndex + 1});
-
-                    leaf = postSpan;
-
-                    var currentLeaf = leaf;
-                    // no need to split up leaf
-                    while (leaf) {
-                        currentLeaf = leaf;
-                        leaf = currentLeaf.getNextLeaf(paragraph);
-                        paragraph.removeChild(currentLeaf);
-                        newParagraph.addChild(currentLeaf);
+                    leaf.set('text',preText);
+                    if(postText){
+                        var postSpan = new SpanElement({text: postText});
+                        paragraph.addChild(postSpan, {index: childIndex + 1});
+                        this.$newElement = postSpan;
+                    }else{
+                        this.$newElement = leaf.getNextLeaf(leaf.$parent);
                     }
-                    this.$previousParagraph = paragraph;
-                    this.$newElement = newParagraph;
                 }
             }
         }
