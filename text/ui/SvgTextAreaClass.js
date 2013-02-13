@@ -1,4 +1,4 @@
-define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operation/SplitParagraphOperation', 'text/operation/ApplyFormatToElementOperation', 'text/entity/TextFlow', 'text/entity/ParagraphElement', 'text/entity/SpanElement'], function (SvgElement, InsertTextOperation, SplitParagraphOperation, ApplyFormatToElementOperation, TextFlow, ParagraphElement, SpanElement) {
+define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operation/SplitParagraphOperation', 'text/operation/ApplyFormatToElementOperation', 'text/entity/TextFlow', 'text/entity/ParagraphElement', 'text/entity/SpanElement', 'text/entity/TextRange', 'text/operation/DeleteOperation'], function (SvgElement, InsertTextOperation, SplitParagraphOperation, ApplyFormatToElementOperation, TextFlow, ParagraphElement, SpanElement, TextRange, DeleteOperation) {
 
     return SvgElement.inherit('SvgTextArea', {
 
@@ -7,7 +7,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             $internalText: "",
             textFlow: null,
             width: 100,
-            height: 100
+            height: 100,
+            _cursorIndex: 0,
+            _anchorIndex: -1
         },
 
         $tSpanTransformMap: {
@@ -29,12 +31,161 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         $classAttributes: ['textElement', 'textContainer', 'cursor', 'textFlow', 'width', 'height'],
 
+        handleKeyDown: function (e) {
+            var keyCode = e.keyCode,
+                textRange, operation;
+
+            if (keyCode === 8) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // delete operation
+                textRange = new TextRange({activeIndex: this.$._cursorIndex, anchorIndex: this.$._anchorIndex});
+                operation = new DeleteOperation(textRange, this.$.textFlow);
+
+                operation.doOperation();
+
+                this.set('_cursorIndex', this.$._cursorIndex - 1);
+                this._renderTextFlow(this.$.textFlow);
+            } else if(keyCode === 46){
+                e.preventDefault();
+                e.stopPropagation();
+                // delete operation
+                textRange = new TextRange({activeIndex: this.$._cursorIndex+1, anchorIndex: this.$._anchorIndex});
+                operation = new DeleteOperation(textRange, this.$.textFlow);
+
+                operation.doOperation();
+
+                this.set('_cursorIndex', this.$._cursorIndex);
+                this._renderTextFlow(this.$.textFlow);
+            } else if (keyCode === 37 || keyCode === 39 || keyCode === 38 || keyCode === 40) {
+                e.preventDefault();
+                // move cursor
+                var cursorIndex = this.$._cursorIndex;
+                switch (keyCode) {
+                    case 37:
+                        cursorIndex--;
+                        break;
+                    case 39:
+                        cursorIndex++;
+                        break;
+                }
+                if (e.shiftKey && this.$._anchorIndex === -1) {
+                    this.set('_anchorIndex', this.$._cursorIndex);
+                } else if (!e.shiftKey && this.$._anchorIndex !== -1) {
+                    this.set('_anchorIndex', -1);
+                }
+                if (cursorIndex > -1) {
+                    this.set('_cursorIndex', cursorIndex);
+                }
+            } else if (keyCode === 13) {
+                e.preventDefault();
+                // line break
+
+                textRange = new TextRange({activeIndex: this.$._cursorIndex});
+                operation = new SplitParagraphOperation(textRange, this.$.textFlow);
+
+                operation.doOperation();
+                this._renderTextFlow(this.$.textFlow);
+                this.set('_cursorIndex', this.$._cursorIndex + 1);
+            }
+        },
+
+        handleKeyPress: function (e) {
+            var keyCode = e.keyCode;
+
+            if (keyCode !== 13 && e.keyIdentifier) {
+                // insert text
+                this.addChar(String.fromCharCode(keyCode));
+            }
+
+        },
+
+        _render_cursorIndex: function (index) {
+            var pos = this._getPositionForTextIndex(index);
+            if (pos) {
+                this.$.cursor.set(pos);
+            }
+            if (this.$._anchorIndex > -1 && this.$._anchorIndex !== index) {
+                pos = this._getPositionForTextIndex(this.$._anchorIndex);
+                if (pos) {
+                    this.$.anchor.set(pos);
+                }
+            } else {
+                this.$.anchor.set({x: 0, y: 0});
+            }
+        },
+
+        _commit_cursorIndex: function(index){
+
+            if(index < 0){
+                return false;
+            }
+
+            if(this.$.textFlow){
+                if(index >= this.$.textFlow.textLength()){
+                    return false;
+                }
+            }
+
+            return true;
+        },
+
+        _getPositionForTextIndex: function (index) {
+            var target,
+                textLength = 0,
+                child,
+                pos,
+                charNum,
+                childLength;
+
+            for (var i = 0; i < this.$.textContainer.$children.length; i++) {
+                child = this.$.textContainer.$children[i];
+                target = child;
+                childLength = child.$el.textContent.length + 1;
+                textLength += childLength;
+                if (textLength > index) {
+                    charNum = index - (textLength - childLength);
+
+                    if(charNum > 0 && charNum === childLength - 1){
+                        charNum--;
+                        i = 0;
+                        while(charNum > 0 && child.$el.textContent.charAt(charNum) == " "){
+                            i++;
+                            charNum--;
+                        }
+                        pos = target.$el.getEndPositionOfChar(charNum);
+                        pos.x += i * 4; // TODO: calculate space width
+                    } else {
+                        pos = target.$el.getStartPositionOfChar(charNum);
+                    }
+                    return {
+                        x: pos.x,
+                        y: pos.y
+                    };
+                }
+            }
+            return null;
+        },
+
+        addChar: function (chr) {
+            if (this.$.textFlow) {
+                var operation = new InsertTextOperation(new TextRange({activeIndex: this.$._cursorIndex, anchorIndex: this.$._cursorIndex}), this.$.textFlow, chr);
+                operation.doOperation();
+                this._renderTextFlow(this.$.textFlow);
+                this.set({
+                    _cursorIndex: this.$._cursorIndex + 1
+                });
+            }
+
+        },
+
         _onDomAdded: function () {
             this.callBase();
             var self = this;
-            this.$stage.$window.setInterval(function () {
+//            this.$stage.$window.setInterval(function () {
 //                self.$.cursor.set('visible', !self.$.cursor.$.visible);
-            }, 600);
+//            }, 600);
         },
 
         _renderTextFlow: function (textFlow) {
@@ -56,10 +207,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 // TODO: use correct line height -> can only be determinated after composing
                 var textElement = this.createComponent(SvgElement, {
                     tagName: "text",
-                    y: this.$currentLine * 16
+                    y: this.$currentLine * 16,
+                    $textElement: element
                 });
 
-                textElement.$textElement = element;
                 var x = 0,
                     transformedStyle = this._transformStyle(element.getComputedStyle(), this.$textTransformMap);
 
@@ -89,10 +240,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 this.$currentLine++;
             } else if (element.isLeaf) {
                 var tspan = this.$templates["tspan"].createInstance({
-                    $text: element.text()
+                    $textElement: element
                 });
-
-                tspan.$textElement = element;
                 var style = this._transformStyle(element.getComputedStyle(), this.$tSpanTransformMap);
 
                 style["alignment-baseline"] = "before-edge";
@@ -104,7 +253,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         },
 
-        _transformStyle: function(style, map) {
+        _transformStyle: function (style, map) {
 
             var ret = {};
 
@@ -121,10 +270,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             var domEvent = e.domEvent,
                 target = e.target;
 
-            var pos = this._getCursorPositionForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
-            if (pos) {
-                this.$.cursor.set(pos);
-                console.log(window.getSelection());
+            var index = this._getCursorIndexForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
+            if (index > -1) {
+                this.set({
+                    '_cursorIndex': index
+                });
             }
             this.$mouseDown = false;
         },
@@ -136,14 +286,14 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             e.stopPropagation();
             e.preventDefault();
 
-            var pos = this._getCursorPositionForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
-            if (pos) {
+            var index = this._getCursorIndexForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
+            if (index > -1) {
                 this.$mouseDown = true;
-                pos.width = 0;
-                this.$anchorPosition = pos;
-                this.$.selection.set({
-                    width: 0
+                this.set({
+                    '_anchorIndex': index,
+                    '_cursorIndex': index
                 });
+
             }
         },
 
@@ -151,26 +301,14 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             if (this.$mouseDown) {
                 var domEvent = e.domEvent,
                     target = e.target;
-                var pos = this._getCursorPositionForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
-                if (pos) {
-                    this.$.cursor.set(pos);
-                    var x, width;
-                    if (this.$anchorPosition.x <= this.$.cursor.$.x) {
-                        x = this.$anchorPosition.x;
-                        width = this.$.cursor.$.x - this.$anchorPosition.x;
-                    } else {
-                        x = this.$.cursor.$.x;
-                        width = this.$anchorPosition.x - this.$.cursor.$.x;
-                    }
-                    this.$.selection.set({
-                        x: x,
-                        width: width
-                    })
+                var index = this._getCursorIndexForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
+                if (index > -1) {
+                    this.set('_cursorIndex',index);
                 }
             }
         },
 
-        _getCursorPositionForMousePosition: function (mousePosition, target) {
+        _getCursorIndexForMousePosition: function (mousePosition, target) {
             var svgRoot = target.getSvgRoot();
             if (svgRoot) {
                 var rootRect = this.$.textContainer.$el.getBoundingClientRect(),
@@ -182,19 +320,22 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                 var num = target.$el.getCharNumAtPosition(point);
                 if (num > -1) {
-                    var pos = target.$el.getEndPositionOfChar(num),
-                        pos2 = target.$el.getStartPositionOfChar(num);
+                    var pos = target.$el.getStartPositionOfChar(num),
+                        pos2 = target.$el.getEndPositionOfChar(num);
                     if (Math.abs(point.x - pos.x) > Math.abs(point.x - pos2.x)) {
-                        pos = pos2;
+                        num++;
                     }
-                    pos.y -= 10;
-                    return {
-                        x: pos.x,
-                        y: pos.y
-                    };
                 }
+                var parent = target.$el.parentNode;
+                var i = 0;
+                while(parent.childNodes[i] !== target.$el){
+                    num += parent.childNodes[i].textContent.length + 1;
+                    i++;
+                }
+
+                return num;
             }
-            return null;
+            return num;
 
         },
 

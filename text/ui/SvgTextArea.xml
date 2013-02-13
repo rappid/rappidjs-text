@@ -1,11 +1,12 @@
 <ui:SvgTextAreaClass xmlns:ui="text.ui" xmlns="http://www.w3.org/2000/svg" xmlns:js="js.core">
     <text cid="textElement" visibility="hidden"/>
-    <rect cid="cursor" width="1" height="10"/>
+    <rect cid="cursor" width="1" height="10" fill="black"/>
+    <rect cid="anchor" width="1" height="10" fill="black"/>
     <rect cid="selection" width="0" height="10"/>
     <g cid="textContainer">
 
     </g>
     <js:Template name="tspan">
-        <tspan>{$text}</tspan>
+        <tspan xml:space="preserve">{$textElement.text}</tspan>
     </js:Template>
 </ui:SvgTextAreaClass>
