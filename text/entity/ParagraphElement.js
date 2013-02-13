@@ -53,8 +53,40 @@ define(['text/entity/FlowGroupElement', 'js/core/List', 'text/entity/SpanElement
             }
 
             this.callBase(child, options);
-        }
+        },
 
+        textLength: function () {
+            return this.callBase() + 1;
+        },
+
+        findChildIndexAtPosition: function(textPosition){
+            var textLength = 0, childLength, ret = -1;
+            this.$.children.each(function (child, index) {
+                textPosition -= child.textLength();
+                if (textPosition <= 0) {
+                    ret = index;
+                    this["break"]();
+                }
+            });
+
+            if (textPosition > 0) {
+                return this.$.children.size() - 1;
+            }
+
+            return ret;
+        },
+        mergeElements: function(){
+            var length = this.$.children.size(),
+                child, previousChild;
+            for(var i = length - 1; i >= 0; i--){
+                child = this.$.children.at(i);
+                if(previousChild && previousChild.hasSameStyle(child)){
+                    child.set('text', child.$.text + previousChild.$.text);
+                    this.removeChild(previousChild);
+                }
+                previousChild = child;
+            }
+        }
 
     }, {
 
