@@ -1,6 +1,6 @@
 var expect = require('chai').expect,
     _ = require('underscore'),
-    testRunner = require('rAppid.js').TestRunner.setup();
+    testRunner = require('rAppid').TestRunner.setup();
 
 var C = {};
 
@@ -40,6 +40,51 @@ describe('text.operation.InsertTextOperation', function () {
             operation.doOperation();
 
             expect(textFlow.text()).to.be.equal("This is bold text. ");
+        });
+
+        it('should insert text at the end of element', function () {
+            var textFlow = new C.TextFlow(),
+                paragraph = new C.Paragraph(),
+                span1 = new C.Span({text: "ABC"}),
+                textRange;
+
+            paragraph.addChild(span1);
+            textFlow.addChild(paragraph);
+
+            textRange = new C.TextRange({
+                textFlow: textFlow,
+                activeIndex: 3,
+                anchorIndex: 3
+            });
+
+            var operation = new C.InsertTextOperation(textRange, textFlow, "DE");
+            operation.doOperation();
+
+            expect(textFlow.text()).to.be.equal("ABCDE ");
+        });
+
+        it('should insert at first position of second paragraph', function () {
+            var textFlow = new C.TextFlow(),
+                paragraph = new C.Paragraph(),
+                paragraph2 = new C.Paragraph(),
+                span1 = new C.Span({text: "ABC"}),
+                textRange;
+
+            paragraph.addChild(span1);
+            paragraph2.addChild(new C.Span());
+            textFlow.addChild(paragraph);
+            textFlow.addChild(paragraph2);
+
+            textRange = new C.TextRange({
+                textFlow: textFlow,
+                activeIndex: 4,
+                anchorIndex: 4
+            });
+
+            var operation = new C.InsertTextOperation(textRange, textFlow, "DE");
+            operation.doOperation();
+
+            expect(textFlow.text()).to.be.equal("ABC DE ");
         });
 
         it('should insert text over range', function () {
