@@ -23,12 +23,16 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
             var textLength = 0, childLength, ret = -1;
             this.$.children.each(function (child, index) {
                 childLength = child.textLength();
-                if (textLength + childLength >= textPosition) {
+                if (textLength + childLength > textPosition) {
                     ret = index;
                     this["break"]();
                 }
                 textLength += childLength;
             });
+
+            if(textPosition >= textLength){
+                return this.$.children.size() - 1;
+            }
 
             return ret;
         },
