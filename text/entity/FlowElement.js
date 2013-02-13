@@ -21,7 +21,12 @@ define(['js/data/Entity', 'text/type/Style', 'underscore'], function (Entity, St
         }.onChange("text"),
 
         hasSameStyle: function (flowElement) {
-            return this.$.style.isDeepEqual(flowElement.$.style);
+            if(this.$.style === flowElement.$.style){
+                return true;
+            } else if(this.$.style){
+                return this.$.style.isDeepEqual(flowElement.$.style);
+            }
+            return false;
         },
 
         applyStyle: function (style) {
