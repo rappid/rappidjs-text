@@ -9,7 +9,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             width: 100,
             height: 100,
             _cursorIndex: 0,
-            _anchorIndex: -1
+            _anchorIndex: 0
         },
 
         $tSpanTransformMap: {
@@ -33,31 +33,37 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         handleKeyDown: function (e) {
             var keyCode = e.keyCode,
-                textRange, operation;
+                textRange, operation, anchorIndex;
 
             if (keyCode === 8) {
                 e.preventDefault();
                 e.stopPropagation();
-
+                anchorIndex = this.$._anchorIndex;
+                if(this.$._anchorIndex === this.$._cursorIndex){
+                    anchorIndex = this.$._cursorIndex - 1;
+                }
                 // delete operation
-                textRange = new TextRange({activeIndex: this.$._cursorIndex, anchorIndex: this.$._anchorIndex});
+                textRange = new TextRange({activeIndex: this.$._cursorIndex, anchorIndex: anchorIndex});
                 operation = new DeleteOperation(textRange, this.$.textFlow);
 
                 operation.doOperation();
-
-                this.set('_cursorIndex', this.$._cursorIndex - 1);
                 this._renderTextFlow(this.$.textFlow);
+                this._setCursorAfterOperation(this.$._anchorIndex === this.$._cursorIndex ? -1 : 0);
             } else if(keyCode === 46){
                 e.preventDefault();
                 e.stopPropagation();
                 // delete operation
-                textRange = new TextRange({activeIndex: this.$._cursorIndex+1, anchorIndex: this.$._anchorIndex});
+                anchorIndex = this.$._anchorIndex;
+                if (this.$._anchorIndex === this.$._cursorIndex) {
+                    anchorIndex = this.$._cursorIndex + 1;
+                }
+                textRange = new TextRange({activeIndex: this.$._cursorIndex, anchorIndex: anchorIndex});
                 operation = new DeleteOperation(textRange, this.$.textFlow);
 
                 operation.doOperation();
 
-                this.set('_cursorIndex', this.$._cursorIndex);
                 this._renderTextFlow(this.$.textFlow);
+                this._setCursorAfterOperation();
             } else if (keyCode === 37 || keyCode === 39 || keyCode === 38 || keyCode === 40) {
                 e.preventDefault();
                 // move cursor
@@ -73,7 +79,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 if (e.shiftKey && this.$._anchorIndex === -1) {
                     this.set('_anchorIndex', this.$._cursorIndex);
                 } else if (!e.shiftKey && this.$._anchorIndex !== -1) {
-                    this.set('_anchorIndex', -1);
+                    this.set('_anchorIndex', cursorIndex);
                 }
                 if (cursorIndex > -1) {
                     this.set('_cursorIndex', cursorIndex);
@@ -87,7 +93,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                 operation.doOperation();
                 this._renderTextFlow(this.$.textFlow);
-                this.set('_cursorIndex', this.$._cursorIndex + 1);
+                this._setCursorAfterOperation(1);
             }
         },
 
@@ -170,14 +176,21 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         addChar: function (chr) {
             if (this.$.textFlow) {
-                var operation = new InsertTextOperation(new TextRange({activeIndex: this.$._cursorIndex, anchorIndex: this.$._cursorIndex}), this.$.textFlow, chr);
+                var operation = new InsertTextOperation(new TextRange({activeIndex: this.$._cursorIndex, anchorIndex: this.$._anchorIndex}), this.$.textFlow, chr);
                 operation.doOperation();
                 this._renderTextFlow(this.$.textFlow);
-                this.set({
-                    _cursorIndex: this.$._cursorIndex + 1
-                });
+                this._setCursorAfterOperation(1);
             }
+        },
 
+        _setCursorAfterOperation: function(add){
+            add = add || 0;
+
+            var cursorIndex = this.$._cursorIndex <= this.$._anchorIndex ? this.$._cursorIndex : this.$._anchorIndex;
+            this.set({
+                _cursorIndex: cursorIndex + add,
+                _anchorIndex: cursorIndex + add
+            });
         },
 
         _onDomAdded: function () {
