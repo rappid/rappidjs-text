@@ -37,36 +37,34 @@ define(['text/operation/FlowOperation', 'text/entity/ParagraphElement', 'text/en
 
                     var relativePosition = activePosition - textLength; // position inside the paragraph
 
-                    var previousLeaf = paragraph.findLeaf(relativePosition - 1);
-                    if (previousLeaf === leaf) {
-                        textLength = 0;
-                        // split the leaf up!
-                        previousLeaf = leaf.getPreviousLeaf(paragraph);
-                        while (previousLeaf) {
-                            textLength += previousLeaf.textLength();
-                            previousLeaf = previousLeaf.getPreviousLeaf(paragraph);
-                        }
-
-                        var leafPosition = relativePosition - textLength;
-
-                        var preText = leaf.text(0, leafPosition),
-                            postText = leaf.text(leafPosition);
-
-                        childIndex = paragraph.getChildIndex(leaf);
-
-                        // create new leafs
-                        var preSpan = new SpanElement({text: preText}),
-                            postSpan = new SpanElement({text: postText});
-
-                        // remove old
-                        paragraph.removeChild(leaf);
-
-                        // place in paragraph
-                        paragraph.addChild(preSpan, {index: childIndex});
-                        paragraph.addChild(postSpan, {index: childIndex + 1});
-
-                        leaf = postSpan;
+                    var previousLeaf;
+                    textLength = 0;
+                    // split the leaf up!
+                    previousLeaf = leaf.getPreviousLeaf(paragraph);
+                    while (previousLeaf) {
+                        textLength += previousLeaf.textLength();
+                        previousLeaf = previousLeaf.getPreviousLeaf(paragraph);
                     }
+
+                    var leafPosition = relativePosition - textLength;
+
+                    var preText = leaf.text(0, leafPosition),
+                        postText = leaf.text(leafPosition);
+
+                    childIndex = paragraph.getChildIndex(leaf);
+
+                    // create new leafs
+                    var preSpan = new SpanElement({text: preText}),
+                        postSpan = new SpanElement({text: postText});
+
+                    // remove old
+                    paragraph.removeChild(leaf);
+
+                    // place in paragraph
+                    paragraph.addChild(preSpan, {index: childIndex});
+                    paragraph.addChild(postSpan, {index: childIndex + 1});
+
+                    leaf = postSpan;
 
                     var currentLeaf = leaf;
                     // no need to split up leaf
