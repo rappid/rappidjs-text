@@ -29,7 +29,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             "textAnchor": "text-anchor"
         },
 
-        $classAttributes: ['textElement', 'textContainer', 'cursor', 'textFlow', 'width', 'height'],
+        $classAttributes: ['textElement', 'textContainer', 'cursor', 'textFlow', 'width', 'height', 'anchor'],
 
         handleKeyDown: function (e) {
             var keyCode = e.keyCode,
@@ -66,6 +66,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 this._setCursorAfterOperation();
             } else if (keyCode === 37 || keyCode === 39 || keyCode === 38 || keyCode === 40) {
                 e.preventDefault();
+                e.stopPropagation();
                 // move cursor
                 var cursorIndex = this.$._cursorIndex;
                 switch (keyCode) {
@@ -86,7 +87,14 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 }
             } else if (keyCode === 13) {
                 e.preventDefault();
+                e.stopPropagation();
                 // line break
+                if(this.$._cursorIndex !== this.$._anchorIndex){
+                    textRange = new TextRange({activeIndex: this.$._cursorIndex, anchorIndex: this.$._anchorIndex});
+                    operation = new DeleteOperation(textRange, this.$.textFlow);
+                    operation.doOperation();
+                    this._setCursorAfterOperation();
+                }
 
                 textRange = new TextRange({activeIndex: this.$._cursorIndex});
                 operation = new SplitParagraphOperation(textRange, this.$.textFlow);
@@ -100,9 +108,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         handleKeyPress: function (e) {
             var keyCode = e.keyCode;
 
-            if (keyCode !== 13 && e.keyIdentifier) {
+            if (e.charCode) {
                 // insert text
-                this.addChar(String.fromCharCode(keyCode));
+                this.addChar(String.fromCharCode(e.charCode));
             }
 
         },
@@ -162,8 +170,13 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         }
                         pos = target.$el.getEndPositionOfChar(charNum);
                         pos.x += i * 4; // TODO: calculate space width
-                    } else {
+                    } else if(target.$el.textContent) {
                         pos = target.$el.getStartPositionOfChar(charNum);
+                    } else {
+                        pos = {
+                            x: 0,
+                            y: 0
+                        }
                     }
                     return {
                         x: pos.x,
@@ -190,7 +203,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             this.set({
                 _cursorIndex: cursorIndex + add,
                 _anchorIndex: cursorIndex + add
-            });
+            },{force: true});
         },
 
         _onDomAdded: function () {
@@ -205,7 +218,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             if (textFlow) {
                 var self = this;
                 this.$.textContainer.removeAllChildren();
-                this.$currentLine = 0;
+                this.$currentLine = 1;
                 textFlow.$.children.each(function (child) {
                     self._renderElement(child, self.$.textContainer);
                 });
@@ -256,8 +269,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     $textElement: element
                 });
                 var style = this._transformStyle(element.getComputedStyle(), this.$tSpanTransformMap);
-
-                style["alignment-baseline"] = "before-edge";
 
                 tspan.set(style);
 
