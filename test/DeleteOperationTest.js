@@ -132,6 +132,36 @@ describe('text.operation.InsertTextOperation', function () {
 
         });
 
+        it('should merge paragraphs', function () {
+            var textFlow = new C.TextFlow(),
+                paragraph = new C.Paragraph(),
+                paragraph2 = new C.Paragraph(),
+                span1 = new C.Span({text: "ABC"}),
+                span2 = new C.Span({text: "   "}),
+                span3 = new C.Span({text: "DEF"}),
+                textRange;
+
+            paragraph.addChild(span1);
+            paragraph2.addChild(span2);
+            paragraph2.addChild(span3);
+
+            textFlow.addChild(paragraph);
+            textFlow.addChild(paragraph2);
+
+            textRange = new C.TextRange({
+                anchorIndex: 3,
+                activeIndex: 4
+            });
+
+            var operation = new C.DeleteOperation(textRange, textFlow);
+            operation.doOperation();
+
+            expect(textFlow.text()).to.be.equal("ABC   DEF ");
+            expect(textFlow.numChildren()).to.be.equal(1);
+
+
+        });
+
     });
 
 });
