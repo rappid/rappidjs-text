@@ -27,7 +27,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
             if (!endElement.isLeaf) {
                 if (absoluteEnd > -1) {
                     endElement = endElement.findLeaf(absoluteEnd);
-                    if (!endElement) {
+                    if (!endElement.isLeaf) {
                         endElement = endElement.getLastLeaf();
                     }
                 } else {
