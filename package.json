@@ -9,6 +9,9 @@
     ],
     "description": "Text layout library for rAppid.js.",
     "lib": "piwik",
+    "scripts": {
+        "test": "mocha -R spec --ignore-leaks"
+    },
     "repository": {
         "type": "git",
         "url": "git://github.com/it-ony/rappidjs-text.git"
@@ -21,7 +24,8 @@
     },
     "devDependencies": {
         "chai": "*",
-        "mocha": "*"
+        "mocha": "*",
+        "underscore": "*"
     },
     "license": "MIT",
     "engine": {

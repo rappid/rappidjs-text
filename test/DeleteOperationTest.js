@@ -1,6 +1,6 @@
 var expect = require('chai').expect,
     _ = require('underscore'),
-    testRunner = require('rAppid').TestRunner.setup();
+    testRunner = require('rAppid.js').TestRunner.setup();
 
 var C = {};
 
@@ -81,7 +81,7 @@ describe('text.operation.InsertTextOperation', function () {
             expect(textFlow.text()).to.be.equal("AC ");
         });
 
-        it('should delete elements between start and end element', function(){
+        it('should delete elements between start and end element', function () {
             var textFlow = new C.TextFlow(),
                 paragraph = new C.Paragraph(),
                 span1 = new C.Span({text: "ABC"}),
@@ -105,7 +105,7 @@ describe('text.operation.InsertTextOperation', function () {
             expect(textFlow.text()).to.be.equal("AI ");
         });
 
-        it('should merge paragraphs', function(){
+        it('should merge paragraphs', function () {
             var textFlow = new C.TextFlow(),
                 paragraph = new C.Paragraph(),
                 paragraph2 = new C.Paragraph(),

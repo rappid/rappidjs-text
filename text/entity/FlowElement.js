@@ -21,9 +21,9 @@ define(['js/data/Entity', 'text/type/Style', 'underscore'], function (Entity, St
         }.onChange("text"),
 
         hasSameStyle: function (flowElement) {
-            if(this.$.style === flowElement.$.style){
+            if (this.$.style === flowElement.$.style) {
                 return true;
-            } else if(this.$.style){
+            } else if (this.$.style) {
                 return this.$.style.isDeepEqual(flowElement.$.style);
             }
             return false;
@@ -52,15 +52,15 @@ define(['js/data/Entity', 'text/type/Style', 'underscore'], function (Entity, St
 
         },
 
-        composeStyle: function(){
+        composeStyle: function () {
             return this.$.style ? this.$.style.compose() : null;
         },
 
-        getComputedStyle: function(){
+        getComputedStyle: function () {
             var parent = this.$parent,
                 style = this.composeStyle() || {};
 
-            while(parent){
+            while (parent) {
                 _.defaults(style, parent.composeStyle());
                 parent = parent.$parent;
             }

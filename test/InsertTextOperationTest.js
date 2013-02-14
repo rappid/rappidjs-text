@@ -1,6 +1,6 @@
 var expect = require('chai').expect,
     _ = require('underscore'),
-    testRunner = require('rAppid').TestRunner.setup();
+    testRunner = require('rAppid.js').TestRunner.setup();
 
 var C = {};
 
@@ -113,7 +113,7 @@ describe('text.operation.InsertTextOperation', function () {
             expect(textFlow.getChildAt(0).numChildren()).to.be.equal(2);
         });
 
-        it('should delete text', function(){
+        it('should delete text', function () {
             var textFlow = new C.TextFlow(),
                 paragraph = new C.Paragraph(),
                 span1 = new C.Span({text: "This is a"}),

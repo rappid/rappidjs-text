@@ -51,7 +51,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 e.preventDefault();
                 e.stopPropagation();
                 anchorIndex = this.$._anchorIndex;
-                if(this.$._anchorIndex === this.$._cursorIndex){
+                if (this.$._anchorIndex === this.$._cursorIndex) {
                     anchorIndex = this.$._cursorIndex - 1;
                 }
                 // delete operation
@@ -61,7 +61,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 operation.doOperation();
                 this._renderTextFlow(this.$.textFlow);
                 this._setCursorAfterOperation(this.$._anchorIndex === this.$._cursorIndex ? -1 : 0);
-            } else if(keyCode === 46){
+            } else if (keyCode === 46) {
                 e.preventDefault();
                 e.stopPropagation();
                 // delete operation
@@ -101,7 +101,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 e.preventDefault();
                 e.stopPropagation();
                 // line break
-                if(this.$._cursorIndex !== this.$._anchorIndex){
+                if (this.$._cursorIndex !== this.$._anchorIndex) {
                     textRange = new TextRange({activeIndex: this.$._cursorIndex, anchorIndex: this.$._anchorIndex});
                     operation = new DeleteOperation(textRange, this.$.textFlow);
                     operation.doOperation();
@@ -142,14 +142,14 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
         },
 
-        _commit_cursorIndex: function(index){
+        _commit_cursorIndex: function (index) {
 
-            if(index < 0){
+            if (index < 0) {
                 return false;
             }
 
-            if(this.$.textFlow){
-                if(index >= this.$.textFlow.textLength()){
+            if (this.$.textFlow) {
+                if (index >= this.$.textFlow.textLength()) {
                     return false;
                 }
             }
@@ -173,16 +173,16 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 if (textLength > index) {
                     charNum = index - (textLength - childLength);
 
-                    if(charNum > 0 && charNum === childLength - 1){
+                    if (charNum > 0 && charNum === childLength - 1) {
                         charNum--;
                         i = 0;
-                        while(charNum > 0 && child.$el.textContent.charAt(charNum) == " "){
+                        while (charNum > 0 && child.$el.textContent.charAt(charNum) == " ") {
                             i++;
                             charNum--;
                         }
                         pos = target.$el.getEndPositionOfChar(charNum);
                         pos.x += i * 4; // TODO: calculate space width
-                    } else if(target.$el.textContent) {
+                    } else if (target.$el.textContent) {
                         pos = target.$el.getStartPositionOfChar(charNum);
                     } else {
                         pos = {
@@ -208,14 +208,14 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
         },
 
-        _setCursorAfterOperation: function(add){
+        _setCursorAfterOperation: function (add) {
             add = add || 0;
 
             var cursorIndex = this.$._cursorIndex <= this.$._anchorIndex ? this.$._cursorIndex : this.$._anchorIndex;
             this.set({
                 _cursorIndex: cursorIndex + add,
                 _anchorIndex: cursorIndex + add
-            },{force: true});
+            }, {force: true});
         },
 
         _onDomAdded: function () {
@@ -339,7 +339,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     target = e.target;
                 var index = this._getCursorIndexForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
                 if (index > -1) {
-                    this.set('_cursorIndex',index);
+                    this.set('_cursorIndex', index);
                 }
             }
         },
@@ -364,7 +364,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 }
                 var parent = target.$el.parentNode;
                 var i = 0;
-                while(parent.childNodes[i] !== target.$el){
+                while (parent.childNodes[i] !== target.$el) {
                     num += parent.childNodes[i].textContent.length + 1;
                     i++;
                 }

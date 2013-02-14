@@ -1,6 +1,6 @@
 var expect = require('chai').expect,
     _ = require('underscore'),
-    testRunner = require('rAppid').TestRunner.setup();
+    testRunner = require('rAppid.js').TestRunner.setup();
 
 var C = {};
 
@@ -16,9 +16,9 @@ describe('text.entity.ParagraphElement', function () {
 
     });
 
-    describe('#findChildIndexAtPosition', function(){
+    describe('#findChildIndexAtPosition', function () {
 
-        it('should return 0 for textPosition 0', function(){
+        it('should return 0 for textPosition 0', function () {
             var paragraph = new C.Paragraph(),
                 mySpan = new C.Span();
 
@@ -36,7 +36,7 @@ describe('text.entity.ParagraphElement', function () {
             expect(paragraph.findChildIndexAtPosition(1)).to.be.equal(0);
         });
 
-        it('should return the element with the lower index', function(){
+        it('should return the element with the lower index', function () {
             var paragraph = new C.Paragraph(),
                 mySpan = new C.Span({text: "abc"}),
                 mySpan2 = new C.Span({text: "def"});

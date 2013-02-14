@@ -1,6 +1,6 @@
 var expect = require('chai').expect,
     _ = require('underscore'),
-    testRunner = require('rAppid').TestRunner.setup();
+    testRunner = require('rAppid.js').TestRunner.setup();
 
 var C = {};
 
@@ -28,18 +28,18 @@ describe('text.entity.FlowGroupElement', function () {
 
         });
 
-        it('should return cut of text', function(){
+        it('should return cut of text', function () {
 
             var paragraph = new C.FlowGroupElement();
 
             paragraph.addChild(new C.Span({text: "Hello "}));
             paragraph.addChild(new C.Span({text: "World"}));
 
-            expect(paragraph.text(1,7)).to.be.equal("ello W");
+            expect(paragraph.text(1, 7)).to.be.equal("ello W");
         });
 
 
-        it('should return text of all children', function(){
+        it('should return text of all children', function () {
             var paragraph = new C.FlowGroupElement(),
                 subElementA = new C.FlowGroupElement(),
                 subElementB = new C.FlowGroupElement();
@@ -71,14 +71,14 @@ describe('text.entity.FlowGroupElement', function () {
             paragraph.addChild(subElementA);
             paragraph.addChild(subElementB);
 
-            expect(paragraph.text(3,31)).to.be.equal("s is the first paragraph. An");
+            expect(paragraph.text(3, 31)).to.be.equal("s is the first paragraph. An");
         })
 
 
     });
 
     describe('#splitAtIndex', function () {
-        it('should split at given index', function(){
+        it('should split at given index', function () {
             var paragraph = new C.FlowGroupElement();
 
             paragraph.addChild(new C.Span({text: "This is the first "}));
@@ -93,8 +93,8 @@ describe('text.entity.FlowGroupElement', function () {
         });
     });
 
-    describe('#findLeaf', function(){
-        it('should find first leaf for a given textPosition', function(){
+    describe('#findLeaf', function () {
+        it('should find first leaf for a given textPosition', function () {
             var paragraph = new C.FlowGroupElement(),
                 subElementA = new C.FlowGroupElement(),
                 subElementB = new C.FlowGroupElement();
@@ -114,9 +114,9 @@ describe('text.entity.FlowGroupElement', function () {
         });
     });
 
-    describe('#findChildIndexAtPosition', function(){
+    describe('#findChildIndexAtPosition', function () {
 
-        it('should return 0 for textPosition 0', function(){
+        it('should return 0 for textPosition 0', function () {
             var paragraph = new C.FlowGroupElement(),
                 mySpan = new C.Span();
 
@@ -134,7 +134,7 @@ describe('text.entity.FlowGroupElement', function () {
             expect(paragraph.findChildIndexAtPosition(1)).to.be.equal(0);
         });
 
-        it('should return the element with the bigger index', function(){
+        it('should return the element with the bigger index', function () {
             var paragraph = new C.FlowGroupElement(),
                 mySpan = new C.Span({text: "abc"}),
                 mySpan2 = new C.Span({text: "def"});
