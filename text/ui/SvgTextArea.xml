@@ -1,7 +1,7 @@
 <ui:SvgTextAreaClass xmlns:ui="text.ui" xmlns="http://www.w3.org/2000/svg" xmlns:js="js.core">
     <text cid="textElement" visibility="hidden"/>
-    <rect cid="cursor" width="1" height="10" fill="black"/>
-    <rect cid="anchor" width="1" height="10" fill="black"/>
+    <rect cid="cursor" width="1" height="10" class="text-cursor" />
+    <rect cid="anchor" width="1" height="10" class="text-anchor"/>
     <rect cid="selection" width="0" height="10"/>
     <g cid="textContainer">
 
