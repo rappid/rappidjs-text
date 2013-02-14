@@ -34,6 +34,10 @@ define(['text/operation/SplitElementOperation','text/entity/ParagraphElement'], 
             this.$previousParagraph = paragraph;
             this.$newElement = newParagraph;
 
+            var paragraphStyle = paragraph.$.style ? paragraph.$.style.clone() : null;
+
+            newParagraph.applyStyle(paragraphStyle);
+
             var paragraphParent = this.$previousParagraph.$parent;
             if (paragraphParent) {
                 var paragraphIndex = paragraphParent.getChildIndex(this.$previousParagraph);
