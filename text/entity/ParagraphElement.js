@@ -80,9 +80,13 @@ define(['text/entity/FlowGroupElement', 'js/core/List', 'text/entity/SpanElement
                 child, previousChild;
             for(var i = length - 1; i >= 0; i--){
                 child = this.$.children.at(i);
-                if(previousChild && previousChild.hasSameStyle(child)){
-                    child.set('text', child.$.text + previousChild.$.text);
-                    this.removeChild(previousChild);
+                if(previousChild){
+                    if(previousChild.textLength() === 0){
+                        this.removeChild(previousChild);
+                    } else if(previousChild.hasSameStyle(child)){
+                        child.set('text', child.$.text + previousChild.$.text);
+                        this.removeChild(previousChild);
+                    }
                 }
                 previousChild = child;
             }
