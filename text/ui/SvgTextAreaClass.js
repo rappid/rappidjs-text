@@ -31,6 +31,18 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         $classAttributes: ['textElement', 'textContainer', 'cursor', 'textFlow', 'width', 'height', 'anchor'],
 
+        ctor: function(){
+            this.callBase();
+            this.bind('textFlow','formatChanged', this._setCursorAfterOperation, this);
+        },
+
+        getSelection: function(){
+            return {
+                anchorIndex: this.$._anchorIndex,
+                cursorIndex: this.$._cursorIndex
+            }
+        },
+
         handleKeyDown: function (e) {
             var keyCode = e.keyCode,
                 textRange, operation, anchorIndex;
@@ -307,8 +319,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             var domEvent = e.domEvent,
                 target = e.target;
 
-            e.stopPropagation();
-            e.preventDefault();
+//            e.stopPropagation();
+//            e.preventDefault();
 
             var index = this._getCursorIndexForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
             if (index > -1) {
