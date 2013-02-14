@@ -162,6 +162,60 @@ describe('text.operation.InsertTextOperation', function () {
 
         });
 
+        it('should delete empty spans and merge', function () {
+            var textFlow = new C.TextFlow(),
+                paragraph = new C.Paragraph(),
+                span1 = new C.Span({text: "ABC"}),
+                span2 = new C.Span({text: "   "}),
+                span3 = new C.Span({text: "DEF"}),
+                textRange;
+
+            paragraph.addChild(span1);
+            paragraph.addChild(span2);
+            paragraph.addChild(span3);
+
+            textFlow.addChild(paragraph);
+
+            textRange = new C.TextRange({
+                anchorIndex: 6,
+                activeIndex: 9
+            });
+
+            var operation = new C.DeleteOperation(textRange, textFlow);
+            operation.doOperation();
+
+            expect(paragraph.text()).to.be.equal("ABC   ");
+            expect(paragraph.numChildren()).to.be.equal(1);
+
+        });
+
+        it('should delete empty spans and merge', function () {
+            var textFlow = new C.TextFlow(),
+                paragraph = new C.Paragraph(),
+                span1 = new C.Span({text: "AB"}),
+                span2 = new C.Span({text: "CD"}),
+                span3 = new C.Span({text: "EF"}),
+                textRange;
+
+            paragraph.addChild(span1);
+            paragraph.addChild(span2);
+            paragraph.addChild(span3);
+
+            textFlow.addChild(paragraph);
+
+            textRange = new C.TextRange({
+                anchorIndex: 3,
+                activeIndex: 4
+            });
+
+            var operation = new C.DeleteOperation(textRange, textFlow);
+            operation.doOperation();
+
+            expect(paragraph.text()).to.be.equal("ABCEF");
+            expect(paragraph.numChildren()).to.be.equal(1);
+
+        });
+
     });
 
 });
