@@ -1,6 +1,6 @@
 var expect = require('chai').expect,
     _ = require('underscore'),
-    testRunner = require('rAppid.js').TestRunner.setup();
+    testRunner = require('rAppid').TestRunner.setup();
 
 var C = {};
 
