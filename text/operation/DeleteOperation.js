@@ -98,13 +98,17 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore",
                     postText = endElement.text(relativeEnd);
                     element.set('text', preText);
                     endElement.set('text',postText);
-                    // move end element to parent of element
+                    // move end element and all after to parent of element
                     if(endElement.$parent !== element.$parent){
-                        endElement.$parent.removeChild(endElement);
-                        element.$parent.addChild(endElement);
-                        if(endParagraph.$.children.isEmpty()){
-                            endParagraph.$parent.removeChild(endParagraph);
+
+
+                        while(endParagraph.numChildren()){
+                            nextLeaf = endElement.getNextLeaf(endElement.$parent);
+                            endElement.$parent.removeChild(endElement);
+                            element.$parent.addChild(endElement);
+                            endElement = nextLeaf;
                         }
+                        endParagraph.$parent.removeChild(endParagraph);
                     }
                 } else {
                     // endElement == element
