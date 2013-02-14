@@ -7,28 +7,37 @@ define(['text/operation/SplitElementOperation','text/entity/ParagraphElement'], 
 
         doOperation: function () {
             this.callBase();
-            var newParagraph = new ParagraphElement();
+            var newParagraph = new ParagraphElement(),
+                paragraph;
 
             if (this.$newElement) {
                 var
                     leaf = this.$newElement,
-                    paragraph = leaf.$parent,
                     currentLeaf = this.$newElement;
-                // no need to split up leaf
+
+                paragraph = leaf.$parent;
+                /// / no need to split up leaf
                 while (leaf) {
                     currentLeaf = leaf;
                     leaf = currentLeaf.getNextLeaf(paragraph);
                     paragraph.removeChild(currentLeaf);
                     newParagraph.addChild(currentLeaf);
                 }
-                this.$previousParagraph = paragraph;
-                this.$newElement = newParagraph;
+            } else {
+                var element = this.$splittedElement;
 
-                var paragraphParent = this.$previousParagraph.$parent;
-                if (paragraphParent) {
-                    var paragraphIndex = paragraphParent.getChildIndex(this.$previousParagraph);
-                    paragraphParent.addChild(this.$newElement, {index: paragraphIndex + 1});
-                }
+                paragraph = element.$parent;
+
+                newParagraph.addChild(new element.factory());
+            }
+
+            this.$previousParagraph = paragraph;
+            this.$newElement = newParagraph;
+
+            var paragraphParent = this.$previousParagraph.$parent;
+            if (paragraphParent) {
+                var paragraphIndex = paragraphParent.getChildIndex(this.$previousParagraph);
+                paragraphParent.addChild(this.$newElement, {index: paragraphIndex + 1});
             }
         }
 

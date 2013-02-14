@@ -9,7 +9,7 @@ define(['text/operation/FlowOperation', 'text/entity/ParagraphElement', 'text/en
                 throw new Error("Can only split FlowGroupElement");
             }
             this.$targetElement = targetElement;
-
+            this.$splittedElement = null;
             this.callBase();
         },
 
@@ -50,6 +50,7 @@ define(['text/operation/FlowOperation', 'text/entity/ParagraphElement', 'text/en
                     var preText = leaf.text(0, leafPosition),
                         postText = leaf.text(leafPosition);
 
+                    this.$splittedElement = leaf;
                     childIndex = paragraph.getChildIndex(leaf);
 
                     leaf.set('text',preText);
