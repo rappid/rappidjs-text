@@ -8,7 +8,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
 
             this.$targetElement = flowElement;
             this.$textRange = textRange;
-            this.$style = style || {};
+            this.$style = style || null;
         },
 
         doOperation: function () {
@@ -16,8 +16,13 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                 absoluteStart = this.$textRange.$.absoluteStart,
                 absoluteEnd = this.$textRange.$.absoluteEnd,
                 originalStyle,
+                preText,text,postText,
                 changedLeaves = [],
                 child;
+
+            if(absoluteEnd === absoluteStart){
+                return;
+            }
 
             if (!element.isLeaf) {
                 element = element.findLeaf(absoluteStart);
@@ -37,85 +42,137 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
 
             // split element
             var paragraph = element.$parent,
-                textLength = 0;
+                endParagraph = endElement.$parent,
+                textLength = 0,
+                tmpLength = 0,
+                paragraphsBetween = [];
 
-            if (this.$targetElement !== paragraph && !this.$targetElement.isLeaf) {
-                var previousParagraph = paragraph.getPreviousParagraph();
+            if (this.$targetElement !== endParagraph && !this.$targetElement.isLeaf) {
+                var previousParagraph = endParagraph.getPreviousParagraph();
                 while (previousParagraph) {
                     textLength += previousParagraph.textLength();
+
+                    if(!tmpLength){
+                        paragraphsBetween.push(previousParagraph);
+                    }
+
+                    if (previousParagraph === paragraph) {
+                        tmpLength = textLength;
+                    }
+                    previousParagraph = previousParagraph.getPreviousParagraph();
                 }
             }
 
-            var relativePosition = absoluteStart - textLength;
+            var relativePosition = absoluteStart - (textLength - tmpLength),
+                relativeEnd = absoluteEnd - textLength;
 
+            textLength = 0;
+            // split the leaf up!
+            var previousLeaf = element.getPreviousLeaf(paragraph);
 
-            var previousLeaf = paragraph.findLeaf(relativePosition - 1);
-            if (previousLeaf === element) {
-                textLength = 0;
-                // split the leaf up!
-                previousLeaf = element.getPreviousLeaf(paragraph);
+            while (previousLeaf) {
+                textLength += previousLeaf.textLength();
+                previousLeaf = previousLeaf.getPreviousLeaf(paragraph);
+            }
 
-                while (previousLeaf) {
-                    textLength += previousLeaf.textLength();
-                    previousLeaf = previousLeaf.getPreviousLeaf(paragraph);
-                }
+            var leafPosition = relativePosition - textLength;
 
-                var leafPosition = relativePosition - textLength;
+            if (endElement === element) {
+                // if operation is on same element
+                relativeEnd -= textLength;
+                preText = element.text(0,leafPosition);
+                text = element.text(leafPosition,relativeEnd);
+                postText = element.text(relativeEnd);
 
-                var preText = element.text(0, leafPosition),
-                    postText = element.text(leafPosition);
+                childIndex = element.$parent.getChildIndex(element);
 
                 originalStyle = element.$.style ? element.$.style.clone() : null;
 
-                element.set('text', postText);
-                element.applyStyle(this.$style);
-                changedLeaves.push(element);
+                if(!preText){
+                    element.set('text', text);
+                    element.applyStyle(this.$style);
+                    changedLeaves.push(element);
+                } else {
+                    element.set('text',preText);
+                    if (text) {
+                        childIndex++;
+                        child = new element.factory({text: text, style: originalStyle});
+                        child.applyStyle(this.$style);
+                        changedLeaves.push(child);
+                        element.$parent.addChild(child, {index: childIndex});
+                    }
+                }
 
-                if (preText) {
+                if(postText){
+                    childIndex++;
+                    child = new element.factory({text: postText, style: originalStyle});
+                    element.$parent.addChild(child, {index: childIndex});
+                }
+
+                paragraph.mergeElements();
+
+            } else {
+                originalStyle = element.$.style ? element.$.style.clone() : null;
+
+                preText = element.text(0, leafPosition);
+                postText = element.text(leafPosition);
+
+                element.set('text', preText);
+
+                if (postText) {
                     var childIndex = paragraph.getChildIndex(element);
                     child = new element.factory({
-                        text: preText,
+                        text: postText,
                         style: originalStyle
                     });
+                    child.applyStyle(this.$style);
 
                     changedLeaves.push(child);
-                    paragraph.addChild(child, {index: childIndex});
-                }
-            }
+                    paragraph.addChild(child, {index: childIndex + 1});
 
-            var currentElement = element,
-                lastLeaf = null;
-            textLength = 0;
-            while (currentElement !== endElement) {
-
-                currentElement.applyStyle(this.$style);
-                textLength += currentElement.textLength();
-
-                if (lastLeaf && lastLeaf.$parent === currentElement.$parent && lastLeaf.hasSameStyle(currentElement)) {
-
-                    // merge elements together if they are under the same parent
-                    lastLeaf.set('text', lastLeaf.$.text + currentElement.$.text);
-                    lastLeaf.$parent.removeChild(currentElement);
-                    currentElement = lastLeaf;
+                    element = child;
                 } else {
-                    changedLeaves.push(currentElement);
+                    element = element.getNextLeaf(this.$targetElement);
                 }
 
+                var currentElement = element,
+                    lastLeaf = null;
+                textLength = 0;
+                while (currentElement && currentElement !== endElement) {
 
-                lastLeaf = currentElement;
-                currentElement = currentElement.getNextLeaf(this.$targetElement);
-            }
+                    textLength += currentElement.textLength();
+                    currentElement.applyStyle(this.$style);
 
-            var relativeEnd = absoluteEnd - absoluteStart - textLength;
-            if (relativeEnd !== endElement.textLength()) {
+                    if (lastLeaf && lastLeaf.$parent === currentElement.$parent && lastLeaf.hasSameStyle(currentElement)) {
+
+                        // merge elements together if they are under the same parent
+                        lastLeaf.set('text', lastLeaf.$.text + currentElement.$.text);
+
+                        lastLeaf.$parent.removeChild(currentElement);
+                        currentElement = lastLeaf;
+                    }
+
+
+                    lastLeaf = currentElement;
+                    currentElement = currentElement.getNextLeaf(this.$targetElement);
+                }
+
+                previousLeaf = endElement.getPreviousLeaf(endElement.$parent);
+                while (previousLeaf) {
+                    relativeEnd -= previousLeaf.textLength();
+                    previousLeaf = previousLeaf.getPreviousLeaf(endElement.$parent);
+                }
+
                 // split up end element
                 var preEndText = endElement.text(0, relativeEnd),
                     postEndText = endElement.text(relativeEnd);
 
-                originalStyle = element.$.style.clone();
+                originalStyle = endElement.$.style ? endElement.$.style.clone() : null;
+
 
                 endElement.set('text', preEndText);
                 endElement.applyStyle(this.$style);
+                changedLeaves.push(endElement);
 
                 if (lastLeaf && lastLeaf.$parent === endElement.$parent && lastLeaf.hasSameStyle(endElement)) {
                     lastLeaf.set('text', lastLeaf.$.text + preEndText);
@@ -129,19 +186,31 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                 if (postEndText) {
                     var endElementIndex = paragraph.getChildIndex(endElement);
                     child = new endElement.factory({text: postEndText, style: originalStyle});
-                    changedLeaves.push(child);
                     paragraph.addChild(child, {index: endElementIndex + 1});
                 }
+
+                paragraph.mergeElements();
+                if(paragraph !== endParagraph){
+                    endParagraph.mergeElements();
+                }
+
+                for (var i = 0; i < paragraphsBetween.length; i++) {
+                    paragraphsBetween[i].mergeElements();
+                }
+
             }
 
-            for (var i = 0; i < changedLeaves.length; i++) {
+            for (i = 0; i < changedLeaves.length; i++) {
                 child = changedLeaves[i];
+                child.applyStyle(this.$style);
                 if (child.$parent.numChildren() === 1) {
                     child.$parent.applyStyle(child.$.style);
-                    child.$.style.clear();
+                    child.set('style', null);
                 }
             }
-        }
-    });
 
+    }
 });
+
+})
+;
