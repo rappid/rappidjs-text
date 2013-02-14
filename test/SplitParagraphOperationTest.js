@@ -65,7 +65,7 @@ describe('text.operation.SplitParagraphOperation', function () {
             expect(textFlow.numChildren()).to.be.equal(2);
         });
 
-        it('should split up over more than one paragraph', function(){
+        it('should split up over more than one paragraph', function () {
             var textFlow = new C.TextFlow(),
                 paragraph1 = new C.Paragraph(),
                 paragraph2 = new C.Paragraph(),
@@ -93,7 +93,7 @@ describe('text.operation.SplitParagraphOperation', function () {
             expect(textFlow.numChildren()).to.be.equal(4);
         });
 
-        it('should split at end of paragraph', function(){
+        it('should split at end of paragraph', function () {
             var textFlow = new C.TextFlow(),
                 paragraph1 = new C.Paragraph(),
                 span1 = new C.Span({text: "ABC"}),

@@ -1,4 +1,4 @@
-define(['text/operation/SplitElementOperation','text/entity/ParagraphElement'], function (SplitElementOperation, ParagraphElement) {
+define(['text/operation/SplitElementOperation', 'text/entity/ParagraphElement'], function (SplitElementOperation, ParagraphElement) {
     return SplitElementOperation.inherit('text.operation.SplitParagraphOperation', {
 
         ctor: function (textRange, target) {

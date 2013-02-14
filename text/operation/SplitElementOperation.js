@@ -53,12 +53,12 @@ define(['text/operation/FlowOperation', 'text/entity/ParagraphElement', 'text/en
                     this.$splittedElement = leaf;
                     childIndex = paragraph.getChildIndex(leaf);
 
-                    leaf.set('text',preText);
-                    if(postText){
+                    leaf.set('text', preText);
+                    if (postText) {
                         var postSpan = new SpanElement({text: postText});
                         paragraph.addChild(postSpan, {index: childIndex + 1});
                         this.$newElement = postSpan;
-                    }else{
+                    } else {
                         this.$newElement = leaf.getNextLeaf(leaf.$parent);
                     }
                 }

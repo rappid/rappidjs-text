@@ -77,32 +77,32 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore",
                 relativeEnd = relativeEnd - textLength;
             }
 
-            var preText = element.text(0,relativePosition) + this.$text;
+            var preText = element.text(0, relativePosition) + this.$text;
 
-            if(endElement){
+            if (endElement) {
                 var postText;
-                if(element !== endElement){
+                if (element !== endElement) {
                     // remove all elements in between
                     var currentLeaf = element,
                         nextLeaf;
-                    while(currentLeaf !== endElement){
-                        if(currentLeaf.$parent === endElement.$parent){
+                    while (currentLeaf !== endElement) {
+                        if (currentLeaf.$parent === endElement.$parent) {
                             relativeEnd -= currentLeaf.textLength();
                         }
                         nextLeaf = currentLeaf.getNextLeaf(this.$targetElement);
-                        if(currentLeaf !== element){
+                        if (currentLeaf !== element) {
                             currentLeaf.$parent.removeChild(currentLeaf);
                         }
                         currentLeaf = nextLeaf;
                     }
                     postText = endElement.text(relativeEnd);
                     element.set('text', preText);
-                    endElement.set('text',postText);
+                    endElement.set('text', postText);
                     // move end element and all after to parent of element
-                    if(endElement.$parent !== element.$parent){
+                    if (endElement.$parent !== element.$parent) {
 
 
-                        while(endParagraph.numChildren()){
+                        while (endParagraph.numChildren()) {
                             nextLeaf = endElement.getNextLeaf(endElement.$parent);
                             endElement.$parent.removeChild(endElement);
                             element.$parent.addChild(endElement);
@@ -125,6 +125,6 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore",
 
 
 
-});
+    });
 
 });

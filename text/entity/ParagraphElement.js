@@ -59,7 +59,7 @@ define(['text/entity/FlowGroupElement', 'js/core/List', 'text/entity/SpanElement
             return this.callBase() + 1;
         },
 
-        findChildIndexAtPosition: function(textPosition){
+        findChildIndexAtPosition: function (textPosition) {
             var textLength = 0, childLength, ret = -1;
             this.$.children.each(function (child, index) {
                 textPosition -= child.textLength();
@@ -75,12 +75,12 @@ define(['text/entity/FlowGroupElement', 'js/core/List', 'text/entity/SpanElement
 
             return ret;
         },
-        mergeElements: function(){
+        mergeElements: function () {
             var length = this.$.children.size(),
                 child, previousChild;
-            for(var i = length - 1; i >= 0; i--){
+            for (var i = length - 1; i >= 0; i--) {
                 child = this.$.children.at(i);
-                if(previousChild && previousChild.hasSameStyle(child)){
+                if (previousChild && previousChild.hasSameStyle(child)) {
                     child.set('text', child.$.text + previousChild.$.text);
                     this.removeChild(previousChild);
                 }

@@ -30,7 +30,7 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
                 textLength += childLength;
             });
 
-            if(textPosition >= textLength){
+            if (textPosition >= textLength) {
                 return this.$.children.size() - 1;
             }
 
