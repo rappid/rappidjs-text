@@ -91,9 +91,27 @@ describe('text.operation.SplitParagraphOperation', function () {
             operation.doOperation();
 
             expect(textFlow.numChildren()).to.be.equal(4);
-
-
         });
+
+        it('should split at end of paragraph', function(){
+            var textFlow = new C.TextFlow(),
+                paragraph1 = new C.Paragraph(),
+                span1 = new C.Span({text: "ABC"}),
+                textRange;
+
+            paragraph1.addChild(span1);
+            textFlow.addChild(paragraph1);
+
+            textRange = new C.TextRange({
+                activeIndex: 3
+            });
+
+            var operation = new C.SplitParagraphOperation(textRange, textFlow);
+            operation.doOperation();
+
+            expect(textFlow.numChildren()).to.be.equal(2);
+        });
+
     });
 
 });
