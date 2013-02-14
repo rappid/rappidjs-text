@@ -62,47 +62,45 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore",
 
 
             // get position in leaf
-            previousLeaf = startParagraph.findLeaf(relativePosition - 1);
-            if (previousLeaf === element) {
-                textLength = 0;
-                // split the leaf up!
-                previousLeaf = element.getPreviousLeaf(startParagraph);
+            textLength = 0;
+            // split the leaf up!
+            previousLeaf = element.getPreviousLeaf(startParagraph);
 
-                while (previousLeaf) {
-                    textLength += previousLeaf.textLength();
-                    previousLeaf = previousLeaf.getPreviousLeaf(startParagraph);
-                }
-
-                relativePosition = relativePosition - textLength;
-                relativeEnd = relativeEnd - textLength;
+            while (previousLeaf) {
+                textLength += previousLeaf.textLength();
+                previousLeaf = previousLeaf.getPreviousLeaf(startParagraph);
             }
 
-            var preText = element.text(0,relativePosition) + this.$text;
+            relativePosition = relativePosition - textLength;
+            relativeEnd = relativeEnd - textLength;
 
-            if(endElement){
+
+            var preText = element.text(0, relativePosition) + this.$text;
+
+            if (endElement) {
                 var postText;
-                if(element !== endElement){
+                if (element !== endElement) {
                     // remove all elements in between
                     var currentLeaf = element,
                         nextLeaf;
-                    while(currentLeaf !== endElement){
-                        if(currentLeaf.$parent === endElement.$parent){
+                    while (currentLeaf !== endElement) {
+                        if (currentLeaf.$parent === endElement.$parent) {
                             relativeEnd -= currentLeaf.textLength();
                         }
                         nextLeaf = currentLeaf.getNextLeaf(this.$targetElement);
-                        if(currentLeaf !== element){
+                        if (currentLeaf !== element) {
                             currentLeaf.$parent.removeChild(currentLeaf);
                         }
                         currentLeaf = nextLeaf;
                     }
                     postText = endElement.text(relativeEnd);
                     element.set('text', preText);
-                    endElement.set('text',postText);
+
+                    endElement.set('text', postText);
+
                     // move end element and all after to parent of element
-                    if(endElement.$parent !== element.$parent){
-
-
-                        while(endParagraph.numChildren()){
+                    if (endElement.$parent !== element.$parent) {
+                        while (endParagraph.numChildren()) {
                             nextLeaf = endElement.getNextLeaf(endElement.$parent);
                             endElement.$parent.removeChild(endElement);
                             element.$parent.addChild(endElement);
@@ -119,12 +117,14 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore",
                 element.set('text', preText);
             }
 
+            startParagraph.mergeElements();
+
             this.$startElement = element;
             this.$relativePosition = relativePosition;
         }
 
 
 
-});
+    });
 
 });
