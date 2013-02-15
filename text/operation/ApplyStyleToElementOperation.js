@@ -1,14 +1,16 @@
 define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"], function (FlowOperation, FlowElement, _) {
 
-    return FlowOperation.inherit('text.operation.ApplyFormatToElementOperation', {
-        ctor: function (textRange, flowElement, style) {
+    return FlowOperation.inherit('text.operation.ApplyStyleToElementOperation', {
+        ctor: function (textRange, flowElement, leafStyle, paragraphStyle, containerStyle) {
             if (!(flowElement instanceof FlowElement)) {
                 throw new Error("Only elements of FlowElement allowed");
             }
 
             this.$targetElement = flowElement;
             this.$textRange = textRange;
-            this.$style = style || null;
+            this.$leafStyle = leafStyle || null;
+            this.$paragraphStyle = paragraphStyle || null;
+            this.$containerStyle = containerStyle || null;
         },
 
         doOperation: function () {
@@ -19,10 +21,6 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                 preText,text,postText,
                 changedLeaves = [],
                 child;
-
-            if(absoluteEnd === absoluteStart){
-                return;
-            }
 
             if (!element.isLeaf) {
                 element = element.findLeaf(absoluteStart);
@@ -45,6 +43,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                 endParagraph = endElement.$parent,
                 textLength = 0,
                 tmpLength = 0,
+                reachedFirstParagraph = (endParagraph === paragraph),
                 paragraphsBetween = [];
 
             if (this.$targetElement !== endParagraph && !this.$targetElement.isLeaf) {
@@ -52,15 +51,28 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                 while (previousParagraph) {
                     textLength += previousParagraph.textLength();
 
-                    if(!tmpLength){
-                        paragraphsBetween.push(previousParagraph);
-                    }
-
                     if (previousParagraph === paragraph) {
+                        reachedFirstParagraph = true;
                         tmpLength = textLength;
                     }
+
+                    if (!reachedFirstParagraph) {
+                        paragraphsBetween.push(previousParagraph);
+                        if (this.$paragraphStyle) {
+                            previousParagraph.applyStyle(this.$paragraphStyle);
+                        }
+                    }
+
                     previousParagraph = previousParagraph.getPreviousParagraph();
                 }
+            }
+            if(this.$paragraphStyle){
+                endParagraph.applyStyle(this.$paragraphStyle);
+                paragraph.applyStyle(this.$paragraphStyle);
+            }
+
+            if(absoluteStart === absoluteEnd || !this.$leafStyle){
+                return;
             }
 
             var relativePosition = absoluteStart - (textLength - tmpLength),
@@ -90,14 +102,14 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
 
                 if(!preText){
                     element.set('text', text);
-                    element.applyStyle(this.$style);
+                    element.applyStyle(this.$leafStyle);
                     changedLeaves.push(element);
                 } else {
                     element.set('text',preText);
                     if (text) {
                         childIndex++;
                         child = new element.factory({text: text, style: originalStyle});
-                        child.applyStyle(this.$style);
+                        child.applyStyle(this.$leafStyle);
                         changedLeaves.push(child);
                         element.$parent.addChild(child, {index: childIndex});
                     }
@@ -125,7 +137,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                         text: postText,
                         style: originalStyle
                     });
-                    child.applyStyle(this.$style);
+                    child.applyStyle(this.$leafStyle);
 
                     changedLeaves.push(child);
                     paragraph.addChild(child, {index: childIndex + 1});
@@ -141,7 +153,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                 while (currentElement && currentElement !== endElement) {
 
                     textLength += currentElement.textLength();
-                    currentElement.applyStyle(this.$style);
+                    currentElement.applyStyle(this.$leafStyle);
 
                     if (lastLeaf && lastLeaf.$parent === currentElement.$parent && lastLeaf.hasSameStyle(currentElement)) {
 
@@ -171,7 +183,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
 
 
                 endElement.set('text', preEndText);
-                endElement.applyStyle(this.$style);
+                endElement.applyStyle(this.$leafStyle);
                 changedLeaves.push(endElement);
 
                 if (lastLeaf && lastLeaf.$parent === endElement.$parent && lastLeaf.hasSameStyle(endElement)) {
@@ -184,9 +196,9 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
 
                 // apply style for end element
                 if (postEndText) {
-                    var endElementIndex = paragraph.getChildIndex(endElement);
+                    var endElementIndex = endParagraph.getChildIndex(endElement);
                     child = new endElement.factory({text: postEndText, style: originalStyle});
-                    paragraph.addChild(child, {index: endElementIndex + 1});
+                    endParagraph.addChild(child, {index: endElementIndex + 1});
                 }
 
                 paragraph.mergeElements();
@@ -198,15 +210,6 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                     paragraphsBetween[i].mergeElements();
                 }
 
-            }
-
-            for (i = 0; i < changedLeaves.length; i++) {
-                child = changedLeaves[i];
-                child.applyStyle(this.$style);
-                if (child.$parent.numChildren() === 1) {
-                    child.$parent.applyStyle(child.$.style);
-                    child.set('style', null);
-                }
             }
 
     }

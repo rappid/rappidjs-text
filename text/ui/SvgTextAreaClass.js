@@ -1,4 +1,4 @@
-define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operation/SplitParagraphOperation', 'text/operation/ApplyFormatToElementOperation', 'text/entity/TextFlow', 'text/entity/ParagraphElement', 'text/entity/SpanElement', 'text/entity/TextRange', 'text/operation/DeleteOperation'], function (SvgElement, InsertTextOperation, SplitParagraphOperation, ApplyFormatToElementOperation, TextFlow, ParagraphElement, SpanElement, TextRange, DeleteOperation) {
+define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operation/SplitParagraphOperation', 'text/operation/ApplyStyleToElementOperation', 'text/entity/TextFlow', 'text/entity/ParagraphElement', 'text/entity/SpanElement', 'text/entity/TextRange', 'text/operation/DeleteOperation'], function (SvgElement, InsertTextOperation, SplitParagraphOperation, ApplyStyleToElementOperation, TextFlow, ParagraphElement, SpanElement, TextRange, DeleteOperation) {
 
     return SvgElement.inherit('SvgTextArea', {
 
@@ -250,7 +250,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 });
 
                 var x = 0,
-                    transformedStyle = this._transformStyle(element.getComputedStyle(), this.$textTransformMap);
+                    transformedStyle = this._transformStyle(element.composeStyle(), this.$textTransformMap);
 
                 switch (transformedStyle["text-anchor"]) {
                     case "middle":
@@ -280,7 +280,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 var tspan = this.$templates["tspan"].createInstance({
                     $textElement: element
                 });
-                var style = this._transformStyle(element.getComputedStyle(), this.$tSpanTransformMap);
+                var style = this._transformStyle(element.composeStyle(), this.$tSpanTransformMap);
 
                 tspan.set(style);
 

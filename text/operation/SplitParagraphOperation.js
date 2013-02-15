@@ -8,7 +8,9 @@ define(['text/operation/SplitElementOperation', 'text/entity/ParagraphElement'],
         doOperation: function () {
             this.callBase();
             var newParagraph = new ParagraphElement(),
-                paragraph;
+                paragraph,
+                style,
+                child;
 
             if (this.$newElement) {
                 var
@@ -28,20 +30,28 @@ define(['text/operation/SplitElementOperation', 'text/entity/ParagraphElement'],
 
                 paragraph = element.$parent;
 
-                newParagraph.addChild(new element.factory());
+                child = new element.factory();
+
+                newParagraph.addChild(child);
+                this.$newElement = child;
+            }
+
+            style = this.$splittedElement.$.style;
+            if (style) {
+                this.$newElement.applyStyle(style.clone());
             }
 
             this.$previousParagraph = paragraph;
-            this.$newElement = newParagraph;
 
-            var paragraphStyle = paragraph.$.style ? paragraph.$.style.clone() : null;
+            style = paragraph.$.style;
 
-            newParagraph.applyStyle(paragraphStyle);
+            newParagraph.applyStyle(style ? style.clone() : null);
 
             var paragraphParent = this.$previousParagraph.$parent;
             if (paragraphParent) {
                 var paragraphIndex = paragraphParent.getChildIndex(this.$previousParagraph);
-                paragraphParent.addChild(this.$newElement, {index: paragraphIndex + 1});
+                paragraphParent.addChild(newParagraph, {index: paragraphIndex + 1});
+                newParagraph.mergeElements();
             }
         }
 

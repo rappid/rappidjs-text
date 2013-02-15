@@ -14,7 +14,8 @@ describe('text.operation.SplitParagraphOperation', function () {
             Span: 'text/entity/SpanElement',
             Paragraph: 'text/entity/ParagraphElement',
             TextRange: 'text/entity/TextRange',
-            SplitParagraphOperation: 'text/operation/SplitParagraphOperation'
+            SplitParagraphOperation: 'text/operation/SplitParagraphOperation',
+            Style: 'text/type/Style'
         }, C, done);
 
     });
@@ -110,6 +111,26 @@ describe('text.operation.SplitParagraphOperation', function () {
             operation.doOperation();
 
             expect(textFlow.numChildren()).to.be.equal(2);
+        });
+
+        it('should preserve style of splitted span element', function(){
+            var textFlow = new C.TextFlow(),
+                paragraph1 = new C.Paragraph(),
+                span1 = new C.Span({text: "ABC", style: new C.Style({fontWeight: "bold"})}),
+                textRange;
+
+            paragraph1.addChild(span1);
+            textFlow.addChild(paragraph1);
+
+            textRange = new C.TextRange({
+                activeIndex: 2
+            });
+
+            var operation = new C.SplitParagraphOperation(textRange, textFlow);
+            operation.doOperation();
+
+            expect(textFlow.getChildAt(1).getChildAt(0).composeStyle()).to.be.eql({fontWeight: "bold"});
+
         });
 
     });

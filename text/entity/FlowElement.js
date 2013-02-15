@@ -54,18 +54,6 @@ define(['js/data/Entity', 'text/type/Style', 'underscore'], function (Entity, St
 
         composeStyle: function () {
             return this.$.style ? this.$.style.compose() : null;
-        },
-
-        getComputedStyle: function () {
-            var parent = this.$parent,
-                style = this.composeStyle() || {};
-
-            while (parent) {
-                _.defaults(style, parent.composeStyle());
-                parent = parent.$parent;
-            }
-
-            return style;
         }
 
     });

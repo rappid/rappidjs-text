@@ -5,7 +5,7 @@ var expect = require('chai').expect,
 var C = {};
 
 
-describe('text.operation.ApplyFormatToElementOperation', function () {
+describe('text.operation.ApplyStyleToElementOperation', function () {
 
 
     before(function (done) {
@@ -15,7 +15,7 @@ describe('text.operation.ApplyFormatToElementOperation', function () {
             Paragraph: 'text/entity/ParagraphElement',
             TextRange: 'text/entity/TextRange',
             Style: 'text/type/Style',
-            ApplyFormatToElementOperation: 'text/operation/ApplyFormatToElementOperation'
+            ApplyStyleToElementOperation: 'text/operation/ApplyStyleToElementOperation'
         }, C, done);
 
     });
@@ -36,7 +36,7 @@ describe('text.operation.ApplyFormatToElementOperation', function () {
                 activeIndex: 12
             });
 
-            var operation = new C.ApplyFormatToElementOperation(textRange, textFlow, new C.Style({fontWeight: "bold"}));
+            var operation = new C.ApplyStyleToElementOperation(textRange, textFlow, new C.Style({fontWeight: "bold"}));
             operation.doOperation();
 
             expect(textFlow.getChildAt(0).numChildren()).to.be.equal(3);
@@ -56,12 +56,12 @@ describe('text.operation.ApplyFormatToElementOperation', function () {
                 activeIndex: 3
             });
 
-            var operation = new C.ApplyFormatToElementOperation(textRange, textFlow, new C.Style({fontWeight: "bold"}));
+            var operation = new C.ApplyStyleToElementOperation(textRange, textFlow, new C.Style({fontWeight: "bold"}));
             operation.doOperation();
 
             expect(paragraph.numChildren()).to.be.equal(1);
-            expect(paragraph.getChildAt(0).getComputedStyle()).to.be.eql({fontWeight: "bold"});
-            expect(paragraph.getComputedStyle()).to.be.eql({fontWeight: "bold"});
+            expect(paragraph.getChildAt(0).composeStyle()).to.be.eql({fontWeight: "bold"});
+            expect(paragraph.composeStyle()).to.be.eql(null);
         });
 
         it('should split up text and create new paragraph', function () {
@@ -83,11 +83,11 @@ describe('text.operation.ApplyFormatToElementOperation', function () {
                 activeIndex: 8
             });
 
-            var operation = new C.ApplyFormatToElementOperation(textRange, textFlow, new C.Style({fontWeight: "bold"}));
+            var operation = new C.ApplyStyleToElementOperation(textRange, textFlow, new C.Style({fontWeight: "bold"}));
             operation.doOperation();
 
             expect(paragraph.getChildAt(1).text()).to.be.equal("CDEFGH");
-            expect(paragraph.getChildAt(1).getComputedStyle()).to.be.eql({fontWeight: "bold"});
+            expect(paragraph.getChildAt(1).composeStyle()).to.be.eql({fontWeight: "bold"});
         });
 
         it('should apply style in specific paragraph', function(){
@@ -109,40 +109,47 @@ describe('text.operation.ApplyFormatToElementOperation', function () {
                 activeIndex: 6
             });
 
-            var operation = new C.ApplyFormatToElementOperation(textRange, textFlow, new C.Style({fontWeight: "bold"}));
+            var operation = new C.ApplyStyleToElementOperation(textRange, textFlow, new C.Style({fontWeight: "bold"}));
             operation.doOperation();
 
             expect(paragraph2.numChildren()).to.be.equal(3);
-            expect(paragraph2.getChildAt(0).getComputedStyle()).to.be.eql({});
-            expect(paragraph2.getChildAt(1).getComputedStyle()).to.be.eql({fontWeight: "bold"});
+            expect(paragraph2.getChildAt(0).composeStyle()).to.be.eql(null);
+            expect(paragraph2.getChildAt(1).composeStyle()).to.be.eql({fontWeight: "bold"});
             expect(paragraph2.text()).to.be.equal("DEF");
         });
 
-        it('should apply style in specific paragraph', function () {
+        it('should apply leaf style on leafs over all paragraphs in range', function () {
             var textFlow = new C.TextFlow(),
                 paragraph = new C.Paragraph(),
-                span1 = new C.Span({text: "ABC", style: new C.Style({fontWeight: "bold"})}),
+                paragraph2 = new C.Paragraph(),
+                span1 = new C.Span({text: "ABC"}),
                 span2 = new C.Span({text: "DEF"}),
                 textRange;
 
             paragraph.addChild(span1);
-            paragraph.addChild(span2);
+            paragraph2.addChild(span2);
 
             textFlow.addChild(paragraph);
+            textFlow.addChild(paragraph2);
 
             textRange = new C.TextRange({
-                anchorIndex: 5,
-                activeIndex: 6
+                anchorIndex: 2,
+                activeIndex: 5
             });
 
-            var operation = new C.ApplyFormatToElementOperation(textRange, textFlow, new C.Style({fontStyle: "italic"}));
+            var operation = new C.ApplyStyleToElementOperation(textRange, textFlow, new C.Style({fontStyle: "italic"}));
             operation.doOperation();
 
-            expect(paragraph.numChildren()).to.be.equal(3);
-            expect(paragraph.getChildAt(0).getComputedStyle()).to.be.eql({fontWeight: "bold"});
-            expect(paragraph.getChildAt(1).getComputedStyle()).to.be.eql({});
-            expect(paragraph.getChildAt(2).getComputedStyle()).to.be.eql({fontStyle: "italic"});
-            expect(paragraph.text()).to.be.equal("ABCDEF");
+            expect(paragraph.numChildren()).to.be.equal(2);
+            expect(paragraph.getChildAt(0).composeStyle()).to.be.eql(null);
+            expect(paragraph.getChildAt(0).text()).to.be.equal("AB");
+            expect(paragraph.getChildAt(1).composeStyle()).to.be.eql({fontStyle: "italic"});
+            expect(paragraph.getChildAt(1).text()).to.be.equal("C");
+
+
+            expect(paragraph2.numChildren()).to.be.equal(2);
+            expect(paragraph2.getChildAt(0).composeStyle()).to.be.eql({fontStyle: "italic"});
+            expect(paragraph2.getChildAt(1).composeStyle()).to.be.eql(null);
         });
 
         it('should apply style style on last element without creating new element', function(){
@@ -162,12 +169,12 @@ describe('text.operation.ApplyFormatToElementOperation', function () {
                 activeIndex: 6
             });
 
-            var operation = new C.ApplyFormatToElementOperation(textRange, textFlow, new C.Style({fontStyle: "italic"}));
+            var operation = new C.ApplyStyleToElementOperation(textRange, textFlow, new C.Style({fontStyle: "italic"}));
             operation.doOperation();
 
             expect(paragraph.numChildren()).to.be.equal(2);
-            expect(paragraph.getChildAt(0).getComputedStyle()).to.be.eql({});
-            expect(paragraph.getChildAt(1).getComputedStyle()).to.be.eql({fontStyle: "italic"});
+            expect(paragraph.getChildAt(0).composeStyle()).to.be.eql(null);
+            expect(paragraph.getChildAt(1).composeStyle()).to.be.eql({fontStyle: "italic"});
             expect(paragraph.text()).to.be.equal("ABCDEF");
         });
 
@@ -190,14 +197,71 @@ describe('text.operation.ApplyFormatToElementOperation', function () {
                 activeIndex: 8
             });
 
-            var operation = new C.ApplyFormatToElementOperation(textRange, textFlow, new C.Style({fontWeight: "bold"}));
+            var operation = new C.ApplyStyleToElementOperation(textRange, textFlow, new C.Style({fontWeight: "bold"}));
             operation.doOperation();
 
             expect(paragraph.numChildren()).to.be.equal(4);
-            expect(paragraph.getChildAt(1).getComputedStyle()).to.be.eql({fontStyle: "italic"});
-            expect(paragraph.getChildAt(2).getComputedStyle()).to.be.eql({fontWeight: "bold"});
-            expect(paragraph.getChildAt(3).getComputedStyle()).to.be.eql({});
+            expect(paragraph.getChildAt(1).composeStyle()).to.be.eql({fontStyle: "italic"});
+            expect(paragraph.getChildAt(2).composeStyle()).to.be.eql({fontWeight: "bold"});
+            expect(paragraph.getChildAt(3).composeStyle()).to.be.eql(null);
 
+        });
+
+        it('should apply paragraph style only in one paragraph when range is 0', function(){
+            var textFlow = new C.TextFlow(),
+                paragraph = new C.Paragraph(),
+                paragraph2 = new C.Paragraph(),
+                span1 = new C.Span({text: "ABC"}),
+                span2 = new C.Span({text: "DEF"}),
+                textRange;
+
+            paragraph.addChild(span1);
+            paragraph2.addChild(span2);
+
+            textFlow.addChild(paragraph);
+            textFlow.addChild(paragraph2);
+
+            textRange = new C.TextRange({
+                anchorIndex: 5,
+                activeIndex: 5
+            });
+
+            var operation = new C.ApplyStyleToElementOperation(textRange, textFlow, null, new C.Style({textAlign: "left"}));
+            operation.doOperation();
+
+            expect(paragraph.composeStyle()).to.be.eql(null);
+            expect(paragraph2.composeStyle()).to.be.eql({textAlign: "left"});
+        });
+
+        it('should apply paragraph style on all paragraphs that are in range', function(){
+            var textFlow = new C.TextFlow(),
+                paragraph = new C.Paragraph(),
+                paragraph2 = new C.Paragraph(),
+                paragraph3 = new C.Paragraph(),
+                span1 = new C.Span({text: "ABC"}),
+                span2 = new C.Span({text: "DEF"}),
+                span3 = new C.Span({text: "GHI"}),
+                textRange;
+
+            paragraph.addChild(span1);
+            paragraph2.addChild(span2);
+            paragraph3.addChild(span3);
+
+            textFlow.addChild(paragraph);
+            textFlow.addChild(paragraph2);
+            textFlow.addChild(paragraph3);
+
+            textRange = new C.TextRange({
+                anchorIndex: 2,
+                activeIndex: 10
+            });
+
+            var operation = new C.ApplyStyleToElementOperation(textRange, textFlow, null, new C.Style({textAlign: "left"}));
+            operation.doOperation();
+
+            expect(paragraph.composeStyle()).to.be.eql({textAlign: "left"});
+            expect(paragraph2.composeStyle()).to.be.eql({textAlign: "left"});
+            expect(paragraph3.composeStyle()).to.be.eql({textAlign: "left"});
         });
     });
 
