@@ -75,7 +75,7 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
                 if (child.isLeaf) {
                     return child;
                 } else {
-                    return child.getLastLeaf();
+                    return child.getFirstLeaf();
                 }
             }
 
@@ -187,6 +187,59 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
             }
 
             return ret;
+        },
+
+        shallowCopy: function (relativeStart, relativeEnd) {
+            var copy = this.callBase(relativeStart, relativeEnd),
+                textLength = 0,
+                size = this.$.children.size(),
+                from, to,
+                child,
+                childLength = 0;
+
+            for (var i = 0; i < size; i++) {
+                if (relativeEnd > -1 && textLength > relativeEnd) {
+                    break;
+                }
+                from = 0;
+                to = -1;
+                child = this.$.children.at(i);
+                childLength = child.textLength();
+                if(textLength + childLength > relativeStart){
+                    if(textLength <= relativeStart && textLength + childLength > relativeStart){
+                        from = relativeStart  - textLength;
+                    }
+                    if(relativeEnd > -1 && textLength + childLength > relativeEnd){
+                        to = relativeEnd - textLength;
+                    }
+                    copy.addChild(child.shallowCopy(from, to));
+                }
+                textLength += childLength;
+            }
+
+            return copy;
+        },
+
+        splitAtPosition: function (position) {
+            var copy = this.shallowCopy(position),
+                child,
+                textLength = 0;
+
+            var childIndex = this.findChildIndexAtPosition(position);
+            if(childIndex > -1){
+                child = this.getChildAt(childIndex);
+                for(var i = 0; i < childIndex; i++){
+                    textLength += this.getChildAt(i).textLength();
+                }
+                child.splitAtPosition(position - textLength);
+
+                while(childIndex + 1 < this.$.children.size()){
+                    this.$.children.removeAt(childIndex + 1);
+                }
+
+            }
+
+            return copy;
         },
 
         numChildren: function () {

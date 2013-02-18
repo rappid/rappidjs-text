@@ -9,7 +9,7 @@ define(['js/data/Entity', 'text/type/Style', 'underscore'], function (Entity, St
         isLeaf: false,
 
         text: function (relativeStart, relativeEnd, paragraphSeparator) {
-            if (relativeEnd === -1) {
+            if (relativeEnd < 0) {
                 relativeEnd = undefined;
             }
 
@@ -54,6 +54,16 @@ define(['js/data/Entity', 'text/type/Style', 'underscore'], function (Entity, St
 
         composeStyle: function () {
             return this.$.style ? this.$.style.compose() : null;
+        },
+
+        shallowCopy: function(relativeStart, relativeEnd){
+            var style = this.$.style ? this.$.style.clone() : null;
+
+            return new this.factory({style: style});
+        },
+
+        splitAtPosition: function(position){
+            return this.shallowCopy(position);
         }
 
     });
