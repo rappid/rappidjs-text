@@ -110,7 +110,7 @@ describe('text.operation.InsertTextOperation', function () {
             operation.doOperation();
 
             expect(textFlow.text()).to.be.equal("This is a new Text ");
-            expect(textFlow.getChildAt(0).numChildren()).to.be.equal(2);
+            expect(textFlow.getChildAt(0).numChildren()).to.be.equal(1);
         });
 
         it('should delete text', function () {
@@ -136,7 +136,7 @@ describe('text.operation.InsertTextOperation', function () {
             operation.doOperation();
 
             expect(textFlow.text()).to.be.equal("This Text ");
-            expect(textFlow.getChildAt(0).numChildren()).to.be.equal(2);
+            expect(textFlow.getChildAt(0).numChildren()).to.be.equal(1);
 
 
         });

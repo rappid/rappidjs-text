@@ -14,113 +14,42 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore",
             var element = this.$targetElement,
                 absoluteStart = this.$textRange.$.absoluteStart,
                 absoluteEnd = this.$textRange.$.absoluteEnd,
-                endElement = element,
-                previousLeaf;
+                lastElement;
 
-            // get start leaf
-            if (!element.isLeaf) {
-                element = element.findLeaf(absoluteStart);
-                if (!element && this.$targetElement instanceof ParagraphElement) {
-                    element = new SpanElement();
-                    this.$targetElement.addChild(element);
-                }
+
+            if (absoluteEnd > 0) {
+                lastElement = element.splitAtPosition(absoluteEnd);
             }
 
-            // get end leaf
-            if (absoluteStart === absoluteEnd) {
-                endElement = element;
-            } else {
-                if (absoluteEnd !== absoluteStart) {
-                    endElement = this.$targetElement;
-                    if (!endElement.isLeaf) {
-                        endElement = endElement.findLeaf(absoluteEnd);
-                    } else {
-                        endElement = endElement.getLastLeaf();
-                    }
-                }
+            if (absoluteStart !== absoluteEnd) {
+                element.splitAtPosition(absoluteStart);
             }
 
-            // find relative position
-            var startParagraph = element.$parent,
-                endParagraph = endElement.$parent,
-                textLength = 0,
-                tmpLength = 0;
-
-            if (this.$targetElement !== endParagraph && !this.$targetElement.isLeaf) {
-                var previousParagraph = endParagraph.getPreviousParagraph();
-                while (previousParagraph) {
-                    textLength += previousParagraph.textLength();
-                    if (previousParagraph === startParagraph) {
-                        tmpLength = textLength;
-                    }
-                    previousParagraph = previousParagraph.getPreviousParagraph();
-                }
+            var startLeaf = element.getLastLeaf();
+            if (this.$text) {
+                startLeaf.set('text', startLeaf.$.text + this.$text);
             }
 
-            var relativePosition = absoluteStart - (textLength - tmpLength),
-                relativeEnd = absoluteEnd - textLength;
+            var parent = startLeaf.$parent;
+            if (lastElement) {
+                var endLeaf = lastElement.getFirstLeaf();
+                if (endLeaf && endLeaf !== startLeaf) {
+                    var endParent = endLeaf.$parent;
 
-
-            // get position in leaf
-            textLength = 0;
-            // split the leaf up!
-            previousLeaf = element.getPreviousLeaf(startParagraph);
-
-            while (previousLeaf) {
-                textLength += previousLeaf.textLength();
-                previousLeaf = previousLeaf.getPreviousLeaf(startParagraph);
-            }
-
-            relativePosition = relativePosition - textLength;
-            relativeEnd = relativeEnd - textLength;
-
-
-            var preText = element.text(0, relativePosition) + this.$text;
-
-            if (endElement) {
-                var postText;
-                if (element !== endElement) {
-                    // remove all elements in between
-                    var currentLeaf = element,
+                    var currentLeaf = endLeaf,
                         nextLeaf;
-                    while (currentLeaf !== endElement) {
-                        if (currentLeaf.$parent === endElement.$parent) {
-                            relativeEnd -= currentLeaf.textLength();
-                        }
-                        nextLeaf = currentLeaf.getNextLeaf(this.$targetElement);
-                        if (currentLeaf !== element) {
-                            currentLeaf.$parent.removeChild(currentLeaf);
+                    while (currentLeaf) {
+                        nextLeaf = currentLeaf.getNextLeaf(endParent);
+                        if (currentLeaf.textLength() > 0) {
+                            parent.addChild(currentLeaf);
                         }
                         currentLeaf = nextLeaf;
                     }
-                    postText = endElement.text(relativeEnd);
-                    element.set('text', preText);
 
-                    endElement.set('text', postText);
-
-                    // move end element and all after to parent of element
-                    if (endElement.$parent !== element.$parent) {
-                        while (endParagraph.numChildren()) {
-                            nextLeaf = endElement.getNextLeaf(endElement.$parent);
-                            endElement.$parent.removeChild(endElement);
-                            element.$parent.addChild(endElement);
-                            endElement = nextLeaf;
-                        }
-                        endParagraph.$parent.removeChild(endParagraph);
-                    }
-                } else {
-                    // endElement == element
-                    postText = endElement.text(relativeEnd);
-                    endElement.set('text', preText + postText);
                 }
-            } else {
-                element.set('text', preText);
             }
+            parent.mergeElements();
 
-            startParagraph.mergeElements();
-
-            this.$startElement = element;
-            this.$relativePosition = relativePosition;
         }
 
 

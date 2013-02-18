@@ -6,52 +6,26 @@ define(['text/operation/SplitElementOperation', 'text/entity/ParagraphElement'],
         },
 
         doOperation: function () {
-            this.callBase();
-            var newParagraph = new ParagraphElement(),
-                paragraph,
-                style,
-                child;
-
-            if (this.$newElement) {
-                var
-                    leaf = this.$newElement,
-                    currentLeaf = this.$newElement;
-
-                paragraph = leaf.$parent;
-                /// / no need to split up leaf
-                while (leaf) {
-                    currentLeaf = leaf;
-                    leaf = currentLeaf.getNextLeaf(paragraph);
-                    paragraph.removeChild(currentLeaf);
-                    newParagraph.addChild(currentLeaf);
+            var originalParagraph;
+            var activeIndex = this.$textRange.$.activeIndex;
+            if(!(this.$targetElement instanceof ParagraphElement)){
+                var leaf = this.$targetElement.findLeaf(activeIndex);
+                if(leaf && leaf.$parent){
+                    originalParagraph = leaf.$parent;
+                } else {
+                    throw new Error("No Paragraph element found!");
                 }
-            } else {
-                var element = this.$splittedElement;
-
-                paragraph = element.$parent;
-
-                child = new element.factory();
-
-                newParagraph.addChild(child);
-                this.$newElement = child;
             }
 
-            style = this.$splittedElement.$.style;
-            if (style) {
-                this.$newElement.applyStyle(style.clone());
-            }
+            this.callBase();
 
-            this.$previousParagraph = paragraph;
-
-            style = paragraph.$.style;
-
-            newParagraph.applyStyle(style ? style.clone() : null);
-
-            var paragraphParent = this.$previousParagraph.$parent;
-            if (paragraphParent) {
-                var paragraphIndex = paragraphParent.getChildIndex(this.$previousParagraph);
-                paragraphParent.addChild(newParagraph, {index: paragraphIndex + 1});
-                newParagraph.mergeElements();
+            var paragraphParent = originalParagraph.$parent;
+            if(paragraphParent){
+                var firstNewLeaf = this.$newElement.getFirstLeaf();
+                if(firstNewLeaf && firstNewLeaf.$parent){
+                    var childIndex = paragraphParent.getChildIndex(originalParagraph);
+                    paragraphParent.addChild(firstNewLeaf.$parent,{index: childIndex + 1});
+                }
             }
         }
 
