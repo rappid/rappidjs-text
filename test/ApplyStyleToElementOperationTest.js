@@ -115,7 +115,7 @@ describe('text.operation.ApplyStyleToElementOperation', function () {
             expect(paragraph2.numChildren()).to.be.equal(3);
             expect(paragraph2.getChildAt(0).composeStyle()).to.be.eql(null);
             expect(paragraph2.getChildAt(1).composeStyle()).to.be.eql({fontWeight: "bold"});
-            expect(paragraph2.text()).to.be.equal("DEF");
+            expect(paragraph2.text()).to.be.equal("DEF ");
         });
 
         it('should apply leaf style on leafs over all paragraphs in range', function () {
@@ -152,7 +152,7 @@ describe('text.operation.ApplyStyleToElementOperation', function () {
             expect(paragraph2.getChildAt(1).composeStyle()).to.be.eql(null);
         });
 
-        it('should apply style style on last element without creating new element', function(){
+        it('should apply style on last element without creating new element', function(){
             var textFlow = new C.TextFlow(),
                 paragraph = new C.Paragraph(),
                 span1 = new C.Span({text: "ABC"}),
@@ -175,7 +175,7 @@ describe('text.operation.ApplyStyleToElementOperation', function () {
             expect(paragraph.numChildren()).to.be.equal(2);
             expect(paragraph.getChildAt(0).composeStyle()).to.be.eql(null);
             expect(paragraph.getChildAt(1).composeStyle()).to.be.eql({fontStyle: "italic"});
-            expect(paragraph.text()).to.be.equal("ABCDEF");
+            expect(paragraph.text()).to.be.equal("ABCDEF ");
         });
 
         it('should apply correct original style', function(){
