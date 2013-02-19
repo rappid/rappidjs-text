@@ -24,8 +24,19 @@ define(['text/operation/SplitElementOperation', 'text/entity/ParagraphElement'],
                 var firstNewLeaf = this.$newElement.getFirstLeaf();
                 if(firstNewLeaf && firstNewLeaf.$parent){
                     var childIndex = paragraphParent.getChildIndex(originalParagraph);
-                    paragraphParent.addChild(firstNewLeaf.$parent,{index: childIndex + 1});
+                    var currentParagraph = firstNewLeaf.$parent,
+                        nextParagraph;
+
+                    while(currentParagraph){
+                        nextParagraph = currentParagraph.getNextParagraph();
+                        paragraphParent.addChild(currentParagraph,{index: childIndex+1});
+                        childIndex++;
+                        currentParagraph = nextParagraph;
+
+                    }
                 }
+
+
             }
         }
 

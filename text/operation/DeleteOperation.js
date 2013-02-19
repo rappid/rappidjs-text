@@ -17,7 +17,9 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore",
                 lastElement;
 
 
-            if (absoluteEnd > 0) {
+            var childIndex = element.findChildIndexAtPosition(absoluteStart);
+
+            if (absoluteEnd > -1) {
                 lastElement = element.splitAtPosition(absoluteEnd);
             }
 
@@ -26,29 +28,45 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore",
             }
 
             var startLeaf = element.getLastLeaf();
-            if (this.$text) {
-                startLeaf.set('text', startLeaf.$.text + this.$text);
+//            if(startLeaf && startLeaf.textLength() === 0){
+//                var leafParent = startLeaf.$parent;
+//                if(leafParent.$parent){
+//                    leafParent.$parent.removeChild(leafParent);
+//                }
+//            }
+            var newLeaf = lastElement.getFirstLeaf();
+            if (newLeaf && this.$text) {
+                newLeaf.set('text', this.$text + newLeaf.$.text);
             }
 
-            var parent = startLeaf.$parent;
-            if (lastElement) {
-                var endLeaf = lastElement.getFirstLeaf();
-                if (endLeaf && endLeaf !== startLeaf) {
-                    var endParent = endLeaf.$parent;
+            lastElement.$.children.each(function (child) {
+                element.addChild(child);
+            });
 
-                    var currentLeaf = endLeaf,
-                        nextLeaf;
-                    while (currentLeaf) {
-                        nextLeaf = currentLeaf.getNextLeaf(endParent);
-                        if (currentLeaf.textLength() > 0) {
-                            parent.addChild(currentLeaf);
+//            if(absoluteStart !== absoluteEnd){
+                var parent = startLeaf.$parent;
+                if (lastElement) {
+                    if (newLeaf && newLeaf !== startLeaf) {
+                        var endParent = newLeaf.$parent;
+
+                        var currentLeaf = newLeaf,
+                            nextLeaf;
+                        while (currentLeaf) {
+                            nextLeaf = currentLeaf.getNextLeaf(endParent);
+                            currentLeaf.$parent.removeChild(currentLeaf);
+                            if (currentLeaf.textLength() > 0) {
+                                parent.addChild(currentLeaf);
+                            }
+                            currentLeaf = nextLeaf;
                         }
-                        currentLeaf = nextLeaf;
-                    }
 
-                }
+                        endParent.$parent && endParent.$parent.removeChild(endParent);
+
+                    }
+//                }
+                parent.mergeElements();
             }
-            parent.mergeElements();
+
 
         }
 
