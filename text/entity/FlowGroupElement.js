@@ -21,6 +21,7 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
 
         findChildIndexAtPosition: function (textPosition) {
             var textLength = 0, childLength, ret = -1;
+
             this.$.children.each(function (child, index) {
                 childLength = child.textLength();
                 if (textLength + childLength > textPosition) {
@@ -30,7 +31,7 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
                 textLength += childLength;
             });
 
-            if (textPosition >= textLength) {
+            if (textPosition === textLength) {
                 return this.$.children.size() - 1;
             }
 
@@ -105,9 +106,6 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
             if (relativeEnd === undefined) {
                 relativeEnd = -1;
             }
-            if (paragraphSeparator === undefined) {
-                paragraphSeparator = " ";
-            }
 
             var text = "", textLength = 0, childLength, readText = false, startIndex;
             this.$.children.each(function (child) {
@@ -121,9 +119,9 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
 
                 if (readText) {
                     if (child.isLeaf) {
-                        text += child.text(0, -1, paragraphSeparator);
+                        text += child.text(0, -1);
                     } else {
-                        text += child.text(0, -1, paragraphSeparator) + paragraphSeparator;
+                        text += child.text(0, -1, paragraphSeparator);
                     }
                 }
 
@@ -190,24 +188,28 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
         },
 
         shallowCopy: function (relativeStart, relativeEnd) {
-            var copy = this.callBase(relativeStart, relativeEnd),
-                textLength = 0,
-                size = this.$.children.size(),
-                from, to,
-                child,
-                childLength = 0;
+            if(relativeEnd === undefined){
+                relativeEnd = -1;
+            }
 
-            for (var i = 0; i < size; i++) {
-                if (relativeEnd > -1 && textLength > relativeEnd) {
-                    break;
-                }
-                from = 0;
-                to = -1;
-                child = this.$.children.at(i);
+            var copy = this.callBase(relativeStart, relativeEnd),
+                size = this.numChildren(),
+                startIndex = this.findChildIndexAtPosition(relativeStart),
+                endIndex = relativeEnd > -1 ? this.findChildIndexAtPosition(relativeEnd) : size - 1,
+                textLength = 0,
+                childLength = 0,
+                from, to,
+                child;
+
+
+            for(var i = 0; i < size; i++){
+                child = this.getChildAt(i);
                 childLength = child.textLength();
-                if(textLength + childLength > relativeStart){
-                    if(textLength <= relativeStart && textLength + childLength > relativeStart){
-                        from = relativeStart  - textLength;
+                if(i >= startIndex && i <= endIndex){
+                    from = 0;
+                    to = -1;
+                    if(textLength + childLength >= relativeStart){
+                        from = relativeStart - textLength;
                     }
                     if(relativeEnd > -1 && textLength + childLength > relativeEnd){
                         to = relativeEnd - textLength;
@@ -231,6 +233,7 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
                 for(var i = 0; i < childIndex; i++){
                     textLength += this.getChildAt(i).textLength();
                 }
+
                 child.splitAtPosition(position - textLength);
 
                 while(childIndex + 1 < this.$.children.size()){

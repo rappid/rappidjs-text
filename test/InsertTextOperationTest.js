@@ -71,7 +71,7 @@ describe('text.operation.InsertTextOperation', function () {
                 textRange;
 
             paragraph.addChild(span1);
-            paragraph2.addChild(new C.Span());
+            paragraph2.addChild(new C.Span({text: "F"}));
             textFlow.addChild(paragraph);
             textFlow.addChild(paragraph2);
 
@@ -84,7 +84,7 @@ describe('text.operation.InsertTextOperation', function () {
             var operation = new C.InsertTextOperation(textRange, textFlow, "DE");
             operation.doOperation();
 
-            expect(textFlow.text()).to.be.equal("ABC DE ");
+            expect(textFlow.text()).to.be.equal("ABC DEF ");
         });
 
         it('should insert text over range', function () {
@@ -111,6 +111,60 @@ describe('text.operation.InsertTextOperation', function () {
 
             expect(textFlow.text()).to.be.equal("This is a new Text ");
             expect(textFlow.getChildAt(0).numChildren()).to.be.equal(1);
+        });
+
+        it('should insert text at end of paragraph', function(){
+            var textFlow = new C.TextFlow(),
+                paragraph = new C.Paragraph(),
+                paragraph2 = new C.Paragraph(),
+                span1 = new C.Span({text: "ABC"}),
+                span2 = new C.Span({text: "EF"}),
+                textRange;
+
+            paragraph.addChild(span1);
+            paragraph2.addChild(span2);
+            textFlow.addChild(paragraph);
+            textFlow.addChild(paragraph2);
+
+            textRange = new C.TextRange({
+                textFlow: textFlow,
+                anchorIndex: 3,
+                activeIndex: 3
+            });
+
+            var operation = new C.InsertTextOperation(textRange, textFlow, "D");
+            operation.doOperation();
+
+            expect(textFlow.text()).to.be.equal("ABCD EF ");
+        });
+
+        it('should insert text in empty paragraph', function () {
+            var textFlow = new C.TextFlow(),
+                paragraph = new C.Paragraph(),
+                paragraph2 = new C.Paragraph(),
+                paragraph3 = new C.Paragraph(),
+                span1 = new C.Span({text: "ABC"}),
+                span2 = new C.Span({text: ""}),
+                span3 = new C.Span({text: "GHI"}),
+                textRange;
+
+            paragraph.addChild(span1);
+            paragraph2.addChild(span2);
+            paragraph3.addChild(span3);
+            textFlow.addChild(paragraph);
+            textFlow.addChild(paragraph2);
+            textFlow.addChild(paragraph3);
+
+            textRange = new C.TextRange({
+                textFlow: textFlow,
+                anchorIndex: 4,
+                activeIndex: 4
+            });
+
+            var operation = new C.InsertTextOperation(textRange, textFlow, "DEF");
+            operation.doOperation();
+
+            expect(textFlow.text()).to.be.equal("ABC DEF GHI ");
         });
 
         it('should delete text', function () {

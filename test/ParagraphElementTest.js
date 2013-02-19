@@ -62,7 +62,7 @@ describe('text.entity.ParagraphElement', function () {
             var copy = paragraph.shallowCopy(1,2);
 
             expect(copy).to.be.instanceOf(C.Paragraph);
-            expect(copy.text()).to.be.equal("b");
+            expect(copy.text()).to.be.equal("b ");
 
         });
 
@@ -78,7 +78,7 @@ describe('text.entity.ParagraphElement', function () {
 
             var copy = paragraph.shallowCopy(2,8);
 
-            expect(copy.text()).to.be.equal("cdefgh");
+            expect(copy.text()).to.be.equal("cdefgh ");
             expect(copy.numChildren()).to.be.equal(3);
         });
 
@@ -94,7 +94,7 @@ describe('text.entity.ParagraphElement', function () {
 
             var copy = paragraph.shallowCopy(2, 2);
 
-            expect(copy.text()).to.be.equal("");
+            expect(copy.text()).to.be.equal(" ");
             expect(copy.numChildren()).to.be.equal(1);
         });
 
@@ -111,9 +111,25 @@ describe('text.entity.ParagraphElement', function () {
 
             var newParagraph = paragraph.splitAtPosition(1);
 
-            expect(paragraph.text()).to.be.equal("a");
-            expect(newParagraph.text()).to.be.equal("bc");
+            expect(paragraph.text()).to.be.equal("a ");
+            expect(newParagraph.text()).to.be.equal("bc ");
             expect(newParagraph.numChildren()).to.be.equal(1);
+        });
+
+        it('should create a new paragraph with empty span', function(){
+
+            var paragraph = new C.Paragraph(),
+                span = new C.Span({text: "abc"});
+
+            paragraph.addChild(span);
+
+            var newParagraph = paragraph.splitAtPosition(3);
+
+            expect(paragraph.text()).to.be.equal("abc ");
+            expect(paragraph.numChildren()).to.be.equal(1);
+            expect(newParagraph.text()).to.be.equal(" ");
+            expect(newParagraph.numChildren()).to.be.equal(1);
+
         });
 
         it('should split all children', function () {
@@ -128,8 +144,8 @@ describe('text.entity.ParagraphElement', function () {
 
             var copy = paragraph.splitAtPosition(5);
 
-            expect(paragraph.text()).to.be.equal("abcde");
-            expect(copy.text()).to.be.equal("fghi");
+            expect(paragraph.text()).to.be.equal("abcde ");
+            expect(copy.text()).to.be.equal("fghi ");
             expect(copy.numChildren()).to.be.equal(2);
         });
 

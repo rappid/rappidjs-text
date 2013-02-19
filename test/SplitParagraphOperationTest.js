@@ -40,8 +40,33 @@ describe('text.operation.SplitParagraphOperation', function () {
             operation.doOperation();
 
             expect(textFlow.numChildren()).to.be.equal(2);
-            expect(textFlow.getChildAt(0).text()).to.be.equal("This is ");
-            expect(textFlow.getChildAt(1).text()).to.be.equal("one line of text.");
+            expect(textFlow.getChildAt(0).text()).to.be.equal("This is  ");
+            expect(textFlow.getChildAt(1).text()).to.be.equal("one line of text. ");
+        });
+
+        it('should split up at first postion', function(){
+            var textFlow = new C.TextFlow(),
+                paragraph = new C.Paragraph(),
+                paragraph2 = new C.Paragraph(),
+                span1 = new C.Span({text: "ABC"}),
+                span2 = new C.Span({text: "DEF"}),
+                textRange;
+
+            paragraph.addChild(span1);
+            paragraph2.addChild(span2);
+            textFlow.addChild(paragraph);
+            textFlow.addChild(paragraph2);
+
+            textRange = new C.TextRange({
+                textFlow: textFlow,
+                activeIndex: 0
+            });
+
+            var operation = new C.SplitParagraphOperation(textRange);
+            operation.doOperation();
+
+            expect(textFlow.numChildren()).to.be.equal(3);
+
         });
 
         it('should split up between two spans', function () {
@@ -64,6 +89,8 @@ describe('text.operation.SplitParagraphOperation', function () {
             operation.doOperation();
 
             expect(textFlow.numChildren()).to.be.equal(2);
+            expect(textFlow.getChildAt(0).text()).to.be.equal("A B C ");
+            expect(textFlow.getChildAt(1).text()).to.be.equal("D E F G ");
         });
 
         it('should split up over more than one paragraph', function () {
@@ -111,6 +138,30 @@ describe('text.operation.SplitParagraphOperation', function () {
             operation.doOperation();
 
             expect(textFlow.numChildren()).to.be.equal(2);
+        });
+
+        it('should split up at first position of paragraph', function(){
+
+            var textFlow = new C.TextFlow(),
+                paragraph1 = new C.Paragraph(),
+                paragraph2 = new C.Paragraph(),
+                span1 = new C.Span({text: "ABC"}),
+                span2 = new C.Span({text: "DEF"}),
+                textRange;
+
+            paragraph1.addChild(span1);
+            paragraph2.addChild(span2);
+            textFlow.addChild(paragraph1);
+            textFlow.addChild(paragraph2);
+
+            textRange = new C.TextRange({
+                activeIndex: 4
+            });
+
+            var operation = new C.SplitParagraphOperation(textRange, textFlow);
+            operation.doOperation();
+
+            expect(textFlow.numChildren()).to.be.equal(3);
         });
 
         it('should preserve style of splitted span element', function(){
