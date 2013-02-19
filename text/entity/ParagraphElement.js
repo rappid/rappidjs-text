@@ -1,5 +1,7 @@
 define(['text/entity/FlowGroupElement', 'js/core/List', 'text/entity/SpanElement'], function (FlowGroupElement, List, SpanElement) {
 
+    var undefined;
+
     var Paragraph = FlowGroupElement.inherit('text.entity.ParagraphElement', {
         getNextParagraph: function () {
             var parent = this.$parent;
@@ -90,6 +92,20 @@ define(['text/entity/FlowGroupElement', 'js/core/List', 'text/entity/SpanElement
                 }
                 previousChild = child;
             }
+        },
+        shallowCopy: function(relativeStart, relativeEnd){
+            var textLength = this.textLength();
+            if(relativeStart >= textLength){
+                relativeStart = textLength - 1;
+            }
+
+            return this.callBase(relativeStart, relativeEnd);
+        },
+        text: function(relativeStart, relativeEnd, paragraphSeparator){
+            if (paragraphSeparator === undefined) {
+                paragraphSeparator = " ";
+            }
+            return this.callBase(relativeStart, relativeEnd, paragraphSeparator) + paragraphSeparator;
         }
 
     }, {
