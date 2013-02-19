@@ -53,7 +53,7 @@ describe('text.entity.FlowGroupElement', function () {
             paragraph.addChild(subElementA);
             paragraph.addChild(subElementB);
 
-            expect(paragraph.text()).to.be.equal("This is the first paragraph. And this is the second paragraph. ");
+            expect(paragraph.text()).to.be.equal("This is the first paragraph.And this is the second paragraph.");
         });
 
 
@@ -71,7 +71,7 @@ describe('text.entity.FlowGroupElement', function () {
             paragraph.addChild(subElementA);
             paragraph.addChild(subElementB);
 
-            expect(paragraph.text(3, 31)).to.be.equal("s is the first paragraph. An");
+            expect(paragraph.text(3, 31)).to.be.equal("s is the first paragraph.And");
         })
 
 
@@ -125,13 +125,13 @@ describe('text.entity.FlowGroupElement', function () {
             expect(paragraph.findChildIndexAtPosition(0)).to.be.equal(0);
         });
 
-        it('should return last index for textPosition outside of elements', function () {
+        it('should return -1 for textPosition outside of elements', function () {
             var paragraph = new C.FlowGroupElement(),
                 mySpan = new C.Span();
 
             paragraph.addChild(mySpan);
 
-            expect(paragraph.findChildIndexAtPosition(1)).to.be.equal(0);
+            expect(paragraph.findChildIndexAtPosition(1)).to.be.equal(-1);
         });
 
         it('should return the element with the bigger index', function () {
@@ -196,6 +196,6 @@ describe('text.entity.FlowGroupElement', function () {
             expect(mySpan.getPreviousLeaf().getPreviousLeaf()).to.be.equal(null);
             expect(mySpan3.getPreviousLeaf()).to.be.equal(mySpan2);
         });
-    })
+    });
 
 });
