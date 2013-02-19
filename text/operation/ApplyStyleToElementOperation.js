@@ -18,7 +18,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                 absoluteStart = this.$textRange.$.absoluteStart,
                 absoluteEnd = this.$textRange.$.absoluteEnd,
                 originalStyle,
-                preText,text,postText,
+                preText, text, postText,
                 changedLeaves = [],
                 child;
 
@@ -66,12 +66,12 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                     previousParagraph = previousParagraph.getPreviousParagraph();
                 }
             }
-            if(this.$paragraphStyle){
+            if (this.$paragraphStyle) {
                 endParagraph.applyStyle(this.$paragraphStyle);
                 paragraph.applyStyle(this.$paragraphStyle);
             }
 
-            if(absoluteStart === absoluteEnd || !this.$leafStyle){
+            if (absoluteStart === absoluteEnd || !this.$leafStyle) {
                 return;
             }
 
@@ -92,20 +92,20 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
             if (endElement === element) {
                 // if operation is on same element
                 relativeEnd -= textLength;
-                preText = element.text(0,leafPosition);
-                text = element.text(leafPosition,relativeEnd);
+                preText = element.text(0, leafPosition);
+                text = element.text(leafPosition, relativeEnd);
                 postText = element.text(relativeEnd);
 
                 childIndex = element.$parent.getChildIndex(element);
 
                 originalStyle = element.$.style ? element.$.style.clone() : null;
 
-                if(!preText){
+                if (!preText) {
                     element.set('text', text);
                     element.applyStyle(this.$leafStyle);
                     changedLeaves.push(element);
                 } else {
-                    element.set('text',preText);
+                    element.set('text', preText);
                     if (text) {
                         childIndex++;
                         child = new element.factory({text: text, style: originalStyle});
@@ -115,7 +115,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                     }
                 }
 
-                if(postText){
+                if (postText) {
                     childIndex++;
                     child = new element.factory({text: postText, style: originalStyle});
                     element.$parent.addChild(child, {index: childIndex});
@@ -202,7 +202,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                 }
 
                 paragraph.mergeElements();
-                if(paragraph !== endParagraph){
+                if (paragraph !== endParagraph) {
                     endParagraph.mergeElements();
                 }
 
@@ -212,8 +212,6 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
 
             }
 
-    }
+        }
+    });
 });
-
-})
-;

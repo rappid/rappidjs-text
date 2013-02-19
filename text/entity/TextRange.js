@@ -23,8 +23,11 @@ define(["js/core/Bindable"], function (Bindable) {
         }
 
     }, {
-        createTextRange: function (textFlow, anchorIndex, activeIndex) {
-            return new TextRange({textFlow: textFlow, anchorIndex: anchorIndex, activeIndex: activeIndex});
+        createTextRange: function (anchorIndex, activeIndex) {
+            return new TextRange({
+                anchorIndex: anchorIndex,
+                activeIndex: activeIndex
+            });
         }
     });
 
