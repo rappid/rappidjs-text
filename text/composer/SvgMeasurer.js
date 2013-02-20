@@ -29,7 +29,7 @@ define(["text/composer/Measurer", "text/metric/Metric"], function (Measurer, Met
             }
 
             var document = this.svg.$stage.$document,
-                style = span.composeStyle(),
+                style = span.composeStyle() || {},
                 fontSize = style.fontSize || 0;
 
             style.fontSize = 100;
@@ -49,7 +49,7 @@ define(["text/composer/Measurer", "text/metric/Metric"], function (Measurer, Met
 
             var box = text.getBBox();
 
-            container.removeChild(box);
+            container.removeChild(text);
 
             return new Metric({
                 width: box.width / 100 * fontSize,
