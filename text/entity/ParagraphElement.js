@@ -61,7 +61,7 @@ define(['text/entity/FlowGroupElement', 'js/core/List', 'text/entity/SpanElement
             return this.callBase() + 1;
         },
 
-        findChildIndexAtPosition: function(textPosition){
+        findChildIndexAtPosition: function (textPosition) {
             var textLength = 0, childLength, ret = -1;
             this.$.children.each(function (child, index) {
                 textPosition -= child.textLength();
@@ -77,15 +77,15 @@ define(['text/entity/FlowGroupElement', 'js/core/List', 'text/entity/SpanElement
 
             return ret;
         },
-        mergeElements: function(){
+        mergeElements: function () {
             var length = this.$.children.size(),
-                child, previousChild;
-            for(var i = length - 1; i >= 0; i--){
+                child = null, previousChild = null;
+            for (var i = length - 1; i >= 0; i--) {
                 child = this.$.children.at(i);
-                if(previousChild){
-                    if(previousChild.textLength() === 0){
+                if (previousChild) {
+                    if (previousChild.textLength() === 0) {
                         this.removeChild(previousChild);
-                    } else if(previousChild.hasSameStyle(child)){
+                    } else if (previousChild.hasSameStyle(child)) {
                         child.set('text', child.$.text + previousChild.$.text);
                         this.removeChild(previousChild);
                     }
@@ -93,15 +93,15 @@ define(['text/entity/FlowGroupElement', 'js/core/List', 'text/entity/SpanElement
                 previousChild = child;
             }
         },
-        shallowCopy: function(relativeStart, relativeEnd){
+        shallowCopy: function (relativeStart, relativeEnd) {
             var textLength = this.textLength();
-            if(relativeStart >= textLength){
+            if (relativeStart >= textLength) {
                 relativeStart = textLength - 1;
             }
 
             return this.callBase(relativeStart, relativeEnd);
         },
-        text: function(relativeStart, relativeEnd, paragraphSeparator){
+        text: function (relativeStart, relativeEnd, paragraphSeparator) {
             if (paragraphSeparator === undefined) {
                 paragraphSeparator = "";
             }
