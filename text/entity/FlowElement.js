@@ -1,4 +1,4 @@
-define(['js/data/Entity', 'text/type/Style', 'underscore'], function (Entity, Style, _) {
+define(['js/data/Entity', 'text/type/Style'], function (Entity, Style) {
     var undefined;
     return Entity.inherit('text.entity.FlowElement', {
         defaults: {
