@@ -42,7 +42,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             return {
                 anchorIndex: this.$._anchorIndex,
                 cursorIndex: this.$._cursorIndex
-            }
+            };
         },
 
         handleKeyDown: function (e) {
@@ -190,7 +190,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         pos = {
                             x: 0,
                             y: 0
-                        }
+                        };
                     }
                     return {
                         x: pos.x,
@@ -259,7 +259,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         x = this.$.width / 2;
                         break;
                     case "end":
-                        x = this.$.width
+                        x = this.$.width;
                 }
 
                 transformedStyle.x = x;
