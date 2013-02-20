@@ -39,7 +39,8 @@ describe('text.operation.InsertTextOperation', function () {
             var operation = new C.InsertTextOperation(textRange, textFlow, " bold");
             operation.doOperation();
 
-            expect(textFlow.text()).to.be.equal("This is bold text. ");
+            expect(textFlow.text()).to.be.equal("This is bold text.");
+            expect(textFlow.numChildren()).to.be.equal(1);
         });
 
         it('should insert text at the end of element', function () {
@@ -60,7 +61,8 @@ describe('text.operation.InsertTextOperation', function () {
             var operation = new C.InsertTextOperation(textRange, textFlow, "DE");
             operation.doOperation();
 
-            expect(textFlow.text()).to.be.equal("ABCDE ");
+            expect(textFlow.text()).to.be.equal("ABCDE");
+            expect(textFlow.numChildren()).to.be.equal(1);
         });
 
         it('should insert at first position of second paragraph', function () {
@@ -84,7 +86,7 @@ describe('text.operation.InsertTextOperation', function () {
             var operation = new C.InsertTextOperation(textRange, textFlow, "DE");
             operation.doOperation();
 
-            expect(textFlow.text()).to.be.equal("ABC DEF ");
+            expect(textFlow.text(0, -1, "¶")).to.be.equal("ABC¶DEF¶");
         });
 
         it('should insert text over range', function () {
@@ -109,7 +111,8 @@ describe('text.operation.InsertTextOperation', function () {
             var operation = new C.InsertTextOperation(textRange, textFlow, " is a new");
             operation.doOperation();
 
-            expect(textFlow.text()).to.be.equal("This is a new Text ");
+            expect(textFlow.text()).to.be.equal("This is a new Text");
+            expect(textFlow.numChildren()).to.be.equal(1);
             expect(textFlow.getChildAt(0).numChildren()).to.be.equal(1);
         });
 
@@ -135,7 +138,7 @@ describe('text.operation.InsertTextOperation', function () {
             var operation = new C.InsertTextOperation(textRange, textFlow, "D");
             operation.doOperation();
 
-            expect(textFlow.text()).to.be.equal("ABCD EF ");
+            expect(textFlow.text(0, -1, "¶")).to.be.equal("ABCD¶EF¶");
         });
 
         it('should insert text in empty paragraph', function () {
@@ -164,7 +167,7 @@ describe('text.operation.InsertTextOperation', function () {
             var operation = new C.InsertTextOperation(textRange, textFlow, "DEF");
             operation.doOperation();
 
-            expect(textFlow.text()).to.be.equal("ABC DEF GHI ");
+            expect(textFlow.text(0, -1, "¶")).to.be.equal("ABC¶DEF¶GHI¶");
         });
 
         it('should delete text', function () {
@@ -189,7 +192,7 @@ describe('text.operation.InsertTextOperation', function () {
             var operation = new C.InsertTextOperation(textRange, textFlow, "");
             operation.doOperation();
 
-            expect(textFlow.text()).to.be.equal("This Text ");
+            expect(textFlow.text()).to.be.equal("This Text");
             expect(textFlow.getChildAt(0).numChildren()).to.be.equal(1);
 
 
