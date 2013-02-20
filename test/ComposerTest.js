@@ -110,11 +110,29 @@ describe('Composer', function () {
 
         });
 
-        it.skip("should break text into lines", function() {
+        it("should break text into lines on white space chars", function() {
 
-        });
+            flow = helper.createTextFlow("Simple test.");
 
-        it.skip("should determinate the line height based on the max text height on the line", function() {
+            (new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(0, 1), flow, new C.Style({
+                fontSize: 10
+            }))).doOperation();
+
+            (new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(1, 2), flow, new C.Style({
+                fontSize: 11
+            }))).doOperation();
+
+            (new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(2, 3), flow, new C.Style({
+                fontSize: 13
+            }))).doOperation();
+
+            var composed = composer._composeText(flow.$.children.at(0), new C.Layout({
+                width: 100
+            }));
+
+            expect(composed.$.lines).to.have.length(2);
+            expect(composed.$.lines[0].measure.height).to.eql(13);
+            expect(composed.$.lines[1].measure.height).to.eql(12);
 
         });
 
