@@ -40,8 +40,8 @@ describe('text.operation.SplitParagraphOperation', function () {
             operation.doOperation();
 
             expect(textFlow.numChildren()).to.be.equal(2);
-            expect(textFlow.getChildAt(0).text()).to.be.equal("This is ¶");
-            expect(textFlow.getChildAt(1).text()).to.be.equal("one line of text.¶");
+            expect(textFlow.getChildAt(0).text()).to.be.equal("This is ");
+            expect(textFlow.getChildAt(1).text()).to.be.equal("one line of text.");
         });
 
         it('should split up at first postion', function(){
@@ -89,8 +89,8 @@ describe('text.operation.SplitParagraphOperation', function () {
             operation.doOperation();
 
             expect(textFlow.numChildren()).to.be.equal(2);
-            expect(textFlow.getChildAt(0).text()).to.be.equal("A B C¶");
-            expect(textFlow.getChildAt(1).text()).to.be.equal("D E F G¶");
+            expect(textFlow.getChildAt(0).text()).to.be.equal("A B C");
+            expect(textFlow.getChildAt(1).text()).to.be.equal("D E F G");
         });
 
         it('should split up over more than one paragraph', function () {

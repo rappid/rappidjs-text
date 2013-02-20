@@ -103,7 +103,7 @@ define(['text/entity/FlowGroupElement', 'js/core/List', 'text/entity/SpanElement
         },
         text: function(relativeStart, relativeEnd, paragraphSeparator){
             if (paragraphSeparator === undefined) {
-                paragraphSeparator = "¶";
+                paragraphSeparator = "";
             }
             return this.callBase(relativeStart, relativeEnd, paragraphSeparator) + paragraphSeparator;
         }
