@@ -153,7 +153,7 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
          * Replaces child elements in the group with the specified new elements.
          * @param {Number} beginChildIndex
          * @param {Number} endChildIndex
-         * @param [FlowElement] children
+         * @param {FlowElement} [children]
          */
         replaceChildren: function (beginChildIndex, endChildIndex, children) {
             var newChildren = Array.prototype.slice.call(arguments, 2);
