@@ -26,7 +26,7 @@ describe('Composer', function () {
     });
 
     beforeEach(function () {
-        measurer = new C.MeasurerMock()
+        measurer = new C.MeasurerMock();
     });
 
     var helper = {
@@ -82,8 +82,8 @@ describe('Composer', function () {
 
             var composed = composer._composeText(flow.$.children.at(0));
 
-            expect(composed.$.lines).to.have.length(1);
-            expect(composed.$.lines[0].measure.lineHeight).to.eql(12);
+            expect(composed.$.children).to.have.length(1);
+            expect(composed.$.children[0].measure.lineHeight).to.eql(12);
 
         });
 
@@ -104,9 +104,9 @@ describe('Composer', function () {
             expect(flow.$.children.$items).to.have.length(1);
             expect(flow.$.children.at(0).$.children.$items).to.have.length(3);
 
-            expect(composed.$.lines).to.have.length(1);
-            expect(composed.$.lines[0].measure.height).to.eql(36);
-            expect(composed.$.lines[0].measure.lineHeight).to.eql(80);
+            expect(composed.$.children).to.have.length(1);
+            expect(composed.$.children[0].measure.height).to.eql(36);
+            expect(composed.$.children[0].measure.lineHeight).to.eql(80);
 
         });
 
@@ -130,9 +130,9 @@ describe('Composer', function () {
                 width: 100
             }));
 
-            expect(composed.$.lines).to.have.length(2);
-            expect(composed.$.lines[0].measure.height).to.eql(13);
-            expect(composed.$.lines[1].measure.height).to.eql(12);
+            expect(composed.$.children).to.have.length(2);
+            expect(composed.$.children[0].measure.height).to.eql(13);
+            expect(composed.$.children[1].measure.height).to.eql(12);
 
         });
 
