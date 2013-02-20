@@ -263,6 +263,32 @@ describe('text.operation.ApplyStyleToElementOperation', function () {
             expect(paragraph2.composeStyle()).to.be.eql({textAlign: "left"});
             expect(paragraph3.composeStyle()).to.be.eql({textAlign: "left"});
         });
+
+        it('should apply paragraph style on all paragraphs that are in range', function () {
+            var textFlow = new C.TextFlow(),
+                paragraph = new C.Paragraph(),
+                span = new C.Span({text: "Simple test."}),
+                textRange;
+
+            paragraph.addChild(span);
+            textFlow.addChild(paragraph);
+
+            (new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(0, 1), textFlow, {
+                fontSize: 10
+            })).doOperation();
+
+            (new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(1, 2), textFlow, {
+                fontSize: 11
+            })).doOperation();
+
+            (new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(2, 3), textFlow, {
+                fontSize: 12
+            })).doOperation();
+
+            expect(paragraph.numChildren()).to.eql(4);
+
+        });
+
     });
 
 });
