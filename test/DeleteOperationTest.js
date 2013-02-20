@@ -39,7 +39,7 @@ describe('text.operation.InsertTextOperation', function () {
             var operation = new C.DeleteOperation(textRange, textFlow);
             operation.doOperation();
 
-            expect(textFlow.text()).to.be.equal("This is text. ");
+            expect(textFlow.text()).to.be.equal("This is text.¶");
         });
 
         it('should delete range', function () {
@@ -60,7 +60,7 @@ describe('text.operation.InsertTextOperation', function () {
             operation.doOperation();
 
             expect(textFlow.numChildren()).to.be.equal(1);
-            expect(textFlow.text()).to.be.equal("AC ");
+            expect(textFlow.text()).to.be.equal("AC¶");
         });
 
         it('should delete range where anchor is higher than active index', function () {
@@ -80,7 +80,7 @@ describe('text.operation.InsertTextOperation', function () {
             var operation = new C.DeleteOperation(textRange, textFlow);
             operation.doOperation();
 
-            expect(textFlow.text()).to.be.equal("AC ");
+            expect(textFlow.text()).to.be.equal("AC¶");
         });
 
         it('should delete elements between start and end element', function () {
@@ -104,7 +104,7 @@ describe('text.operation.InsertTextOperation', function () {
             var operation = new C.DeleteOperation(textRange, textFlow);
             operation.doOperation();
 
-            expect(textFlow.text()).to.be.equal("AI ");
+            expect(textFlow.text()).to.be.equal("AI¶");
         });
 
         it('should merge paragraphs', function () {
@@ -129,7 +129,7 @@ describe('text.operation.InsertTextOperation', function () {
             var operation = new C.DeleteOperation(textRange, textFlow);
             operation.doOperation();
 
-            expect(textFlow.text()).to.be.equal("ABEF ");
+            expect(textFlow.text()).to.be.equal("ABEF¶");
 
 
         });
@@ -158,7 +158,7 @@ describe('text.operation.InsertTextOperation', function () {
             var operation = new C.DeleteOperation(textRange, textFlow);
             operation.doOperation();
 
-            expect(textFlow.text()).to.be.equal("ABCDEFGHI ");
+            expect(textFlow.text()).to.be.equal("ABCDEFGHI¶");
             expect(textFlow.numChildren()).to.be.equal(1);
 
 
@@ -186,7 +186,7 @@ describe('text.operation.InsertTextOperation', function () {
             var operation = new C.DeleteOperation(textRange, textFlow);
             operation.doOperation();
 
-            expect(paragraph.text()).to.be.equal("ABCDEF ");
+            expect(paragraph.text()).to.be.equal("ABCDEF¶");
             expect(paragraph.numChildren()).to.be.equal(1);
 
         });
@@ -213,7 +213,7 @@ describe('text.operation.InsertTextOperation', function () {
             var operation = new C.DeleteOperation(textRange, textFlow);
             operation.doOperation();
 
-            expect(paragraph.text()).to.be.equal("ABCEF ");
+            expect(paragraph.text()).to.be.equal("ABCEF¶");
             expect(paragraph.numChildren()).to.be.equal(1);
 
         });
@@ -240,7 +240,7 @@ describe('text.operation.InsertTextOperation', function () {
             var operation = new C.DeleteOperation(textRange, textFlow);
             operation.doOperation();
 
-            expect(textFlow.text()).to.be.equal("A CD ");
+            expect(textFlow.text()).to.be.equal("A¶CD¶");
             expect(textFlow.numChildren()).to.be.equal(2);
 
         });
@@ -267,7 +267,7 @@ describe('text.operation.InsertTextOperation', function () {
             var operation = new C.DeleteOperation(textRange, textFlow);
             operation.doOperation();
 
-            expect(paragraph.text()).to.be.equal("ABCD ");
+            expect(paragraph.text()).to.be.equal("ABCD¶");
             expect(paragraph.getChildAt(0).composeStyle()).to.be.eql({fontStyle: "italic"});
             expect(paragraph.getChildAt(1).composeStyle()).to.be.eql({fontWeight: "bold"});
         });
@@ -294,7 +294,7 @@ describe('text.operation.InsertTextOperation', function () {
             var operation = new C.DeleteOperation(textRange, textFlow);
             operation.doOperation();
 
-            expect(textFlow.text()).to.be.equal("AB D ");
+            expect(textFlow.text()).to.be.equal("AB¶D¶");
         });
 
     });
