@@ -33,7 +33,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         ctor: function(){
             this.callBase();
-            this.bind('textFlow','formatChanged', this._setCursorAfterOperation, this);
+            this.bind('textFlow','formatChanged', function() {
+                this._setCursorAfterOperation();
+            }, this);
         },
 
         getSelection: function(){
