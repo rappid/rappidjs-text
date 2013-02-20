@@ -267,8 +267,7 @@ describe('text.operation.ApplyStyleToElementOperation', function () {
         it('should apply paragraph style on all paragraphs that are in range', function () {
             var textFlow = new C.TextFlow(),
                 paragraph = new C.Paragraph(),
-                span = new C.Span({text: "Simple test."}),
-                textRange;
+                span = new C.Span({text: "Simple test."});
 
             paragraph.addChild(span);
             textFlow.addChild(paragraph);
