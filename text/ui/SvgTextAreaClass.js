@@ -1,11 +1,11 @@
-define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operation/SplitParagraphOperation', 'text/operation/ApplyStyleToElementOperation', 'text/entity/TextFlow', 'text/entity/ParagraphElement', 'text/entity/SpanElement', 'text/entity/TextRange', 'text/operation/DeleteOperation'], function (SvgElement, InsertTextOperation, SplitParagraphOperation, ApplyStyleToElementOperation, TextFlow, ParagraphElement, SpanElement, TextRange, DeleteOperation) {
+define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operation/SplitParagraphOperation', 'text/operation/ApplyStyleToElementOperation', 'text/entity/TextFlow', 'text/entity/ParagraphElement', 'text/entity/SpanElement', 'text/entity/TextRange', 'text/operation/DeleteOperation', 'underscore'], function (SvgElement, InsertTextOperation, SplitParagraphOperation, ApplyStyleToElementOperation, TextFlow, ParagraphElement, SpanElement, TextRange, DeleteOperation, _) {
 
     return SvgElement.inherit('SvgTextArea', {
 
         defaults: {
             tagName: 'g',
             $internalText: "",
-            textFlow: null,
+            composedTextFlow: null,
             width: 100,
             height: 100,
             _cursorIndex: 0,
@@ -29,16 +29,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             "textAnchor": "text-anchor"
         },
 
-        $classAttributes: ['textElement', 'textContainer', 'cursor', 'textFlow', 'width', 'height', 'anchor'],
+        $classAttributes: ['textElement', 'cursor', 'textFlow', 'width', 'height', 'anchor'],
 
-        ctor: function(){
-            this.callBase();
-            this.bind('textFlow','formatChanged', function() {
-                this._setCursorAfterOperation();
-            }, this);
-        },
-
-        getSelection: function(){
+        getSelection: function () {
             return {
                 anchorIndex: this.$._anchorIndex,
                 cursorIndex: this.$._cursorIndex
@@ -228,17 +221,94 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 //            }, 600);
         },
 
-        _renderTextFlow: function (textFlow) {
-            if (textFlow) {
-                var self = this;
-                this.$.textContainer.removeAllChildren();
-                this.$currentLine = 1;
-                textFlow.$.children.each(function (child) {
-                    self._renderElement(child, self.$.textContainer);
-                });
+        _renderTextFlow: function () {
+//            console.warn("_renderTextFlow will be removed");
+        },
+
+        _renderComposedTextFlow: function (composedTextFlow) {
+            console.log(composedTextFlow);
+
+            var text = this.$.text;
+            if (!text) {
+                return;
             }
 
+            text.removeAllChildren();
+
+            if (!composedTextFlow) {
+                return;
+            }
+
+            // transform the tree into a list of paragraphs and lines
+
+            var y = 0;
+
+            for (var i = 0; i < composedTextFlow.composed.children.length; i++) {
+                var paragraph = composedTextFlow.composed.children[i],
+                    paragraphStyle = paragraph.item.composeStyle();
+
+                for (var j = 0; j < paragraph.children.length; j++) {
+                    var softLine = paragraph.children[j];
+
+                    for (var k = 0; k < softLine.children.length; k++) {
+
+                        var line = softLine.children[k];
+
+                        y += line.getTextHeight();
+
+                        for (var l = 0; l < line.children.length; l++) {
+                            var lineElement = line.children[l].item;
+
+                            var tspan = this.$templates["tspan"].createInstance({
+                                text: lineElement.$.text
+                            });
+
+                            var style = this._transformStyle(lineElement.composeStyle(), this.$tSpanTransformMap);
+
+                            if (l === 0) {
+                                // apply paragraph style
+                                _.extend(style, this._transformStyle(paragraphStyle, this.$textTransformMap));
+
+                                var x = 0;
+
+                                switch (style["text-anchor"]) {
+                                    case "middle":
+                                        x = this.$.width / 2;
+                                        break;
+                                    case "end":
+                                        x = this.$.width;
+                                }
+
+                                var fontSize = style["font-size"];
+
+                                style.x = x;
+                                style.y = y;
+
+                            }
+
+                            tspan.set(style);
+                            text.addChild(tspan);
+
+                        }
+
+                        y += line.getHeight() - line.getTextHeight();
+
+                    }
+                }
+            }
         },
+
+//        _renderTextFlow: function (textFlow) {
+//            if (textFlow) {
+//                var self = this;
+//                this.$.textContainer.removeAllChildren();
+//                this.$currentLine = 1;
+//                textFlow.$.children.each(function (child) {
+//                    self._renderElement(child, self.$.textContainer);
+//                });
+//            }
+//
+//        },
         _renderElement: function (element, textContainer) {
 
             if (element instanceof ParagraphElement) {
@@ -347,7 +417,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         _getCursorIndexForMousePosition: function (mousePosition, target) {
-            var svgRoot = target.getSvgRoot();
+            var svgRoot = target.getSvgRoot(),
+                num;
+
             if (svgRoot) {
                 var rootRect = this.$.textContainer.$el.getBoundingClientRect(),
                     point = svgRoot.$el.createSVGPoint();
@@ -356,11 +428,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 point.x = (mousePosition.x - rootRect.left) * factor.x;
                 point.y = (mousePosition.y - rootRect.top) * factor.y;
 
-                var num = target.$el.getCharNumAtPosition(point);
+                num = target.$el.getCharNumAtPosition(point);
                 if (num > -1) {
-                    var pos = target.$el.getStartPositionOfChar(num),
-                        pos2 = target.$el.getEndPositionOfChar(num);
-                    if (Math.abs(point.x - pos.x) > Math.abs(point.x - pos2.x)) {
+                    var startPos = target.$el.getStartPositionOfChar(num),
+                        endPos = target.$el.getEndPositionOfChar(num);
+                    if (Math.abs(point.x - startPos.x) > Math.abs(point.x - endPos.x)) {
                         num++;
                     }
                 }
@@ -375,130 +447,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
             return num;
 
-        },
-
-        _positionCursor: function (e) {
-            var domEvent = e.domEvent;
-
-            var targetElement = domEvent.target;
-
-
-        },
-
-        _getWidthForText: function (text) {
-            if (this.isRendered()) {
-                this.$.textElement.$children[0].set('textContent', text);
-                return this.$.textElement.$el.getComputedTextLength();
-            }
-
-            return 0;
-        },
-
-        _getLineHeight: function () {
-            if (this.isRendered()) {
-                this.$.textElement.$children[0].set('textContent', "A");
-                return this.$.textElement.$el.getBBox().height;
-            }
-
-            return 0;
-        },
-
-        _wrapText: function (text) {
-
-            var bbox = this.$el.getBBox(),
-                words = text.split(" "),
-                width = 50,
-                spaceWidth = this._getWidthForText("_"),
-                wordWidth,
-                word,
-                wordStack = [],
-                lineHeight = this._getLineHeight(),
-                currentLineLength = 0,
-                splitIndex,
-                originalWord,
-                linebreaks,
-                linebreakStack;
-
-            this.$.textBlock.removeAllChildren();
-
-            while (words.length) {
-                word = words.shift();
-
-                if (word === 1) {
-                    wordStack.push(word);
-                    currentLineLength = 0;
-                    continue;
-                }
-
-                if (word.indexOf("\n") > 0) {
-                    linebreakStack = [];
-                    linebreaks = word.split("\n");
-                    if (linebreaks.length) {
-                        for (var k = 0; k < linebreaks.length; k++) {
-                            if (k > 0) {
-                                linebreakStack.push(1, linebreaks[k]);
-                            } else {
-                                word = linebreaks[k];
-                            }
-                        }
-                    }
-                    words = linebreakStack.concat(words);
-                }
-
-                wordWidth = this._getWidthForText(word);
-                splitIndex = word.length;
-
-                if (currentLineLength + wordWidth > width) {
-
-                    if (currentLineLength > 0) {
-                        wordStack.push(1);
-
-                        currentLineLength = 0;
-                    }
-
-
-                    originalWord = word;
-                    while (wordWidth > width) {
-                        splitIndex = word.length - 1;
-                        word = word.substr(0, splitIndex);
-                        wordWidth = this._getWidthForText(word);
-                    }
-
-                    if (word.length !== originalWord.length) {
-                        // add linebreak
-                        words.unshift(originalWord.substr(splitIndex));
-                        words.unshift(1);
-                    }
-                }
-                word = word.trim();
-
-                wordStack.push(word);
-                currentLineLength += wordWidth;
-
-            }
-
-            var realWords = [], line, lineNumber = 1;
-            for (var j = 0; j < wordStack.length; j++) {
-                if (wordStack[j] === 1) {
-                    line = realWords.join(" ") || " ";
-                    this._addTextWrap(line, lineHeight * lineNumber);
-                    lineNumber++;
-                    realWords = [];
-                } else {
-                    realWords.push(wordStack[j]);
-                }
-            }
-
-            if (realWords.length) {
-                this._addTextWrap(realWords.join(" "), lineHeight * (lineNumber));
-            }
-
-        },
-
-        _addTextWrap: function (text, y) {
-            var tspan = this.$templates["tspan"].createInstance({text: text, y: y, x: 0, "text-anchor": "middle"});
-
-            this.$.textBlock.addChild(tspan);
         }
 
     });
