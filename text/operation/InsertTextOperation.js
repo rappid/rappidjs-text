@@ -5,9 +5,9 @@ define(["text/operation/DeleteOperation", "text/entity/FlowElement", "underscore
             if (!(flowElement instanceof FlowElement)) {
                 throw new Error("Only elements of FlowElement allowed");
             }
-            this.$targetElement = flowElement;
             this.$textRange = textRange;
             this.$text = text || "";
+            this.callBase(flowElement);
         }
     });
 

@@ -6,11 +6,12 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                 throw new Error("Only elements of FlowElement allowed");
             }
 
-            this.$targetElement = flowElement;
             this.$textRange = textRange;
             this.$leafStyle = leafStyle || null;
             this.$paragraphStyle = paragraphStyle || null;
             this.$containerStyle = containerStyle || null;
+
+            this.callBase(flowElement);
         },
 
         doOperation: function () {

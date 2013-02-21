@@ -8,9 +8,8 @@ define(['text/operation/FlowOperation', 'text/entity/ParagraphElement', 'text/en
             if (!(targetElement instanceof FlowGroupElement)) {
                 throw new Error("Can only split FlowGroupElement");
             }
-            this.$targetElement = targetElement;
             this.$splittedElement = null;
-            this.callBase();
+            this.callBase(targetElement);
         },
 
         doOperation: function () {
