@@ -34,46 +34,17 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                     } else {
                         styleElement = element;
                     }
-                        firstLeaf = styleElement.getFirstLeaf();
-                        var leaf = firstLeaf;
-                        while (leaf) {
-                            leaf.applyStyle(this.$leafStyle);
-                            leaf = leaf.getNextLeaf(styleElement);
-                        }
+                    firstLeaf = styleElement.getFirstLeaf();
+                    var leaf = firstLeaf;
+                    while (leaf) {
+                        leaf.applyStyle(this.$leafStyle);
+                        leaf = leaf.getNextLeaf(styleElement);
+                    }
 
-                        lastLeaf = element.getLastLeaf();
+                    lastLeaf = element.getLastLeaf();
 
-                        if(styleElement !== element){
-                            styleElement.$.children.each(function (child) {
-                                if (!child.isLeaf) {
-                                    element.addChild(child);
-                                }
-                            });
-
-                            if (lastLeaf && firstLeaf) {
-                                parent = lastLeaf.$parent;
-                                endParent = firstLeaf.$parent;
-
-                                currentLeaf = firstLeaf;
-
-                                while (currentLeaf) {
-                                    nextLeaf = currentLeaf.getNextLeaf(endParent);
-                                    currentLeaf.$parent.removeChild(currentLeaf);
-                                    if (currentLeaf.textLength() > 0) {
-                                        parent.addChild(currentLeaf);
-                                    }
-                                    currentLeaf = nextLeaf;
-                                }
-
-                                endParent.$parent && endParent.$parent.removeChild(endParent);
-                            }
-                        }
-
-
-                        firstLeaf = lastElement.getFirstLeaf();
-                        lastLeaf = element.getLastLeaf();
-
-                        lastElement.$.children.each(function (child) {
+                    if (styleElement !== element) {
+                        styleElement.$.children.each(function (child) {
                             if (!child.isLeaf) {
                                 element.addChild(child);
                             }
@@ -96,43 +67,75 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
 
                             endParent.$parent && endParent.$parent.removeChild(endParent);
                         }
-
-                        parent.mergeElements();
-
                     }
-                }
 
-                if (this.$paragraphStyle) {
-                    firstLeaf = element.findLeaf(absoluteStart);
-                    lastLeaf = element.findLeaf(absoluteEnd);
 
-                    var paragraph = firstLeaf.$parent,
-                        endParagraph = lastLeaf.$parent,
-                        reachedFirstParagraph = paragraph === endParagraph;
+                    firstLeaf = lastElement.getFirstLeaf();
+                    lastLeaf = element.getLastLeaf();
 
-                    if (this.$targetElement !== endParagraph && !this.$targetElement.isLeaf) {
-                        var previousParagraph = endParagraph.getPreviousParagraph();
-                        while (previousParagraph) {
-                            if (previousParagraph === paragraph) {
-                                reachedFirstParagraph = true;
-                            }
-
-                            if (!reachedFirstParagraph) {
-                                if (this.$paragraphStyle) {
-                                    previousParagraph.applyStyle(this.$paragraphStyle);
-                                }
-                            }
-
-                            previousParagraph = previousParagraph.getPreviousParagraph();
+                    lastElement.$.children.each(function (child) {
+                        if (!child.isLeaf) {
+                            element.addChild(child);
                         }
+                    });
+
+                    if (lastLeaf && firstLeaf) {
+                        parent = lastLeaf.$parent;
+                        endParent = firstLeaf.$parent;
+
+                        currentLeaf = firstLeaf;
+
+                        while (currentLeaf) {
+                            nextLeaf = currentLeaf.getNextLeaf(endParent);
+                            currentLeaf.$parent.removeChild(currentLeaf);
+                            if (currentLeaf.textLength() > 0) {
+                                parent.addChild(currentLeaf);
+                            }
+                            currentLeaf = nextLeaf;
+                        }
+
+                        endParent.$parent && endParent.$parent.removeChild(endParent);
                     }
 
-                    endParagraph.applyStyle(this.$paragraphStyle);
-                    paragraph.applyStyle(this.$paragraphStyle);
+                    parent.mergeElements();
 
                 }
+            }
 
+            if (this.$paragraphStyle) {
+                firstLeaf = element.findLeaf(absoluteStart);
+                lastLeaf = element.findLeaf(absoluteEnd);
+
+                var paragraph = firstLeaf.$parent,
+                    endParagraph = lastLeaf.$parent,
+                    reachedFirstParagraph = paragraph === endParagraph;
+
+                if (this.$targetElement !== endParagraph && !this.$targetElement.isLeaf) {
+                    var previousParagraph = endParagraph.getPreviousParagraph();
+                    while (previousParagraph) {
+                        if (previousParagraph === paragraph) {
+                            reachedFirstParagraph = true;
+                        }
+
+                        if (!reachedFirstParagraph) {
+                            if (this.$paragraphStyle) {
+                                previousParagraph.applyStyle(this.$paragraphStyle);
+                            }
+                        }
+
+                        previousParagraph = previousParagraph.getPreviousParagraph();
+                    }
+                }
+
+                endParagraph.applyStyle(this.$paragraphStyle);
+                paragraph.applyStyle(this.$paragraphStyle);
 
             }
-        });
+
+            this.callBase();
+
+
+        }
+
+    });
 });
