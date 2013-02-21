@@ -12,39 +12,40 @@ define(["js/core/Bindable"], function (Bindable) {
                     this.set({
                         absoluteEnd: this.$.activeIndex,
                         absoluteStart: this.$.anchorIndex
-                    });
+                    },{silent: true});
                 } else {
                     this.set({
                         absoluteStart: this.$.activeIndex,
                         absoluteEnd: this.$.anchorIndex
-                    });
+                    }, {silent: true});
                 }
             }
         },
-        getCommonLeafStyle: function(flowElement){
+        getCommonLeafStyle: function (flowElement) {
 
             var firstLeaf = flowElement.findLeaf(this.$.absoluteStart),
+                nextLeaf = flowElement.findLeaf(this.$.absoluteStart + 1),
                 lastLeaf = flowElement.findLeaf(this.$.absoluteEnd),
-                currentLeaf = firstLeaf;
+                currentLeaf = nextLeaf !== firstLeaf && lastLeaf !== firstLeaf ? nextLeaf : firstLeaf;
 
             var style = currentLeaf.$.style ? currentLeaf.$.style.clone() : null,
                 currentStyle;
 
-            while(currentLeaf !== lastLeaf){
-                currentStyle = currentLeaf.$.style;
-                if(!style && currentStyle){
-                    style = currentStyle.clone();
-                }
-                if(currentStyle){
+            if (currentLeaf !== lastLeaf) {
+                do {
+                    currentLeaf = currentLeaf.getNextLeaf(flowElement);
+                    currentStyle = currentLeaf.$.style;
+                    if (!style && currentStyle) {
+                        style = currentStyle.clone();
+                    }
                     style.merge(currentStyle);
-                }
 
-                currentLeaf = currentLeaf.getNextLeaf(flowElement);
+                } while (currentLeaf !== lastLeaf)
             }
 
             return style;
         },
-        getCommonParagraphStyle: function(flowElement){
+        getCommonParagraphStyle: function (flowElement) {
             var firstLeaf = flowElement.findLeaf(this.$.absoluteStart),
                 lastLeaf = flowElement.findLeaf(this.$.absoluteEnd),
                 currentParagraph = firstLeaf.$parent,
@@ -53,16 +54,16 @@ define(["js/core/Bindable"], function (Bindable) {
             var style = currentParagraph.$.style ? currentParagraph.$.style.clone() : null,
                 currentStyle;
 
-            while (currentParagraph !== lastParagraph) {
-                currentStyle = currentParagraph.$.style;
-                if (!style && currentStyle) {
-                    style = currentStyle.clone();
-                }
-                if (currentStyle) {
+            if (currentParagraph !== lastParagraph) {
+                do {
+                    currentParagraph = currentParagraph.getNextParagraph();
+                    currentStyle = currentParagraph.$.style;
+                    if (!style && currentStyle) {
+                        style = currentStyle.clone();
+                    }
                     style.merge(currentStyle);
-                }
+                } while (currentParagraph !== lastParagraph)
 
-                currentParagraph = currentParagraph.getNextParagraph();
             }
 
             return style;
