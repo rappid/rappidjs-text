@@ -57,8 +57,8 @@ describe('Composer', function () {
             expect(flow.numChildren()).to.be.eql(1);
 
             var metric = measurer.measure(flow.$.children.at(0).$.children.at(0));
-            expect(metric.$.width).to.be.eql(36);
-            expect(metric.$.height).to.be.eql(12);
+            expect(metric.width).to.be.eql(36);
+            expect(metric.height).to.be.eql(12);
 
         });
 
@@ -70,11 +70,11 @@ describe('Composer', function () {
             flow,
             longText = "This is a long text, but the container isn't that large.";
 
-        before(function() {
+        before(function () {
             composer = new C.Composer(measurer);
         });
 
-        beforeEach(function() {
+        beforeEach(function () {
             flow = helper.createTextFlow(longText);
         });
 
@@ -82,8 +82,8 @@ describe('Composer', function () {
 
             var composed = composer._composeText(flow.$.children.at(0));
 
-            expect(composed.$.children).to.have.length(1);
-            expect(composed.$.children[0].measure.lineHeight).to.eql(12);
+            expect(composed.children).to.have.length(1);
+            expect(composed.children[0].measure.lineHeight).to.eql(12);
 
         });
 
@@ -104,13 +104,13 @@ describe('Composer', function () {
             expect(flow.$.children.$items).to.have.length(1);
             expect(flow.$.children.at(0).$.children.$items).to.have.length(3);
 
-            expect(composed.$.children).to.have.length(1);
-            expect(composed.$.children[0].measure.height).to.eql(36);
-            expect(composed.$.children[0].measure.lineHeight).to.eql(80);
+            expect(composed.children).to.have.length(1);
+            expect(composed.children[0].measure.height).to.eql(36);
+            expect(composed.children[0].measure.lineHeight).to.eql(80);
 
         });
 
-        it("should break text into lines on white space chars", function() {
+        it("should break text into lines on white space chars", function () {
 
             flow = helper.createTextFlow("Simple test.");
 
@@ -130,9 +130,9 @@ describe('Composer', function () {
                 width: 100
             }));
 
-            expect(composed.$.children).to.have.length(2);
-            expect(composed.$.children[0].measure.height).to.eql(13);
-            expect(composed.$.children[1].measure.height).to.eql(12);
+            expect(composed.children).to.have.length(2);
+            expect(composed.children[0].measure.height).to.eql(13);
+            expect(composed.children[1].measure.height).to.eql(12);
 
         });
 
