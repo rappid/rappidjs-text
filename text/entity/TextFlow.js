@@ -19,7 +19,7 @@ define(['text/entity/FlowGroupElement', 'text/entity/DivElement', 'text/entity/P
 
             for (var i = 0; i < paragraphs.length; i++) {
                 var line = paragraphs[i];
-                textFlow.addChild(ParagraphElement.initializeFromText(line))
+                textFlow.addChild(ParagraphElement.initializeFromText(line));
             }
 
             return textFlow;
