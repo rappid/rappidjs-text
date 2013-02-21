@@ -20,6 +20,52 @@ define(["js/core/Bindable"], function (Bindable) {
                     });
                 }
             }
+        },
+        getCommonLeafStyle: function(flowElement){
+
+            var firstLeaf = flowElement.findLeaf(this.$.absoluteStart),
+                lastLeaf = flowElement.findLeaf(this.$.absoluteEnd),
+                currentLeaf = firstLeaf;
+
+            var style = currentLeaf.$.style ? currentLeaf.$.style.clone() : null,
+                currentStyle;
+
+            while(currentLeaf !== lastLeaf){
+                currentStyle = currentLeaf.$.style;
+                if(!style && currentStyle){
+                    style = currentStyle.clone();
+                }
+                if(currentStyle){
+                    style.merge(currentStyle);
+                }
+
+                currentLeaf = currentLeaf.getNextLeaf(flowElement);
+            }
+
+            return style;
+        },
+        getCommonParagraphStyle: function(flowElement){
+            var firstLeaf = flowElement.findLeaf(this.$.absoluteStart),
+                lastLeaf = flowElement.findLeaf(this.$.absoluteEnd),
+                currentParagraph = firstLeaf.$parent,
+                lastParagraph = lastLeaf.$parent;
+
+            var style = currentParagraph.$.style ? currentParagraph.$.style.clone() : null,
+                currentStyle;
+
+            while (currentParagraph !== lastParagraph) {
+                currentStyle = currentParagraph.$.style;
+                if (!style && currentStyle) {
+                    style = currentStyle.clone();
+                }
+                if (currentStyle) {
+                    style.merge(currentStyle);
+                }
+
+                currentParagraph = currentParagraph.getNextParagraph();
+            }
+
+            return style;
         }
 
     }, {
