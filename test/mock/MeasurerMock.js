@@ -7,10 +7,7 @@ define(["text/composer/Measurer", "text/metric/Metric"], function (Measurer, Met
             var style = span.composeStyle(),
                 fontSize = style.fontSize || 0;
 
-            return new Metric({
-                width: span.textLength() * fontSize,
-                height: fontSize
-            });
+            return new Metric(span.textLength() * fontSize, fontSize);
         }
 
     });

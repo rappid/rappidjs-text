@@ -1,10 +1,10 @@
-define(["js/core/Bindable"], function(Bindable) {
+define(["js/core/Base"], function(Base) {
 
-    return Bindable.inherit({
+    return Base.inherit({
 
-        defaults: {
-            width: 0,
-            height: 0
+        ctor: function(width, height) {
+            this.width = width || 0;
+            this.height = height || 0;
         }
 
     });
