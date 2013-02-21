@@ -6,7 +6,10 @@
     <g cid="textContainer">
 
     </g>
+
+    <text cid="text" text-rendering="geometricprecision"/>
+
     <js:Template name="tspan">
-        <tspan xml:space="preserve">{$textElement.text}</tspan>
+        <tspan xml:space="preserve">{text}</tspan>
     </js:Template>
 </ui:SvgTextAreaClass>

@@ -51,10 +51,7 @@ define(["text/composer/Measurer", "text/metric/Metric"], function (Measurer, Met
 
             container.removeChild(text);
 
-            return new Metric({
-                width: box.width / 100 * fontSize,
-                height: box.height / 100 * fontSize
-            });
+            return new Metric(box.width / 100 * fontSize, box.height / 100 * fontSize);
         }
 
     });

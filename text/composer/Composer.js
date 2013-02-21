@@ -13,7 +13,15 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
             this.callBase();
         },
 
-        compose: function (group, layout) {
+        compose: function(textFlow, layout) {
+            return {
+                textFlow: textFlow,
+                layout: layout,
+                composed: this._compose(textFlow, layout)
+            };
+        },
+
+        _compose: function (group, layout) {
             // simplification: group could either hold groups or spans
             layout = layout || new Layout();
 
@@ -23,9 +31,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
 
             // TODO: Margins, Borders, Padding
 
-            var ret = new Composer.Element({
-                    item: group
-                }),
+            var ret = new Composer.BlockElement(group),
                 child;
 
             var newLayout = layout,
@@ -33,21 +39,15 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
 
             if (group instanceof ParagraphElement) {
                 child = this._composeText(group, newLayout);
-                child.set({
-                    y: y
-                });
-                ret.$.children.push(child);
+                child.y = y;
+                ret.children.push(child);
             } else {
                 for (var i = 0; i < group.$.children.$items.length; i++) {
-                    child = this.compose(group.$.children.$items[i], newLayout);
+                    child = this._compose(group.$.children.$items[i], newLayout);
 
-                    child.set({
-                        y: y
-                    });
-
+                    child.y = y;
                     y += child.height;
-
-                    ret.$.children.push(child);
+                    ret.children.push(child);
                 }
             }
 
@@ -63,11 +63,10 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
             }
 
             var lines = [], i,
-                ret = new Composer.Element({
-                    item: paragraph,
-                    children: lines
-                }),
+                ret = new Composer.BlockElement(paragraph),
                 measurer = this.$measurer;
+
+            ret.children = lines;
 
             var line = new Composer.Line();
             lines.push(line);
@@ -139,7 +138,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                         for (i = 0; i < wordSpans.length; i++) {
                             var inlineElement = Composer.InlineElement.createFromElement(wordSpans[i], measurer);
                             inlineWordSpans.push(inlineElement);
-                            wordWidth += inlineElement.measure.$.width;
+                            wordWidth += inlineElement.measure.width;
                         }
 
                         if (lineWidth + wordWidth <= layoutWidth) {
@@ -185,30 +184,96 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                 width = Math.max(width, width);
             }
 
-            ret.set({
-                height: height,
-                width: width
-            });
+            ret.height = height;
+            ret.width = width;
 
             return ret;
         }
 
     });
 
-    Composer.Element = Bindable.inherit("text.composer.Composer.Element", {
+    Composer.Element = Base.inherit("text.composer.Composer.Element", {
+        ctor: function(item) {
+            this.item = item;
+        },
 
-        defaults: {
+        getWidth: function() {
+            return this.width;
+        },
 
-            item: null,
-            children: [],
+        getHeight: function () {
+            return this.height;
+        }
+    });
 
-            x: NaN,
-            y: NaN,
-            width: NaN,
-            height: NaN
+    Composer.BlockElement = Composer.Element.inherit("text.composer.Composer.BlockElement", {
+        ctor: function(item) {
+            this.callBase(item);
+            this.children = [];
+        }
+    });
+
+    Composer.InlineElement = Composer.Element.inherit("text.composer.Composer.InlineElement", {
+
+        ctor: function(item, measure) {
+            this.callBase();
+            this.measure = measure;
         }
 
+    }, {
+        createFromElement: function (element, measurer) {
+            return new Composer.InlineElement(element, measurer.measure(element));
+        }
     });
+
+    Composer.Line = Composer.BlockElement.inherit("text.composer.Composer.Line", {
+
+        ctor: function (item) {
+            this.callBase(item);
+        },
+
+        addInlineElement: function (inlineElement) {
+            this.children.push(inlineElement);
+            this.measure = null;
+        },
+
+        getWidth: function() {
+            this.measure = this.measure || this._measure();
+            return this.measure.width;
+        },
+
+        getHeight: function() {
+            this.measure = this.measure || this._measure();
+            return this.measure.lineHeight;
+        },
+
+        getTextHeight: function() {
+            this.measure = this.measure || this._measure();
+            return this.measure.height;
+        },
+
+        _measure: function () {
+            var ret = {
+                height: 0,
+                lineHeight: 0,
+                width: 0
+            };
+
+            for (var i = 0; i < this.children.length; i++) {
+                var inlineElement = this.children[i],
+                    composeStyle = inlineElement.item.composeStyle() || {},
+                    height = inlineElement.measure.height || 0,
+                    lineHeight = height * (composeStyle.lineHeight || 1);
+
+                ret.height = Math.max(ret.height, height);
+                ret.lineHeight = Math.max(ret.lineHeight, lineHeight);
+                ret.width += inlineElement.measure.width || 0;
+            }
+
+            return ret;
+        }
+    });
+
 
     Composer.WordSpan = SpanElement.inherit('text.composer.Composer.WordSpan', {
 
@@ -220,58 +285,6 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
             return this.$.originalSpan.composeStyle();
         }
 
-    });
-
-    Composer.Line = Base.inherit("text.composer.Composer.Line", {
-
-        defaults: {
-            measure: null
-        },
-
-        ctor: function () {
-            this.inlineElements = [];
-
-            this.callBase();
-        },
-
-        addInlineElement: function (inlineElement) {
-            this.inlineElements.push(inlineElement);
-        },
-
-        _measure: function () {
-            var ret = {
-                height: 0,
-                lineHeight: 0,
-                width: 0
-            };
-
-            for (var i = 0; i < this.inlineElements.length; i++) {
-                var inlineElement = this.inlineElements[i],
-                    composeStyle = inlineElement.element.composeStyle() || {},
-                    height = inlineElement.measure.$.height || 0,
-                    lineHeight = height * (composeStyle.lineHeight || 1);
-
-                ret.height = Math.max(ret.height, height);
-                ret.lineHeight = Math.max(ret.lineHeight, lineHeight);
-                ret.width += inlineElement.measure.$.width || 0;
-            }
-
-            this.measure = ret;
-
-            return ret;
-        }
-    });
-
-    Composer.InlineElement = Base.inherit("text.composer.Composer.InlineElement", {
-
-        ctor: function (element, measure) {
-            this.element = element;
-            this.measure = measure;
-        }
-    }, {
-        createFromElement: function (element, measurer) {
-            return new Composer.InlineElement(element, measurer.measure(element));
-        }
     });
 
 
