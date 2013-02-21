@@ -42,7 +42,7 @@ describe('text.operation.ApplyStyleToElementOperation', function () {
             expect(textFlow.getChildAt(0).numChildren()).to.be.equal(3);
         });
 
-        it('should apply style to over whole paragraph, dont split up and apply style to paragraph', function () {
+        it('should apply style over whole paragraph, dont split up and apply style to paragraph', function () {
             var textFlow = new C.TextFlow(),
                 paragraph = new C.Paragraph(),
                 span1 = new C.Span({text: "ABC"}),
@@ -95,7 +95,7 @@ describe('text.operation.ApplyStyleToElementOperation', function () {
                 paragraph = new C.Paragraph(),
                 paragraph2 = new C.Paragraph(),
                 span1 = new C.Span({text: "ABC"}),
-                span2 = new C.Span({text: "DEF"}),
+                span2 = new C.Span({text: "DEFG", style: new C.Style({fontWeight: "normal"})}),
                 textRange;
 
             paragraph.addChild(span1);
@@ -113,9 +113,9 @@ describe('text.operation.ApplyStyleToElementOperation', function () {
             operation.doOperation();
 
             expect(paragraph2.numChildren()).to.be.equal(3);
-            expect(paragraph2.getChildAt(0).composeStyle()).to.be.eql(null);
+            expect(paragraph2.getChildAt(0).composeStyle()).to.be.eql({fontWeight: "normal"});
             expect(paragraph2.getChildAt(1).composeStyle()).to.be.eql({fontWeight: "bold"});
-            expect(paragraph2.text()).to.be.equal("DEF");
+            expect(paragraph2.text()).to.be.equal("DEFG");
         });
 
         it('should apply leaf style on leafs over all paragraphs in range', function () {
@@ -147,6 +147,7 @@ describe('text.operation.ApplyStyleToElementOperation', function () {
             expect(paragraph.getChildAt(1).text()).to.be.equal("C");
 
 
+            paragraph2 = textFlow.getChildAt(1);
             expect(paragraph2.numChildren()).to.be.equal(2);
             expect(paragraph2.getChildAt(0).composeStyle()).to.be.eql({fontStyle: "italic"});
             expect(paragraph2.getChildAt(1).composeStyle()).to.be.eql(null);
@@ -295,8 +296,9 @@ describe('text.operation.ApplyStyleToElementOperation', function () {
                 fontSize: 10
             }))).doOperation();
 
-            expect(textFlow.numChildren()).to.eql(1);
-            expect(textFlow.$.children.at(0).numChildren()).to.eql(1);
+            expect(textFlow.numChildren()).to.eql(2);
+            expect(textFlow.getChildAt(0).numChildren()).to.eql(1);
+            expect(textFlow.getChildAt(1).numChildren()).to.eql(1);
 
         });
 
