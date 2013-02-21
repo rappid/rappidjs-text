@@ -1,12 +1,12 @@
 define(["js/core/Base"], function (Base) {
 
     return Base.inherit('text.operation.FlowOperation', {
-        ctor: function (textFlow) {
-            this.$textFlow = textFlow;
+        ctor: function (flowElement) {
+            this.$targetElement = flowElement;
         },
 
         doOperation: function () {
-            // abstract method
+            this.$targetElement.notifyOperationComplete();
         },
 
         undo: function () {
