@@ -16,6 +16,8 @@ define(["js/core/Bindable", "underscore"], function (Bindable, _) {
                         }
                     }
                 }
+            } else {
+                this.clear();
             }
         }
 
