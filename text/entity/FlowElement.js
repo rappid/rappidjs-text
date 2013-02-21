@@ -64,6 +64,10 @@ define(['js/data/Entity', 'text/type/Style'], function (Entity, Style) {
 
         splitAtPosition: function(position){
             return this.shallowCopy(position);
+        },
+
+        notifyOperationComplete: function(){
+            this.trigger('operationCompleted');
         }
 
     });
