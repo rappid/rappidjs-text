@@ -289,20 +289,9 @@ describe('text.operation.ApplyStyleToElementOperation', function () {
         });
 
         it('create new text flow and apply style on complete text flow should result in one paragraph with one span', function () {
-            var textFlow = new C.TextFlow.initializeFromText("rAppid:js is awesome.");
+            var textFlow = new C.TextFlow.initializeFromText("rAppid:js is awesome.\nWhat do you think?");
 
-            var CustomStyle = C.Style.inherit({
-
-                compose: function() {
-                    var ret = this.callBase();
-                    ret.color = "red";
-                    return ret;
-                }
-            });
-
-
-
-            (new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(0, textFlow.textLength()), textFlow, new CustomStyle({
+            (new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(0, textFlow.textLength()), textFlow, new C.Style({
                 fontSize: 10
             }))).doOperation();
 
