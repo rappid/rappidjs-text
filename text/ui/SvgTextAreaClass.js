@@ -1,11 +1,13 @@
-define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operation/SplitParagraphOperation', 'text/operation/ApplyStyleToElementOperation', 'text/entity/TextFlow', 'text/entity/ParagraphElement', 'text/entity/SpanElement', 'text/entity/TextRange', 'text/operation/DeleteOperation', 'underscore'], function (SvgElement, InsertTextOperation, SplitParagraphOperation, ApplyStyleToElementOperation, TextFlow, ParagraphElement, SpanElement, TextRange, DeleteOperation, _) {
+define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operation/SplitParagraphOperation', 'text/operation/ApplyStyleToElementOperation', 'text/entity/TextFlow', 'text/entity/ParagraphElement', 'text/entity/SpanElement', 'text/entity/TextRange', 'text/operation/DeleteOperation'], function (SvgElement, InsertTextOperation, SplitParagraphOperation, ApplyStyleToElementOperation, TextFlow, ParagraphElement, SpanElement, TextRange, DeleteOperation) {
 
     return SvgElement.inherit('SvgTextArea', {
 
         defaults: {
             tagName: 'g',
             $internalText: "",
+            textRange: TextRange,
             composedTextFlow: null,
+            textFlow: "{composedTextFlow.textFlow}",
             width: 100,
             height: 100,
             _cursorIndex: 0,
@@ -29,13 +31,17 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             "textAnchor": "text-anchor"
         },
 
-        $classAttributes: ['textElement', 'cursor', 'textFlow', 'width', 'height', 'anchor'],
+        $classAttributes: ['cursor', 'textFlow', 'width', 'height', 'anchor'],
 
-        getSelection: function () {
-            return {
-                anchorIndex: this.$._anchorIndex,
-                cursorIndex: this.$._cursorIndex
-            };
+        ctor: function(){
+            this.callBase();
+            this.bind('textFlow','formatChanged', function() {
+
+            }, this);
+        },
+
+        getSelection: function(){
+            return this.$.textRange;
         },
 
         handleKeyDown: function (e) {
@@ -84,14 +90,16 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         cursorIndex++;
                         break;
                 }
+                var indieces = {
+                    _anchorIndex: -1,
+                    _cursorIndex: cursorIndex
+                };
                 if (e.shiftKey && this.$._anchorIndex === -1) {
-                    this.set('_anchorIndex', this.$._cursorIndex);
+                    indieces._anchorIndex = this.$._cursorIndex;
                 } else if (!e.shiftKey && this.$._anchorIndex !== -1) {
-                    this.set('_anchorIndex', cursorIndex);
+                    indieces._anchorIndex = cursorIndex;
                 }
-                if (cursorIndex > -1) {
-                    this.set('_cursorIndex', cursorIndex);
-                }
+                this.set(indieces);
             } else if (keyCode === 13) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -127,8 +135,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             if (pos) {
                 this.$.cursor.set(pos);
             }
-            if (this.$._anchorIndex > -1 && this.$._anchorIndex !== index) {
-                pos = this._getPositionForTextIndex(this.$._anchorIndex);
+            if (this.$._anchorIndex > -1) {
+                if(this.$._anchorIndex !== index){
+                    pos = this._getPositionForTextIndex(this.$._anchorIndex);
+                }
                 if (pos) {
                     this.$.anchor.set(pos);
                 }
@@ -152,6 +162,33 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             return true;
         },
 
+        _commit_anchorIndex: function(index){
+
+            if(index < 0){
+                return false;
+            }
+
+            if(this.$.textFlow) {
+                if(index >= this.$.textFlow.textLength()){
+                    return false;
+                }
+            }
+
+            return true;
+        },
+
+        _commitChangedAttributes: function($){
+            this.callBase();
+
+            if(this._hasSome($, ['_anchorIndex', '_cursorIndex'])){
+                this.$.textRange.set({
+                   activeIndex: this.$._cursorIndex,
+                   anchorIndex: this.$._anchorIndex
+                });
+            }
+
+        },
+
         _getPositionForTextIndex: function (index) {
             var target,
                 textLength = 0,
@@ -160,8 +197,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 charNum,
                 childLength;
 
-            for (var i = 0; i < this.$.textContainer.$children.length; i++) {
-                child = this.$.textContainer.$children[i];
+            for (var i = 0; i < this.$.text.$children.length; i++) {
+                child = this.$.text.$children[i];
                 target = child;
                 childLength = child.$el.textContent.length + 1;
                 textLength += childLength;
@@ -298,69 +335,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
         },
 
-//        _renderTextFlow: function (textFlow) {
-//            if (textFlow) {
-//                var self = this;
-//                this.$.textContainer.removeAllChildren();
-//                this.$currentLine = 1;
-//                textFlow.$.children.each(function (child) {
-//                    self._renderElement(child, self.$.textContainer);
-//                });
-//            }
-//
-//        },
-        _renderElement: function (element, textContainer) {
-
-            if (element instanceof ParagraphElement) {
-                var self = this;
-
-                // TODO: use correct line height -> can only be determinated after composing
-                var textElement = this.createComponent(SvgElement, {
-                    tagName: "text",
-                    y: this.$currentLine * 16,
-                    $textElement: element
-                });
-
-                var x = 0,
-                    transformedStyle = this._transformStyle(element.composeStyle(), this.$textTransformMap);
-
-                switch (transformedStyle["text-anchor"]) {
-                    case "middle":
-                        x = this.$.width / 2;
-                        break;
-                    case "end":
-                        x = this.$.width;
-                }
-
-                transformedStyle.x = x;
-                transformedStyle["text-rendering"] = "geometricprecision";
-
-                textElement.set(transformedStyle);
-
-
-                element.$.children.each(function (child) {
-                    self._renderElement(child, textElement);
-                });
-
-                textElement.bind('on:mouseup', this._onTextMouseUp, this);
-                textElement.bind('on:mousedown', this._onTextMouseDown, this);
-                textElement.bind('on:mousemove', this._onTextMouseMove, this);
-
-                textContainer.addChild(textElement);
-                this.$currentLine++;
-            } else if (element.isLeaf) {
-                var tspan = this.$templates["tspan"].createInstance({
-                    $textElement: element
-                });
-                var style = this._transformStyle(element.composeStyle(), this.$tSpanTransformMap);
-
-                tspan.set(style);
-
-                textContainer.addChild(tspan);
-            }
-
-        },
-
         _transformStyle: function (style, map) {
 
             var ret = {};
@@ -421,7 +395,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 num;
 
             if (svgRoot) {
-                var rootRect = this.$.textContainer.$el.getBoundingClientRect(),
+                var rootRect = this.$.text.$el.getBoundingClientRect(),
                     point = svgRoot.$el.createSVGPoint();
                 var factor = svgRoot.globalToLocalFactor();
 
