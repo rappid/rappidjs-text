@@ -8,6 +8,7 @@ define(['text/operation/SplitElementOperation', 'text/entity/ParagraphElement'],
         doOperation: function () {
             var originalParagraph;
             var activeIndex = this.$textRange.$.activeIndex;
+
             if(!(this.$targetElement instanceof ParagraphElement)){
                 var leaf = this.$targetElement.findLeaf(activeIndex);
                 if(leaf && leaf.$parent){
@@ -35,9 +36,9 @@ define(['text/operation/SplitElementOperation', 'text/entity/ParagraphElement'],
 
                     }
                 }
-
-
             }
+
+            this.$targetElement.notifyOperationComplete();
         }
 
 
