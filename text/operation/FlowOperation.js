@@ -6,7 +6,7 @@ define(["js/core/Base"], function (Base) {
         },
 
         doOperation: function () {
-            this.$targetElement.notifyOperationComplete();
+            this.$targetElement.notifyOperationComplete(this);
         },
 
         undo: function () {
