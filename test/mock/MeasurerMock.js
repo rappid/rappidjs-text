@@ -2,6 +2,12 @@ define(["text/composer/Measurer", "text/metric/Metric"], function (Measurer, Met
 
     return Measurer.inherit("test.mock.MeasurerMock", {
 
+        loadAssets: function (textFlow, callback) {
+            setTimeout(function() {
+                callback && callback();
+            }, 5);
+        },
+
         measureText: function(span) {
 
             var style = span.composeStyle(),

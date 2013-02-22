@@ -2,6 +2,10 @@ define(["js/core/Base", "text/entity/SpanElement"], function(Base, SpanElement) 
 
     return Base.inherit("text.measurer.Measurer", {
 
+        loadAssets: function(textFlow, callback) {
+            callback && callback();
+        },
+
         measure: function (element) {
 
             if (element instanceof SpanElement) {
