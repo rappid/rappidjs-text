@@ -66,8 +66,8 @@ define(['js/data/Entity', 'text/type/Style'], function (Entity, Style) {
             return this.shallowCopy(position);
         },
 
-        notifyOperationComplete: function(){
-            this.trigger('operationCompleted');
+        notifyOperationComplete: function(operation){
+            this.trigger('operationCompleted',{operation: operation});
         }
 
     });
