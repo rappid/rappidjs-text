@@ -79,30 +79,39 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                     lineWidth = 0,
                     softLines = text.split("\n"),
                     charPosition = 0,
-                    leafPosition = 0;
+                    leafPosition = 0,
+                    softLine,
+                    words,
+                    word,
+                    start,
+                    end,
+                    startLeaf,
+                    endLeaf,
+                    leaves,
+                    leaf,
+                    wordWidth;
 
                 for (var j = 0; j < softLines.length; j++) {
 
-                    var softLine = softLines[j],
-                        words = softLine.split(" ");
+                    softLine = softLines[j];
+                    words = softLine.split(" ");
 
                     for (var k = 0; k < words.length; k++) {
-                        var word = words[k];
-                        var start = charPosition;
-                        var end = charPosition + word.length;
+                        word = words[k];
+                        start = charPosition;
+                        end = charPosition + word.length;
 
-                        var startLeaf = paragraph.findLeaf(start);
-                        var endLeaf = paragraph.findLeaf(end);
+                        startLeaf = paragraph.findLeaf(start);
+                        endLeaf = paragraph.findLeaf(end);
 
-                        var leafs = [startLeaf];
-                        var leaf;
+                        leaves = [startLeaf];
 
                         if (startLeaf !== endLeaf) {
                             leaf = startLeaf;
-                            // find all leafs
+                            // find all leaves
                             do {
                                 leaf = leaf.getNextLeaf(paragraph);
-                                leafs.push(leaf);
+                                leaves.push(leaf);
                             } while (leaf && leaf !== endLeaf);
                         }
 
@@ -110,7 +119,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                             inlineWordSpans = [];
 
                         // create new span elements for split words
-                        if (leafs.length === 1) {
+                        if (leaves.length === 1) {
                             // word exists of just one leaf
                             wordSpans = [new Composer.WordSpan({
                                 text: word,
@@ -121,8 +130,8 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                             var wordPosition = start,
                                 leafStartPosition = leafPosition;
 
-                            for (var l = 0; l < leafs.length; l++) {
-                                leaf = leafs[l];
+                            for (var l = 0; l < leaves.length; l++) {
+                                leaf = leaves[l];
                                 var wordSpanLength = leafStartPosition + leaf.textLength() - wordPosition;
                                 wordSpans.push(new Composer.WordSpan({
                                     text: word.substr(wordPosition, wordSpanLength),
@@ -134,7 +143,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                             }
                         }
 
-                        var wordWidth = 0;
+                        wordWidth = 0;
                         for (i = 0; i < wordSpans.length; i++) {
                             var inlineElement = Composer.InlineElement.createFromElement(wordSpans[i], measurer);
                             inlineWordSpans.push(inlineElement);
