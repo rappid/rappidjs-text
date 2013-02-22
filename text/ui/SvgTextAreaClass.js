@@ -33,10 +33,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         $classAttributes: ['textRange','text','selection','cursor', 'textFlow', 'width', 'height', 'anchor'],
 
-        ctor: function(){
-            this.callBase();
-        },
-
         getSelection: function(){
             return this.$.textRange;
         },
@@ -57,7 +53,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 operation = new DeleteOperation(textRange, this.$.textFlow);
 
                 operation.doOperation();
-                this._renderTextFlow(this.$.textFlow);
+
                 this._setCursorAfterOperation(this.$._anchorIndex === this.$._cursorIndex ? -1 : 0);
             } else if (keyCode === 46) {
                 e.preventDefault();
@@ -111,7 +107,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 operation = new SplitParagraphOperation(textRange, this.$.textFlow);
 
                 operation.doOperation();
-                this._renderTextFlow(this.$.textFlow);
                 this._setCursorAfterOperation(1);
             }
         },
@@ -245,7 +240,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             this.set({
                 _cursorIndex: cursorIndex + add,
                 _anchorIndex: cursorIndex + add
-            }, {force: true});
+            });
         },
 
         _onDomAdded: function () {
@@ -254,10 +249,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 //            this.$stage.$window.setInterval(function () {
 //                self.$.cursor.set('visible', !self.$.cursor.$.visible);
 //            }, 600);
-        },
-
-        _renderTextFlow: function () {
-//            console.warn("_renderTextFlow will be removed");
         },
 
         _renderComposedTextFlow: function (composedTextFlow) {
