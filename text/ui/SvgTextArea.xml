@@ -8,6 +8,6 @@
             onmousedown="_onTextMouseDown" onmousemove="_onTextMouseMove"/>
 
     <js:Template name="tspan">
-        <tspan xml:space="preserve">{text}</tspan>
+        <tspan xml:space="preserve"><![CDATA[{$text}]]></tspan>
     </js:Template>
 </ui:SvgTextAreaClass>

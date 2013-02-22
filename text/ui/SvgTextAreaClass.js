@@ -1,4 +1,4 @@
-define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operation/SplitParagraphOperation', 'text/operation/ApplyStyleToElementOperation', 'text/entity/TextFlow', 'text/entity/ParagraphElement', 'text/entity/SpanElement', 'text/entity/TextRange', 'text/operation/DeleteOperation'], function (SvgElement, InsertTextOperation, SplitParagraphOperation, ApplyStyleToElementOperation, TextFlow, ParagraphElement, SpanElement, TextRange, DeleteOperation) {
+define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operation/SplitParagraphOperation', 'text/operation/ApplyStyleToElementOperation', 'text/entity/TextFlow', 'text/entity/ParagraphElement', 'text/entity/SpanElement', 'text/entity/TextRange', 'text/operation/DeleteOperation', 'underscore'], function (SvgElement, InsertTextOperation, SplitParagraphOperation, ApplyStyleToElementOperation, TextFlow, ParagraphElement, SpanElement, TextRange, DeleteOperation, _) {
 
     return SvgElement.inherit('SvgTextArea', {
 
@@ -297,7 +297,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                             var lineElement = line.children[l].item;
 
                             var tspan = this.$templates["tspan"].createInstance({
-                                text: lineElement.$.text
+                                $text: lineElement.$.text
                             });
 
                             var style = this._transformStyle(lineElement.composeStyle(), this.$tSpanTransformMap);
@@ -315,8 +315,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                                     case "end":
                                         x = this.$.width;
                                 }
-
-                                var fontSize = style["font-size"];
 
                                 style.x = x;
                                 style.y = y;
@@ -364,9 +362,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         _onTextMouseDown: function (e) {
             var domEvent = e.domEvent,
                 target = e.target;
-
-//            e.stopPropagation();
-//            e.preventDefault();
 
             var index = this._getCursorIndexForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
             if (index > -1) {
