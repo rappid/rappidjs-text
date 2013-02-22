@@ -31,13 +31,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             "textAnchor": "text-anchor"
         },
 
-        $classAttributes: ['cursor', 'textFlow', 'width', 'height', 'anchor'],
+        $classAttributes: ['textRange','text','selection','cursor', 'textFlow', 'width', 'height', 'anchor'],
 
         ctor: function(){
             this.callBase();
-            this.bind('textFlow','formatChanged', function() {
-
-            }, this);
         },
 
         getSelection: function(){
@@ -75,7 +72,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                 operation.doOperation();
 
-                this._renderTextFlow(this.$.textFlow);
                 this._setCursorAfterOperation();
             } else if (keyCode === 37 || keyCode === 39 || keyCode === 38 || keyCode === 40) {
                 e.preventDefault();
@@ -190,45 +186,47 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         _getPositionForTextIndex: function (index) {
-            var target,
-                textLength = 0,
+            if(!this.$.text.$children.length){
+                return null;
+            }
+
+            var textLength = -1,
                 child,
+                i = 0,
                 pos,
-                charNum,
-                childLength;
+                childLength,
+                line = -1,
+                isIndexEndOfLine = false;
 
-            for (var i = 0; i < this.$.text.$children.length; i++) {
+            while(i < this.$.text.$children.length && textLength <= index){
                 child = this.$.text.$children[i];
-                target = child;
-                childLength = child.$el.textContent.length + 1;
+                childLength = child.$el.textContent.length;
+                if(child.has('y')){
+                    textLength++;
+                    line++;
+                }
                 textLength += childLength;
-                if (textLength > index) {
-                    charNum = index - (textLength - childLength);
-
-                    if (charNum > 0 && charNum === childLength - 1) {
-                        charNum--;
-                        i = 0;
-                        while (charNum > 0 && child.$el.textContent.charAt(charNum) == " ") {
-                            i++;
-                            charNum--;
-                        }
-                        pos = target.$el.getEndPositionOfChar(charNum);
-                        pos.x += i * 4; // TODO: calculate space width
-                    } else if (target.$el.textContent) {
-                        pos = target.$el.getStartPositionOfChar(charNum);
-                    } else {
-                        pos = {
-                            x: 0,
-                            y: 0
-                        };
-                    }
-                    return {
-                        x: pos.x,
-                        y: pos.y
-                    };
+                i++;
+                if (index > 0 && textLength === index) {
+                    isIndexEndOfLine = true;
+                    break;
                 }
             }
-            return null;
+
+
+            if(isIndexEndOfLine){
+                pos = this.$.text.$el.getEndPositionOfChar(index-line-1);
+            } else {
+                pos = this.$.text.$el.getStartPositionOfChar(index-line);
+            }
+            if(pos){
+                return {
+                    x: pos.x,
+                    y: pos.y
+                };
+            } else {
+                return null;
+            }
         },
 
         addChar: function (chr) {
