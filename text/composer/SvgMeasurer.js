@@ -1,4 +1,4 @@
-define(["text/composer/Measurer", "text/metric/Metric"], function (Measurer, Metric) {
+define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], function (Measurer, Metric, _, flow) {
 
     var SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 
@@ -14,6 +14,58 @@ define(["text/composer/Measurer", "text/metric/Metric"], function (Measurer, Met
 
             this.callBase();
         },
+
+        loadAssets: function(textFlow, callback) {
+            callback = callback || function() {};
+
+            var fonts = this.getUsedFonts(textFlow);
+            for (var i = 0; i < fonts.length; i++) {
+                fonts[i] = this.getFontInformation(fonts[i]);
+            }
+
+            var svg = this.svg;
+
+            flow()
+                .parEach(fonts, function(font, cb) {
+                    svg.fontManager.loadExternalFont(font.name, font.url, cb);
+                })
+                .exec(callback);
+
+        },
+
+        getFontInformation: function(font) {
+            return {
+                url: null,
+                name: null
+            };
+        },
+
+        getUsedFonts: function (textFlow) {
+            var fonts = [];
+
+            if (textFlow) {
+                addFonts(textFlow);
+            }
+
+            return fonts;
+
+            function addFonts(flowElement) {
+                if (flowElement) {
+                    var font = flowElement.get("style.font");
+
+                    if (font && _.indexOf(fonts, font) === -1) {
+                        fonts.push(font);
+                    }
+
+                    if (!flowElement.isLeaf) {
+                        flowElement.$.children.each(function (child) {
+                            addFonts(child);
+                        });
+                    }
+                }
+            }
+        },
+
 
         $transformMap: {
             "fontFamily": "font-family",
