@@ -67,7 +67,7 @@ define(['js/data/Entity', 'text/type/Style'], function (Entity, Style) {
         },
 
         notifyOperationComplete: function(operation){
-            this.trigger('operationCompleted',{operation: operation});
+            this.trigger('operationComplete',{operation: operation});
         }
 
     });
