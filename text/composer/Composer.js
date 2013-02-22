@@ -3,8 +3,6 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
     var Composer = Base.inherit('text.composer.Composer', {
 
         ctor: function (measurer) {
-            this.$spaceWidthCache = {};
-
             if (!measurer) {
                 throw new Error("No Measurer defined for Composer");
             }
@@ -13,12 +11,26 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
             this.callBase();
         },
 
-        compose: function(textFlow, layout) {
-            return {
-                textFlow: textFlow,
-                layout: layout,
-                composed: this._compose(textFlow, layout)
-            };
+        compose: function(textFlow, layout, callback) {
+
+            callback = callback || this.emptyCallback();
+
+            var self = this;
+            this.$measurer.loadAssets(textFlow, function(err) {
+
+                if (err) {
+                    callback(err);
+                } else {
+
+                    var result = {
+                        textFlow: textFlow,
+                        layout: layout,
+                        composed: self._compose(textFlow, layout)
+                    };
+
+                    callback(null, result);
+                }
+            });
         },
 
         _compose: function (group, layout) {
