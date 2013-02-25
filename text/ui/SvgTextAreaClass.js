@@ -252,7 +252,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         _renderComposedTextFlow: function (composedTextFlow) {
-            console.log(composedTextFlow);
 
             var text = this.$.text;
             if (!text) {
