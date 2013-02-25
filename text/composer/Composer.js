@@ -272,7 +272,9 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
             this.measure = measure;
 
             var composeStyle = item.composeStyle();
-            measure.height = Math.max(measure.height, ((composeStyle.fontSize || 0) * (composeStyle.lineHeight || 1)));
+            var height = (composeStyle.fontSize || 0);
+            measure.height = Math.max(measure.height, height);
+            measure.lineHeight = Math.max(measure.lineHeight, (height * (composeStyle.lineHeight || 1)));
         }
 
     }, {
