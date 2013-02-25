@@ -228,7 +228,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             if (this.$.textFlow) {
                 var operation = new InsertTextOperation(new TextRange({activeIndex: this.$._cursorIndex, anchorIndex: this.$._anchorIndex}), this.$.textFlow, chr);
                 operation.doOperation();
-                this._renderTextFlow(this.$.textFlow);
                 this._setCursorAfterOperation(1);
             }
         },
