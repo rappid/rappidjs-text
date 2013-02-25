@@ -96,6 +96,8 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
                 }
             }
 
+            text.setAttributeNS("http://www.w3.org/XML/1998/namespace", "space", "preserve");
+
             var container = this.svg.$el;
             container.appendChild(text);
 

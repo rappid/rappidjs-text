@@ -156,8 +156,10 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                         }
 
                         wordWidth = 0;
+                        var inlineElement;
+
                         for (i = 0; i < wordSpans.length; i++) {
-                            var inlineElement = Composer.InlineElement.createFromElement(wordSpans[i], measurer);
+                            inlineElement = Composer.InlineElement.createFromElement(wordSpans[i], measurer);
                             inlineWordSpans.push(inlineElement);
                             wordWidth += inlineElement.measure.width;
                         }
@@ -167,6 +169,12 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
 
                             lineWidth += wordWidth;
                             // TODO: white space width
+
+                            inlineElement.item.$.text += " ";
+
+                            var withWhiteSpace = Composer.InlineElement.createFromElement(inlineElement.item, measurer);
+                            inlineWordSpans[inlineWordSpans.length - 1] = withWhiteSpace;
+                            lineWidth += (withWhiteSpace.measure.width - inlineElement.measure.width);
 
                         } else if (wordWidth < layoutWidth || true) { // FIXME: if the word is larger than the layout, split it up on chars
                             // word can be placed on a new line
@@ -300,6 +308,14 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
 
         defaults: {
             originalSpan: null
+        },
+
+        ctor: function() {
+            this.callBase();
+
+            if (!this.$.style && this.$.originalSpan) {
+                this.$.style = this.$.originalSpan.$.style;
+            }
         },
 
         composeStyle: function () {
