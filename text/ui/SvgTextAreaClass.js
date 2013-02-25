@@ -31,9 +31,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             "textAnchor": "text-anchor"
         },
 
-        $classAttributes: ['textRange','text','selection','cursor', 'textFlow', 'width', 'height', 'anchor'],
+        $classAttributes: ['textRange', 'text', 'selection', 'cursor', 'textFlow', 'width', 'height', 'anchor'],
 
-        getSelection: function(){
+        getSelection: function () {
             return this.$.textRange;
         },
 
@@ -127,7 +127,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 this.$.cursor.set(pos);
             }
             if (this.$._anchorIndex > -1) {
-                if(this.$._anchorIndex !== index){
+                if (this.$._anchorIndex !== index) {
                     pos = this._getPositionForTextIndex(this.$._anchorIndex);
                 }
                 if (pos) {
@@ -153,14 +153,14 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             return true;
         },
 
-        _commit_anchorIndex: function(index){
+        _commit_anchorIndex: function (index) {
 
-            if(index < 0){
+            if (index < 0) {
                 return false;
             }
 
-            if(this.$.textFlow) {
-                if(index >= this.$.textFlow.textLength()){
+            if (this.$.textFlow) {
+                if (index >= this.$.textFlow.textLength()) {
                     return false;
                 }
             }
@@ -168,20 +168,20 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             return true;
         },
 
-        _commitChangedAttributes: function($){
+        _commitChangedAttributes: function ($) {
             this.callBase();
 
-            if(this._hasSome($, ['_anchorIndex', '_cursorIndex'])){
+            if (this._hasSome($, ['_anchorIndex', '_cursorIndex'])) {
                 this.$.textRange.set({
-                   activeIndex: this.$._cursorIndex,
-                   anchorIndex: this.$._anchorIndex
+                    activeIndex: this.$._cursorIndex,
+                    anchorIndex: this.$._anchorIndex
                 });
             }
 
         },
 
         _getPositionForTextIndex: function (index) {
-            if(!this.$.text.$children.length){
+            if (!this.$.text.$children.length) {
                 return null;
             }
 
@@ -193,10 +193,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 line = -1,
                 isIndexEndOfLine = false;
 
-            while(i < this.$.text.$children.length && textLength <= index){
+            while (i < this.$.text.$children.length && textLength <= index) {
                 child = this.$.text.$children[i];
                 childLength = child.$el.textContent.length;
-                if(child.has('y')){
+                if (child.has('y')) {
                     textLength++;
                     line++;
                 }
@@ -207,14 +207,20 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     break;
                 }
             }
-
-
-            if(isIndexEndOfLine){
-                pos = this.$.text.$el.getEndPositionOfChar(index-line-1);
-            } else {
-                pos = this.$.text.$el.getStartPositionOfChar(index-line);
+            if(child.$el.textContent === "" && child.has('y')){
+                return {
+                    x: child.$el.getAttribute("x"),
+                    y: child.$el.getAttribute("y")
+                };
             }
-            if(pos){
+
+
+            if (isIndexEndOfLine) {
+                pos = this.$.text.$el.getEndPositionOfChar(index - line - 1);
+            } else {
+                pos = this.$.text.$el.getStartPositionOfChar(index - line);
+            }
+            if (pos) {
                 return {
                     x: pos.x,
                     y: pos.y
@@ -265,7 +271,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
             // transform the tree into a list of paragraphs and lines
 
-            var y = 0;
+            var y = 0,
+                tspan;
 
             for (var i = 0; i < composedTextFlow.composed.children.length; i++) {
                 var paragraph = composedTextFlow.composed.children[i],
@@ -283,7 +290,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         for (var l = 0; l < line.children.length; l++) {
                             var lineElement = line.children[l].item;
 
-                            var tspan = this.$templates["tspan"].createInstance({
+                            tspan = this.$templates["tspan"].createInstance({
                                 $text: lineElement.$.text
                             });
 
@@ -310,7 +317,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                             tspan.set(style);
                             text.addChild(tspan);
-
                         }
 
                         y += line.getHeight() - line.getTextHeight();
