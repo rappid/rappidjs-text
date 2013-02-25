@@ -11,12 +11,12 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
             this.callBase();
         },
 
-        compose: function(textFlow, layout, callback) {
+        compose: function (textFlow, layout, callback) {
 
             callback = callback || this.emptyCallback();
 
             var self = this;
-            this.$measurer.loadAssets(textFlow, function(err) {
+            this.$measurer.loadAssets(textFlow, function (err) {
 
                 if (err) {
                     callback(err);
@@ -52,13 +52,14 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
             if (group instanceof ParagraphElement) {
                 child = this._composeText(group, newLayout);
                 child.y = y;
+                y += child.getHeight();
                 ret.children.push(child);
             } else {
                 for (var i = 0; i < group.$.children.$items.length; i++) {
                     child = this._compose(group.$.children.$items[i], newLayout);
 
                     child.y = y;
-                    y += child.height;
+                    y += child.getHeight();
                     ret.children.push(child);
                 }
             }
@@ -170,18 +171,30 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                             lineWidth += wordWidth;
                             // TODO: white space width
 
+
+                        } else if (wordWidth < layoutWidth || true) { // FIXME: if the word is larger than the layout, split it up on chars
+                            // word must be placed on a new line
+
+                            if (line.children.length > 0) {
+                                var lastLineElement = line.children[line.children.length - 1];
+                                lastLineElement.item.$.text = lastLineElement.item.$.text.substr(0, lastLineElement.item.$.text.length - 1);
+                            }
+
+                            line = new Composer.Line();
+                            lines.push(line);
+                            lineWidth = wordWidth;
+                        }
+
+                        if (k !== words.length - 1) {
+                            // not the last word on the soft line
                             inlineElement.item.$.text += " ";
 
                             var withWhiteSpace = Composer.InlineElement.createFromElement(inlineElement.item, measurer);
                             inlineWordSpans[inlineWordSpans.length - 1] = withWhiteSpace;
                             lineWidth += (withWhiteSpace.measure.width - inlineElement.measure.width);
 
-                        } else if (wordWidth < layoutWidth || true) { // FIXME: if the word is larger than the layout, split it up on chars
-                            // word can be placed on a new line
-                            line = new Composer.Line();
-                            lines.push(line);
-                            lineWidth = wordWidth;
                         }
+
 
                         for (i = 0; i < inlineWordSpans.length; i++) {
                             line.addInlineElement(inlineWordSpans[i]);
@@ -222,11 +235,11 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
     });
 
     Composer.Element = Base.inherit("text.composer.Composer.Element", {
-        ctor: function(item) {
+        ctor: function (item) {
             this.item = item;
         },
 
-        getWidth: function() {
+        getWidth: function () {
             return this.width;
         },
 
@@ -236,17 +249,30 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
     });
 
     Composer.BlockElement = Composer.Element.inherit("text.composer.Composer.BlockElement", {
-        ctor: function(item) {
+        ctor: function (item) {
             this.callBase(item);
             this.children = [];
+        },
+
+        getHeight: function() {
+            var ret = 0;
+
+            for (var i = 0; i < this.children.length; i++) {
+                ret += (this.children[i].getHeight() || 0);
+            }
+
+            return ret;
         }
     });
 
     Composer.InlineElement = Composer.Element.inherit("text.composer.Composer.InlineElement", {
 
-        ctor: function(item, measure) {
+        ctor: function (item, measure) {
             this.callBase();
             this.measure = measure;
+
+            var composeStyle = item.composeStyle();
+            measure.height = Math.max(measure.height, ((composeStyle.fontSize || 0) * (composeStyle.lineHeight || 1)));
         }
 
     }, {
@@ -266,17 +292,17 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
             this.measure = null;
         },
 
-        getWidth: function() {
+        getWidth: function () {
             this.measure = this.measure || this._measure();
             return this.measure.width;
         },
 
-        getHeight: function() {
+        getHeight: function () {
             this.measure = this.measure || this._measure();
             return this.measure.lineHeight;
         },
 
-        getTextHeight: function() {
+        getTextHeight: function () {
             this.measure = this.measure || this._measure();
             return this.measure.height;
         },
@@ -310,7 +336,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
             originalSpan: null
         },
 
-        ctor: function() {
+        ctor: function () {
             this.callBase();
 
             if (!this.$.style && this.$.originalSpan) {
