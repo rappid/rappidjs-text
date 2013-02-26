@@ -264,6 +264,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
 
             text.removeAllChildren();
+            text.set("visible", false);
 
 
             if (!composedTextFlow) {
@@ -318,6 +319,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                             tspan.set(style);
                             text.addChild(tspan);
+
+
                         }
 
                         y += line.getHeight() - line.getTextHeight();
@@ -325,6 +328,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     }
                 }
             }
+
+            text.set("visible", true);
+
             this._render_cursorIndex(this.$._cursorIndex);
         },
 
