@@ -4,8 +4,8 @@
     <rect cid="selection" width="0" height="10"/>
 
     <text cid="text" text-rendering="geometricprecision"
-          onmouseup="_onTextMouseUp"
-            onmousedown="_onTextMouseDown" onmousemove="_onTextMouseMove"/>
+          onpointerup="_onTextMouseUp"
+          onpointerdown="_onTextMouseDown" onpointermove="_onTextMouseMove"/>
 
     <js:Template name="tspan">
         <tspan xml:space="preserve"><![CDATA[{$text}]]></tspan>

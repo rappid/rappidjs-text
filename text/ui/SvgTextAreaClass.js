@@ -55,6 +55,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 operation.doOperation();
 
                 this._setCursorAfterOperation(this.$._anchorIndex === this.$._cursorIndex ? -1 : 0);
+
             } else if (keyCode === 46) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -214,7 +215,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 };
             }
 
-
             if (isIndexEndOfLine) {
                 pos = this.$.text.$el.getEndPositionOfChar(index - line - 1);
             } else {
@@ -264,6 +264,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
 
             text.removeAllChildren();
+
 
             if (!composedTextFlow) {
                 return;
@@ -324,6 +325,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     }
                 }
             }
+            this._render_cursorIndex(this.$._cursorIndex);
         },
 
         _transformStyle: function (style, map) {
@@ -340,7 +342,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         _onTextMouseUp: function (e) {
-            var domEvent = e.domEvent,
+            var domEvent = e.pointerEvent,
                 target = e.target;
 
             var index = this._getCursorIndexForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
@@ -353,7 +355,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         _onTextMouseDown: function (e) {
-            var domEvent = e.domEvent,
+            var domEvent = e.pointerEvent,
                 target = e.target;
 
             var index = this._getCursorIndexForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
@@ -369,8 +371,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         _onTextMouseMove: function (e) {
             if (this.$mouseDown) {
-                var domEvent = e.domEvent,
+                e.stopPropagation();
+                e.preventDefault();
+                var domEvent = e.pointerEvent,
                     target = e.target;
+                console.log(domEvent.clientX, domEvent.clientY);
                 var index = this._getCursorIndexForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
                 if (index > -1) {
                     this.set('_cursorIndex', index);
@@ -384,28 +389,45 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
             if (svgRoot) {
                 var rootRect = this.$.text.$el.getBoundingClientRect(),
+                    parentRect = this.$.text.$el.parentNode.getBoundingClientRect(),
                     point = svgRoot.$el.createSVGPoint();
-                var factor = svgRoot.globalToLocalFactor();
+                var factor = svgRoot.globalToLocalFactor(),
+                    child;
 
-                point.x = (mousePosition.x - rootRect.left) * factor.x;
-                point.y = (mousePosition.y - rootRect.top) * factor.y;
+                point.x = Math.round((mousePosition.x - rootRect.left + (rootRect.left - parentRect.left)) * factor.x);
+                point.y = Math.round((mousePosition.y - rootRect.top) * factor.y);
+
 
                 num = target.$el.getCharNumAtPosition(point);
+
+                var index = num;
                 if (num > -1) {
                     var startPos = target.$el.getStartPositionOfChar(num),
                         endPos = target.$el.getEndPositionOfChar(num);
                     if (Math.abs(point.x - startPos.x) > Math.abs(point.x - endPos.x)) {
-                        num++;
+                        index++;
+                    }
+                    var i = 0;
+                    while(i < this.$.text.$children.length){
+                        child = this.$.text.$children[i];
+                        if (i > 0 && child.has('y')) {
+                            index++;
+                        }
+                        if(child.has('y') && child.get('y') >= startPos.y) {
+                            break;
+                        }
+                        i++;
                     }
                 }
-                var parent = target.$el.parentNode;
-                var i = 0;
-                while (parent.childNodes[i] !== target.$el) {
-                    num += parent.childNodes[i].textContent.length + 1;
-                    i++;
-                }
 
-                return num;
+//                var parent = target.$el.parentNode;
+//                var i = 0;
+//                while (parent.childNodes[i] !== target.$el) {
+//                    num += parent.childNodes[i].textContent.length + 1;
+//                    i++;
+//                }
+
+                return index;
             }
             return num;
 
