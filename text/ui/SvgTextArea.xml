@@ -6,8 +6,4 @@
     <text cid="text" text-rendering="geometricprecision"
           onpointerup="_onTextMouseUp"
           onpointerdown="_onTextMouseDown" onpointermove="_onTextMouseMove"/>
-
-    <js:Template name="selectionRect">
-        <rect width="${width}" height="${height}" x="${x}" y="${y}" style="fill:blue;"/>
-    </js:Template>
 </ui:SvgTextAreaClass>
