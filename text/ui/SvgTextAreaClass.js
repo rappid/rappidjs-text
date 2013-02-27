@@ -450,7 +450,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             if (svgRoot) {
                 var rootRect = this.$.text.$el.getBoundingClientRect(),
                     boundingBox = this.$.text.$el.getBBox(),
-                    parentRect = this.$.text.$el.parentNode.getBoundingClientRect(),
                     point = svgRoot.$el.createSVGPoint();
                 var factor = svgRoot.globalToLocalFactor(),
                     child;
