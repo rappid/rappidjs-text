@@ -6,6 +6,8 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
 
         ctor: function(svg) {
             this.svg = svg;
+            this.measureCache = {};
+
             svg.setViewBox(0, 0, 100, 100);
             svg.set({
                 width: 100,
@@ -89,24 +91,40 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
             var text = document.createElementNS(SVG_NAMESPACE, "text");
             text.textContent = span.$.text;
 
+            var cacheId = "";
+
             // apply the style
             for (var key in style) {
                 if (style.hasOwnProperty(key) && this.$transformMap.hasOwnProperty(key)) {
-                    text.setAttribute(this.$transformMap[key], style[key]);
+                    var attribute = this.$transformMap[key];
+                    var value = style[key];
+                    text.setAttribute(attribute, value);
+
+                    if (key !== "fontSize") {
+                        cacheId += attribute + "=" + value + "&";
+                    }
                 }
             }
 
-            text.setAttribute("text-rendering", "geometricprecision");
-            text.setAttributeNS("http://www.w3.org/XML/1998/namespace", "space", "preserve");
+            var box;
 
-            var container = this.svg.$el;
-            container.appendChild(text);
+            if (!this.measureCache[cacheId]) {
+                text.setAttribute("text-rendering", "geometricprecision");
+                text.setAttributeNS("http://www.w3.org/XML/1998/namespace", "space", "preserve");
 
-            var box = text.getBBox();
+                var container = this.svg.$el;
+                container.appendChild(text);
 
-            container.removeChild(text);
+                box = text.getBBox();
+
+                container.removeChild(text);
+                this.measureCache[cacheId] = box;
+            } else {
+                box = this.measureCache[cacheId];
+            }
 
             return new Metric(box.width / 100 * fontSize, box.height / 100 * fontSize);
+
         }
 
     });
