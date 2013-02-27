@@ -1,7 +1,7 @@
 <ui:SvgTextAreaClass xmlns:ui="text.ui" xmlns="http://www.w3.org/2000/svg" xmlns:js="js.core">
+    <g cid="selection"/>
     <rect cid="cursor" width="1" height="10" class="text-cursor"/>
     <rect cid="anchor" width="1" height="10" class="text-anchor"/>
-    <rect cid="selection" width="0" height="10"/>
 
     <text cid="text" text-rendering="geometricprecision"
           onpointerup="_onTextMouseUp"
@@ -9,5 +9,8 @@
 
     <js:Template name="tspan">
         <tspan xml:space="preserve">{$text}</tspan>
+    </js:Template>
+    <js:Template name="selectionRect">
+        <rect width="${width}" height="${height}" x="${x}" y="${y}" style="fill:blue;"/>
     </js:Template>
 </ui:SvgTextAreaClass>
