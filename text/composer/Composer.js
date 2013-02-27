@@ -92,7 +92,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                     lineWidth = 0,
                     softLines = text.split("\n"),
                     charPosition = 0,
-                    leafPosition = 0,
+                    leafStartPosition = 0,
                     softLine,
                     words,
                     word,
@@ -114,7 +114,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                         start = charPosition;
                         end = charPosition + word.length;
 
-                        startLeaf = paragraph.findLeaf(start);
+                        startLeaf = paragraph.findLeaf(start + 1);
                         endLeaf = paragraph.findLeaf(end);
 
                         leaves = [startLeaf];
@@ -138,22 +138,41 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                                 text: word,
                                 originalSpan: startLeaf
                             })];
+
+                            if (word.length + 1 === startLeaf.textLength()) {
+                                // word + whitespace ends on this span, set the start leaf position
+                                leafStartPosition = end + 1;
+                            }
+
                         } else {
                             // word consists of multiple spans
                             var wordPosition = start,
-                                leafStartPosition = leafPosition;
+                                wordStartPosition = 0,
+                                leafPosition = leafStartPosition,
+                                wordSpanTotalLength = 0;
 
                             for (var l = 0; l < leaves.length; l++) {
                                 leaf = leaves[l];
-                                var wordSpanLength = leafStartPosition + leaf.textLength() - wordPosition;
+                                var leafLength = leaf.textLength();
+                                var wordSpanLength = leafPosition + leafLength - wordPosition;
                                 wordSpans.push(new Composer.WordSpan({
-                                    text: word.substr(wordPosition, wordSpanLength),
+                                    text: word.substr(wordStartPosition, wordSpanLength),
                                     originalSpan: leaf
                                 }));
 
-                                leafStartPosition += leaf.textLength();
+                                wordSpanTotalLength += wordSpanLength;
+                                wordStartPosition += wordSpanLength;
+                                leafPosition += leafLength;
                                 wordPosition += wordSpanLength;
+
+                                if (l !== leaves.length - 1) {
+                                    leafStartPosition += leafLength;
+                                } else if (wordSpanTotalLength === word.length) {
+                                    leafStartPosition = end + 1;
+                                }
+
                             }
+
                         }
 
                         wordWidth = 0;
@@ -193,6 +212,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                             inlineWordSpans[inlineWordSpans.length - 1] = withWhiteSpace;
                             lineWidth += (withWhiteSpace.measure.width - inlineElement.measure.width);
 
+                            charPosition++;
                         }
 
 
@@ -201,6 +221,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                         }
 
                         charPosition += word.length;
+
                     }
 
 
