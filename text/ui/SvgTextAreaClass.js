@@ -123,7 +123,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         _render_cursorIndex: function (index) {
-            console.log(index);
+
             var pos = this._getPositionForTextIndex(index),
                 cursorPos = pos,
                 anchorPos;
@@ -310,7 +310,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 return;
             }
 
-            text.removeAllChildren();
+            text.$el.textContent = "";
+
             text.set("visible", false);
             this.$.selection.removeAllChildren();
 
@@ -334,21 +335,19 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                         var line = softLine.children[k];
                         // add empty selection element
-                        this.$.selection.addChild(this.$templates['selectionRect'].createInstance({
-                            x: 0,
-                            y: y,
-                            height: line.getHeight(),
-                            width: 100
-                        }));
+
+                        var selectionRect = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "rect");
+                        selectionRect.setAttribute("y", y);
+                        selectionRect.setAttribute("height", line.getHeight());
+                        selectionRect.setAttribute("width", 0);
+
+                        this.$.selection.$el.appendChild(selectionRect);
 
                         y += line.getTextHeight();
 
                         for (var l = 0; l < line.children.length; l++) {
                             var lineElement = line.children[l].item;
-
-                            tspan = this.$templates["tspan"].createInstance({
-                                $text: lineElement.$.text
-                            });
+                            tspan = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "tspan");
 
                             var style = this._transformStyle(lineElement.composeStyle(), this.$tSpanTransformMap);
 
@@ -370,13 +369,16 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                                 style.y = y;
                             }
 
-                            tspan.set(style);
-                            text.addChild(tspan);
+                            for (var key in style) {
+                                if (style.hasOwnProperty(key)) {
+                                    tspan.setAttribute(key, style[key]);
+                                }
+                            }
+                            tspan.textContent = lineElement.$.text;
+                            text.$el.appendChild(tspan);
                         }
 
-
                         y += line.getHeight() - line.getTextHeight();
-
 
                     }
                 }

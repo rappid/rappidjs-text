@@ -7,9 +7,6 @@
           onpointerup="_onTextMouseUp"
           onpointerdown="_onTextMouseDown" onpointermove="_onTextMouseMove"/>
 
-    <js:Template name="tspan">
-        <tspan xml:space="preserve">{$text}</tspan>
-    </js:Template>
     <js:Template name="selectionRect">
         <rect width="${width}" height="${height}" x="${x}" y="${y}" style="fill:blue;"/>
     </js:Template>
