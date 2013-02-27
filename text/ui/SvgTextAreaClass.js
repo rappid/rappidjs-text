@@ -340,6 +340,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         selectionRect.setAttribute("y", y);
                         selectionRect.setAttribute("height", line.getHeight());
                         selectionRect.setAttribute("width", 0);
+                        selectionRect.setAttribute("class", "text-selection");
 
                         this.$.selection.$el.appendChild(selectionRect);
 
