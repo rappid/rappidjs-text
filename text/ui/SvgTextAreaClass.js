@@ -458,8 +458,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 point.x = Math.round((mousePosition.x - rootRect.left) * factor.x) + boundingBox.x;
                 point.y = Math.round((mousePosition.y - rootRect.top) * factor.y);
 
-                console.log(boundingBox.x);
-
                 num = target.$el.getCharNumAtPosition(point);
 
                 var index = num;
@@ -484,11 +482,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                 return index;
             }
+
             return num;
 
         }
 
     });
-
 
 });
