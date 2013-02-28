@@ -69,6 +69,163 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
         },
 
         _composeText: function (paragraph, layout) {
+
+            var lines = [], i,
+                ret = new Composer.BlockElement(paragraph);
+
+            // split up to soft lines
+            var paragraphText = paragraph.text(),
+                softLines = paragraphText.split("\n"),
+                softLineStartPosition = 0,
+                leafPosition = 0,
+                spanPositions = {};
+
+            for (var j = 0; j < paragraph.$.children.$items.length; j++) {
+                var span = paragraph.$.children.$items[j];
+                spanPositions[span.$cid] = leafPosition;
+                leafPosition += span.textLength();
+            }
+
+            for (var l = 0; l < softLines.length; l++) {
+                var softLineContent = softLines[l];
+                lines = lines.concat(this._composeSoftLine(paragraph, softLineContent, softLineStartPosition, spanPositions, layout));
+                softLineStartPosition += softLineContent.length + 1;
+            }
+
+            var height = 0,
+                width = 0;
+
+            for (i = 0; i < lines.length; i++) {
+                var measure = lines[i]._measure();
+                height += measure.lineHeight;
+                width = Math.max(width, width);
+            }
+
+            ret.children = lines;
+            ret.height = height;
+            ret.width = width;
+
+            return ret;
+
+        },
+
+        _composeSoftLine: function (paragraph, softLine, softLineStartPosition, spanPositions, layout) {
+
+            layout = layout || new Layout();
+
+            if (!(layout instanceof Layout)) {
+                layout = new Layout(layout);
+            }
+
+            var layoutWidth = layout.$.width,
+                measurer = this.$measurer,
+                words = softLine.split(" "),
+                lines = [],
+                line = new Composer.Line(),
+                lineWidth = 0,
+                wordPosition = 0;
+
+            lines.push(line);
+
+            for (var w = 0; w < words.length; w++) {
+                var word = words[w];
+                var wordSpans = this._getWordSpans(paragraph, word, wordPosition + softLineStartPosition, spanPositions);
+
+                var wordWidth = 0,
+                    inlineElement,
+                    inlineWordSpans = [];
+
+                for (var i = 0; i < wordSpans.length; i++) {
+                    inlineElement = Composer.InlineElement.createFromElement(wordSpans[i], measurer);
+                    inlineWordSpans.push(inlineElement);
+                    wordWidth += inlineElement.measure.width;
+                }
+
+
+                if (!layoutWidth || lineWidth + wordWidth <= layoutWidth) {
+                    // word fits line, add it to line
+
+                    lineWidth += wordWidth;
+                    // TODO: white space width
+
+
+                } else if (wordWidth < layoutWidth || true) { // FIXME: if the word is larger than the layout, split it up on chars
+                    // word must be placed on a new line
+                    if (line.children.length > 0) {
+                        var lastLineElement = line.children[line.children.length - 1];
+                        lastLineElement.item.$.text = lastLineElement.item.$.text.substr(0, lastLineElement.item.$.text.length - 1);
+                    }
+
+                    line = new Composer.Line();
+                    lines.push(line);
+                    lineWidth = wordWidth;
+                }
+
+                if (w !== words.length - 1) {
+                    // not the last word on the soft line
+                    inlineElement.item.$.text += " ";
+
+                    var withWhiteSpace = Composer.InlineElement.createFromElement(inlineElement.item, measurer);
+                    inlineWordSpans[inlineWordSpans.length - 1] = withWhiteSpace;
+                    lineWidth += (withWhiteSpace.measure.width - inlineElement.measure.width);
+
+                    wordPosition++;
+                }
+
+
+                for (i = 0; i < inlineWordSpans.length; i++) {
+                    line.addInlineElement(inlineWordSpans[i]);
+                }
+
+                // word length + white space
+                wordPosition += word.length;
+
+            }
+
+            return lines;
+
+        },
+
+        _getWordSpans: function (paragraph, word, wordStartPosition, spanPositions) {
+
+            var startLeaf = paragraph.findLeaf(wordStartPosition + 1),
+                endLeaf = paragraph.findLeaf(wordStartPosition + word.length),
+                leaves = [startLeaf],
+                leaf,
+                wordSpans = [],
+                wordPosition = 0;
+
+            if (startLeaf !== endLeaf) {
+                leaf = startLeaf;
+                // find all leaves
+                do {
+                    leaf = leaf.getNextLeaf(paragraph);
+                    leaves.push(leaf);
+                } while (leaf && leaf !== endLeaf);
+            }
+
+            var startPosition = spanPositions[startLeaf.$cid];
+            var firstLeafOffset = startPosition - wordStartPosition;
+
+            for (var i = 0; i < leaves.length; i++) {
+                leaf = leaves[i];
+
+                var length = leaf.textLength();
+
+                wordSpans.push(new Composer.WordSpan({
+                    text: word.substr(wordPosition, length - firstLeafOffset),
+                    originalSpan: leaf
+                }));
+
+                wordPosition += length;
+                firstLeafOffset = 0;
+            }
+
+            return wordSpans;
+
+        },
+
+        _composeTextOld: function (paragraph, layout) {
             layout = layout || new Layout();
 
             if (!(layout instanceof Layout)) {
@@ -190,7 +347,6 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                             lineWidth += wordWidth;
                             // TODO: white space width
 
-
                         } else if (wordWidth < layoutWidth || true) { // FIXME: if the word is larger than the layout, split it up on chars
                             // word must be placed on a new line
 
@@ -255,6 +411,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
 
     });
 
+
     Composer.Element = Base.inherit("text.composer.Composer.Element", {
         ctor: function (item) {
             this.item = item;
@@ -275,7 +432,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
             this.children = [];
         },
 
-        getHeight: function() {
+        getHeight: function () {
             var ret = 0;
 
             for (var i = 0; i < this.children.length; i++) {
@@ -292,7 +449,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
             this.callBase();
             this.measure = measure;
 
-            var composeStyle = item.composeStyle();
+            var composeStyle = item.composeStyle() || {};
             var height = (composeStyle.fontSize || 0);
             measure.height = Math.max(measure.height, height);
             measure.lineHeight = Math.max(measure.lineHeight, (height * (composeStyle.lineHeight || 1)));

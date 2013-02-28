@@ -91,7 +91,7 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
             var text = document.createElementNS(SVG_NAMESPACE, "text");
             text.textContent = span.$.text;
 
-            var cacheId = "";
+            var cacheId = span.$.text + "&";
 
             // apply the style
             for (var key in style) {

@@ -136,6 +136,148 @@ describe('Composer', function () {
 
         });
 
+
+        describe('composeText', function () {
+
+            describe("getWordSpans", function () {
+
+                var composer,
+                    data;
+
+                before(function () {
+                    composer = new C.Composer(measurer);
+
+                    composer._getWordSpans = function (paragraph, word, wordStartPosition, spanPositions) {
+
+                        var object = C.Composer.prototype._getWordSpans.apply(this, arguments);
+                        data.push(object);
+                        return object;
+
+                    };
+                });
+
+                beforeEach(function () {
+                    data = []
+                });
+
+                it("should generate the correct word spans", function () {
+                    var paragraph = new C.Paragraph(),
+                        spans = [new C.Span({text: "Text "}),
+                            new C.Span({text: "Com"}),
+                            new C.Span({text: "posing "}),
+                            new C.Span({text: "is "}),
+                            new C.Span({text: "dif"}),
+                            new C.Span({text: "fi"}),
+                            new C.Span({text: "cult"})];
+
+                    for (var i = 0; i < spans.length; i++) {
+                        paragraph.addChild(spans[i]);
+                    }
+
+                    var composed = composer._composeText(paragraph);
+
+                    expect(data).to.have.length(4);
+
+                    expect(data[0]).to.have.length(1);
+                    expect(data[1]).to.have.length(2);
+                    expect(data[2]).to.have.length(1);
+                    expect(data[3]).to.have.length(3);
+
+                    expect(data[0][0].$.text).to.eql("Text ");
+                    expect(data[0][0].$.originalSpan).to.equal(spans[0]);
+
+                    expect(data[1][0].$.text).to.eql("Com");
+                    expect(data[1][0].$.originalSpan).to.equal(spans[1]);
+
+                    expect(data[1][1].$.text).to.eql("posing ");
+                    expect(data[1][1].$.originalSpan).to.equal(spans[2]);
+
+                    expect(data[2][0].$.text).to.eql("is ");
+                    expect(data[2][0].$.originalSpan).to.equal(spans[3]);
+
+                    expect(data[3][0].$.text).to.eql("dif");
+                    expect(data[3][0].$.originalSpan).to.equal(spans[4]);
+
+                    expect(data[3][1].$.text).to.eql("fi");
+                    expect(data[3][1].$.originalSpan).to.equal(spans[5]);
+
+                    expect(data[3][2].$.text).to.eql("cult");
+                    expect(data[3][2].$.originalSpan).to.equal(spans[6]);
+
+                });
+
+            });
+
+            describe("composeSoftLine", function () {
+
+                var composer,
+                    data;
+
+                before(function () {
+                    composer = new C.Composer(measurer);
+
+                    composer._composeSoftLine = function (paragraph, softLine, softLineStartPosition, layout) {
+                        data.push({
+                            paragraph: paragraph,
+                            softLine: softLine,
+                            softLineStartPosition: softLineStartPosition
+                        });
+
+                        return C.Composer.prototype._composeSoftLine.apply(this, arguments);
+
+                    };
+                });
+
+                beforeEach(function () {
+                    data = []
+                });
+
+                it("should split up the paragraph data and call composeSoftLine", function () {
+                    var paragraph = new C.Paragraph(),
+                        span = new C.Span({text: "Composing\nis\ndifficult."});
+
+                    paragraph.addChild(span);
+
+                    composer._composeText(paragraph);
+
+                    expect(data).to.have.length(3);
+                    expect(data[0].softLineStartPosition).to.eql(0);
+                    expect(data[0].softLine).to.eql("Composing");
+
+                    expect(data[1].softLineStartPosition).to.eql(10);
+                    expect(data[1].softLine).to.eql("is");
+
+                    expect(data[2].softLineStartPosition).to.eql(13);
+                    expect(data[2].softLine).to.eql("difficult.");
+                });
+
+            });
+
+            it("should break after the first word", function () {
+                var flow = helper.createTextFlow("A Textflow", {
+                    fontSize: 12
+                });
+
+                var composed = composer._compose(flow, {
+                    width: 100
+                });
+
+                expect(composed).to.exist;
+                expect(composed.children).to.have.length(1); // one paragraph
+
+                expect(composed.children[0].children).to.have.length(1); // one soft line
+
+                expect(composed.children[0].children[0].children).to.have.length(2); // wrapped into two lines
+
+                expect(composed.children[0].children[0].children[0].children).to.have.length(1);
+                expect(composed.children[0].children[0].children[0].children[0].item.$.text).to.be.eql("A");
+
+                expect(composed.children[0].children[0].children[1].children).to.have.length(1);
+                expect(composed.children[0].children[0].children[1].children[0].item.$.text).to.be.eql("Textflow");
+            });
+
+        })
     });
+
 
 });
