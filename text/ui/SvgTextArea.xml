@@ -1,7 +1,7 @@
 <ui:SvgTextAreaClass xmlns:ui="text.ui" xmlns="http://www.w3.org/2000/svg"
                      onpointermove="_onTextAreaMove">
-    <g cid="selection" visible="showSelection"/>
-    <rect cid="cursor" width="1" height="10" class="text-cursor" visible="{showSelection}"/>
+    <g cid="selection" visible="{showSelection}"/>
+    <rect cid="cursor" visible="false" width="1" height="10" class="text-cursor"/>
     <rect cid="anchor" visible="false" width="1" height="10" class="text-anchor" />
 
     <text cid="text" text-rendering="geometricprecision"
