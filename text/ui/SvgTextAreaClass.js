@@ -14,7 +14,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             _anchorIndex: 0,
 
             editable: true,
-            selectable: true
+            selectable: true,
+            showSelection: true
         },
 
         $tSpanTransformMap: {
