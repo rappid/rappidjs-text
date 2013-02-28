@@ -11,7 +11,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             width: 100,
             height: 100,
             _cursorIndex: 0,
-            _anchorIndex: 0
+            _anchorIndex: 0,
+
+            editable: true,
+            selectable: true
         },
 
         $tSpanTransformMap: {
@@ -38,6 +41,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         handleKeyDown: function (e) {
+            
+            if (!this.$.editable) {
+                return;
+            }
+            
             var keyCode = e.keyCode,
                 textRange, operation, anchorIndex;
 
@@ -82,16 +90,16 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         cursorIndex++;
                         break;
                 }
-                var indieces = {
+                var indices = {
                     _anchorIndex: -1,
                     _cursorIndex: cursorIndex
                 };
                 if (e.shiftKey && this.$._anchorIndex === -1) {
-                    indieces._anchorIndex = this.$._cursorIndex;
+                    indices._anchorIndex = this.$._cursorIndex;
                 } else if (!e.shiftKey && this.$._anchorIndex !== -1) {
-                    indieces._anchorIndex = cursorIndex;
+                    indices._anchorIndex = cursorIndex;
                 }
-                this.set(indieces);
+                this.set(indices);
             } else if (keyCode === 13) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -112,7 +120,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         handleKeyPress: function (e) {
-            var keyCode = e.keyCode;
+
+            if (!this.$.editable) {
+                return;
+            }
 
             if (e.charCode) {
                 // insert text
@@ -406,6 +417,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         _onTextMouseUp: function (e) {
+
+            if (!this.$.selectable) {
+                return;
+            }
+
             var domEvent = e.pointerEvent,
                 target = e.target;
 
@@ -419,6 +435,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         _onTextMouseDown: function (e) {
+
+            if (!this.$.selectable) {
+                return;
+            }
+
             var domEvent = e.pointerEvent,
                 target = e.target;
 
@@ -431,6 +452,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         _onTextMouseMove: function (e) {
+
+            if (!this.$.selectable) {
+                return;
+            }
+
             if (this.$mouseDown) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -444,6 +470,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         _onTextAreaMove: function (e) {
+
+            if (!this.$.selectable) {
+                return;
+            }
+
             e.stopPropagation();
             e.preventDefault();
         },
