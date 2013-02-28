@@ -147,6 +147,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
 
         },
+
         _render_cursorIndex: function (index) {
             var cursorPos = this._getPositionForTextIndex(index),
                 anchorPos;
