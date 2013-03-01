@@ -222,11 +222,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         _getPositionForTextIndex: function (index) {
-            var $textEl = this.$.text.$el;
-            if (!this.$addedToDom || !$textEl.childNodes.length) {
+            var textEl = this.$.text.$el;
+
+            if (!this.$addedToDom || !textEl.childNodes.length) {
                 return null;
             }
-            console.log(index);
 
             var textLength = -1,
                 child,
@@ -236,8 +236,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 line = -1,
                 isIndexEndOfLine = false;
 
-            while (i < $textEl.childNodes.length && textLength <= index) {
-                child = $textEl.childNodes[i];
+            while (i < textEl.childNodes.length && textLength <= index) {
+                child = textEl.childNodes[i];
                 childLength = child.textContent.length;
                 if (child.getAttribute('y')) {
                     textLength++;
@@ -259,9 +259,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     };
                 } else {
                     if (isIndexEndOfLine) {
-                        pos = $textEl.getEndPositionOfChar(index - line - 1);
+                        pos = textEl.getEndPositionOfChar(index - line - 1);
                     } else {
-                        pos = $textEl.getStartPositionOfChar(index - line);
+                        pos = textEl.getStartPositionOfChar(index - line);
                     }
                 }
                 var lineHeight = parseFloat(child.getAttribute('data-height')),
@@ -415,7 +415,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
 
             text.set("visible", true);
-            console.log("renderselection");
+
             this._renderSelection(this.$.selection);
         },
 
@@ -535,7 +535,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     while (i < this.$.text.$el.childNodes.length) {
                         child = this.$.text.$el.childNodes[i];
                         y = child.getAttribute('y');
-                        console.log(y);
+
                         if (y) {
                             if(i > 0){
                                 index++;
