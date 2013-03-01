@@ -235,8 +235,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 line = -1,
                 isIndexEndOfLine = false;
 
-            console.log(index);
-
             while (i < $textEl.childNodes.length && textLength <= index) {
                 child = $textEl.childNodes[i];
                 childLength = child.textContent.length;
@@ -439,7 +437,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             var domEvent = e.pointerEvent,
                 target = e.target;
 
-            var index = this._getCursorIndexForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
+            var index = this._getCursorIndexForMousePosition({x: domEvent.pageX, y: domEvent.pageY}, target);
             if (index > -1) {
                 this.$.selection.set({
                     'activeIndex': index
@@ -459,7 +457,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
 //            e.stopPropagation();
 
-            var index = this._getCursorIndexForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
+            var index = this._getCursorIndexForMousePosition({x: domEvent.pageX, y: domEvent.pageY}, target);
             if (index > -1) {
                 this.$mouseDown = true;
                 this.$.selection.set({
@@ -480,7 +478,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 //                e.preventDefault();
                 var domEvent = e.pointerEvent,
                     target = e.target;
-                var index = this._getCursorIndexForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
+                var index = this._getCursorIndexForMousePosition({x: domEvent.pageX, y: domEvent.pageY}, target);
                 if (index > -1) {
                     this.$.selection.set('activeIndex', index);
                 }
@@ -526,11 +524,12 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     while (i < this.$.text.$el.childNodes.length) {
                         child = this.$.text.$el.childNodes[i];
                         y = child.getAttribute('y');
-                        if (y && parseFloat(y) >= startPos.y) {
-                            break;
-                        }
+
                         if (i > 0 && y) {
                             index++;
+                        }
+                        if (y && parseFloat(y) >= startPos.y) {
+                            break;
                         }
                         i++;
                     }
