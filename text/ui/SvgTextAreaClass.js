@@ -226,6 +226,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             if (!this.$addedToDom || !$textEl.childNodes.length) {
                 return null;
             }
+            console.log(index);
 
             var textLength = -1,
                 child,
@@ -330,7 +331,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             text.$el.textContent = "";
 
             text.set("visible", false);
-            this.$.selectionGroup.$el.data = null;
+            var $selectionGroup = this.$.selectionGroup.$el;
+            while ($selectionGroup.firstChild) {
+                $selectionGroup.removeChild($selectionGroup.firstChild);
+            }
 
             if (!composedTextFlow) {
                 return;
@@ -402,7 +406,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         selectionRect.setAttribute("width", 0);
                         selectionRect.setAttribute("class", "text-selection");
 
-                        this.$.selectionGroup.$el.appendChild(selectionRect);
+                        $selectionGroup.appendChild(selectionRect);
 
                         y += lineHeight - textHeight;
 
@@ -434,10 +438,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 return;
             }
 
-            var domEvent = e.pointerEvent,
-                target = e.target;
+            var target = e.target;
 
-            var index = this._getCursorIndexForMousePosition({x: domEvent.pageX, y: domEvent.pageY}, target);
+            var index = this._getCursorIndexForMousePosition(this._getMousePositionForEvent(e), target);
             if (index > -1) {
                 this.$.selection.set({
                     'activeIndex': index
@@ -452,12 +455,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 return;
             }
 
-            var domEvent = e.pointerEvent,
-                target = e.target;
+            var target = e.target;
 
 //            e.stopPropagation();
 
-            var index = this._getCursorIndexForMousePosition({x: domEvent.pageX, y: domEvent.pageY}, target);
+            var index = this._getCursorIndexForMousePosition(this._getMousePositionForEvent(e), target);
             if (index > -1) {
                 this.$mouseDown = true;
                 this.$.selection.set({
@@ -478,10 +480,19 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 //                e.preventDefault();
                 var domEvent = e.pointerEvent,
                     target = e.target;
-                var index = this._getCursorIndexForMousePosition({x: domEvent.pageX, y: domEvent.pageY}, target);
+                var index = this._getCursorIndexForMousePosition(this._getMousePositionForEvent(e), target);
                 if (index > -1) {
                     this.$.selection.set('activeIndex', index);
                 }
+            }
+        },
+
+        _getMousePositionForEvent: function (e) {
+            var pointerEvent = e.pointerEvent;
+            if (e.isTouch) {
+                return {x: pointerEvent.pageX, y: pointerEvent.pageY};
+            } else {
+                return {x: pointerEvent.clientX, y: pointerEvent.clientY};
             }
         },
 
@@ -524,12 +535,14 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     while (i < this.$.text.$el.childNodes.length) {
                         child = this.$.text.$el.childNodes[i];
                         y = child.getAttribute('y');
-
-                        if (i > 0 && y) {
-                            index++;
-                        }
-                        if (y && parseFloat(y) >= startPos.y) {
-                            break;
+                        console.log(y);
+                        if (y) {
+                            if(i > 0){
+                                index++;
+                            }
+                            if(Math.round(parseFloat(y),2) >= startPos.y){
+                                break;
+                            }
                         }
                         i++;
                     }
