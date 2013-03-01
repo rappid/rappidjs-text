@@ -2,8 +2,36 @@ define(["js/core/Bindable"], function (Bindable) {
 
 
     var TextRange = Bindable.inherit('text.entity.TextRange', {
+        _commitActiveIndex: function(index){
+            if (index < 0) {
+                return false;
+            }
+
+            if (this.$.textFlow) {
+                if (index >= this.$.textFlow.textLength()) {
+                    return false;
+                }
+            }
+
+            return true;
+        },
+
+        _commitAnchorIndex: function(index){
+            if (index < 0) {
+                return false;
+            }
+
+            if (this.$.textFlow) {
+                if (index >= this.$.textFlow.textLength()) {
+                    return false;
+                }
+            }
+
+            return true;
+        },
+
+
         _commitChangedAttributes: function ($) {
-            this.callBase($);
             if (this._hasSome($, ["anchorIndex", "activeIndex"])) {
                 if ((this.$.anchorIndex === null || this.$.anchorIndex === -1)) {
                     this.$.anchorIndex = this.$.activeIndex;
@@ -20,6 +48,7 @@ define(["js/core/Bindable"], function (Bindable) {
                     }, {silent: true});
                 }
             }
+            this.callBase($);
         },
         getCommonLeafStyle: function (flowElement) {
 
