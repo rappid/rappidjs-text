@@ -5,13 +5,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         defaults: {
             tagName: 'g',
             $internalText: "",
-            textRange: TextRange,
+            selection: TextRange,
             composedTextFlow: null,
             textFlow: "{composedTextFlow.textFlow}",
             width: 100,
             height: 100,
-            _cursorIndex: 0,
-            _anchorIndex: 0,
             scale: 1,
 
             editable: true,
@@ -36,23 +34,28 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             "textAnchor": "text-anchor"
         },
 
-        $classAttributes: ['scale','textRange', 'text', 'selection', 'cursor', 'textFlow', 'width', 'height', 'anchor'],
+        $classAttributes: ['scale', 'textRange', 'text', 'selection', 'selectionGroup', 'cursor', 'textFlow', 'width', 'height', 'anchor'],
 
         getSelection: function () {
-            return this.$.textRange;
+            return this.$.selection;
         },
 
         ctor: function () {
             this.$showCursor = false;
             this.callBase();
-            this.bind('textRange','change', this._onTextSelectionChange, this);
+            this.bind('selection', 'change', this._onTextSelectionChange, this);
         },
 
-        _onTextSelectionChange: function(e){
-            this.set({
-                _anchorIndex: this.$.textRange.$.anchorIndex,
-                _cursorIndex: this.$.textRange.$.activeIndex
-            });
+        _onTextSelectionChange: function (e) {
+            if (this.isRendered() && e.$.hasOwnProperty("activeIndex") || e.$.hasOwnProperty("anchorIndex")) {
+                this._renderSelection(this.$.selection);
+            }
+        },
+
+        _commitTextFlow: function (textFlow) {
+            if (this.$.selection) {
+                this.$.selection.set('textFlow', textFlow);
+            }
         },
 
         handleKeyDown: function (e) {
@@ -62,31 +65,36 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
 
             var keyCode = e.keyCode,
-                textRange, operation, anchorIndex;
+                textRange, operation, anchorIndex, cursorIndex;
 
             if (keyCode === 8) {
                 e.preventDefault();
                 e.stopPropagation();
-                anchorIndex = this.$._anchorIndex;
-                if (this.$._anchorIndex === this.$._cursorIndex) {
-                    anchorIndex = this.$._cursorIndex - 1;
+
+                cursorIndex = this.$.selection.$.activeIndex;
+                anchorIndex = this.$.selection.$.anchorIndex;
+
+                if (anchorIndex === cursorIndex) {
+                    anchorIndex = cursorIndex - 1;
                 }
                 // delete operation
-                textRange = new TextRange({activeIndex: this.$._cursorIndex, anchorIndex: anchorIndex});
+                textRange = new TextRange({activeIndex: cursorIndex, anchorIndex: anchorIndex});
                 operation = new DeleteOperation(textRange, this.$.textFlow);
 
                 operation.doOperation();
 
-                this._setCursorAfterOperation(this.$._anchorIndex === this.$._cursorIndex ? -1 : 0);
+                this._setCursorAfterOperation(this.$.selection.$.anchorIndex === cursorIndex ? -1 : 0);
             } else if (keyCode === 46) {
                 e.preventDefault();
                 e.stopPropagation();
                 // delete operation
-                anchorIndex = this.$._anchorIndex;
-                if (this.$._anchorIndex === this.$._cursorIndex) {
-                    anchorIndex = this.$._cursorIndex + 1;
+                cursorIndex = this.$.selection.$.activeIndex;
+                anchorIndex = this.$.selection.$.anchorIndex;
+
+                if (anchorIndex === cursorIndex) {
+                    anchorIndex = cursorIndex + 1;
                 }
-                textRange = new TextRange({activeIndex: this.$._cursorIndex, anchorIndex: anchorIndex});
+                textRange = new TextRange({activeIndex: cursorIndex, anchorIndex: anchorIndex});
                 operation = new DeleteOperation(textRange, this.$.textFlow);
 
                 operation.doOperation();
@@ -96,7 +104,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 e.preventDefault();
                 e.stopPropagation();
                 // move cursor
-                var cursorIndex = this.$._cursorIndex;
+                cursorIndex = this.$.selection.$.activeIndex;
+                anchorIndex = this.$.selection.$.anchorIndex;
+
                 switch (keyCode) {
                     case 37:
                         cursorIndex--;
@@ -106,27 +116,30 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         break;
                 }
                 var indices = {
-                    _anchorIndex: -1,
-                    _cursorIndex: cursorIndex
+                    anchorIndex: anchorIndex,
+                    activeIndex: cursorIndex
                 };
-                if (e.shiftKey && this.$._anchorIndex === -1) {
-                    indices._anchorIndex = this.$._cursorIndex;
-                } else if (!e.shiftKey && this.$._anchorIndex !== -1) {
-                    indices._anchorIndex = cursorIndex;
+                if (e.shiftKey && anchorIndex === -1) {
+                    indices.anchorIndex = cursorIndex;
+                } else if (!e.shiftKey && anchorIndex !== -1) {
+                    indices.anchorIndex = cursorIndex;
                 }
-                this.set(indices);
+                this.$.selection.set(indices);
             } else if (keyCode === 13) {
                 e.preventDefault();
                 e.stopPropagation();
                 // line break
-                if (this.$._cursorIndex !== this.$._anchorIndex) {
-                    textRange = new TextRange({activeIndex: this.$._cursorIndex, anchorIndex: this.$._anchorIndex});
+                cursorIndex = this.$.selection.$.activeIndex;
+                anchorIndex = this.$.selection.$.anchorIndex;
+
+                if (cursorIndex !== anchorIndex) {
+                    textRange = new TextRange({activeIndex: cursorIndex, anchorIndex: anchorIndex});
                     operation = new DeleteOperation(textRange, this.$.textFlow);
                     operation.doOperation();
                     this._setCursorAfterOperation();
                 }
 
-                textRange = new TextRange({activeIndex: this.$._cursorIndex});
+                textRange = new TextRange({activeIndex: cursorIndex});
                 operation = new SplitParagraphOperation(textRange, this.$.textFlow);
 
                 operation.doOperation();
@@ -148,20 +161,23 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         },
 
-        _render_cursorIndex: function (index) {
-            var cursorPos = this._getPositionForTextIndex(index),
+        _renderSelection: function (selection) {
+            if (!selection) {
+                return;
+            }
+            var cursorPos = this._getPositionForTextIndex(selection.$.activeIndex),
                 anchorPos;
             if (cursorPos) {
                 this.$.cursor.set(cursorPos);
-                if (this.$._anchorIndex > -1 && this.$._anchorIndex !== index) {
-                    anchorPos = this._getPositionForTextIndex(this.$._anchorIndex);
+                if (selection.$.anchorIndex > -1 && selection.$.anchorIndex !== selection.$.index) {
+                    anchorPos = this._getPositionForTextIndex(selection.$.anchorIndex);
                 } else {
                     anchorPos = cursorPos;
                 }
             }
 
             if (cursorPos && anchorPos) {
-                var startPos = this.$._anchorIndex === -1 || index < this.$._anchorIndex ? cursorPos : anchorPos,
+                var startPos = selection.$.anchorIndex === -1 || selection.$.activeIndex < selection.$.anchorIndex ? cursorPos : anchorPos,
                     endPos = startPos === cursorPos ? anchorPos : cursorPos,
                     rect,
                     y,
@@ -174,8 +190,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                 this.$showCursor = cursorPos === anchorPos;
                 // go through all selection rectangles
-                for (var i = 0; i < this.$.selection.$el.childNodes.length; i++) {
-                    rect = this.$.selection.$el.childNodes[i];
+                for (var i = 0; i < this.$.selectionGroup.$el.childNodes.length; i++) {
+                    rect = this.$.selectionGroup.$el.childNodes[i];
                     x = 0;
                     height = parseFloat(rect.getAttribute("height"));
                     y = Math.round(parseFloat(rect.getAttribute("y")) + height, 2);
@@ -205,50 +221,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         },
 
-        _commit_cursorIndex: function (index) {
-
-            if (index < 0) {
-                return false;
-            }
-
-            if (this.$.textFlow) {
-                if (index >= this.$.textFlow.textLength()) {
-                    return false;
-                }
-            }
-
-            return true;
-        },
-
-        _commit_anchorIndex: function (index) {
-
-            if (index < 0) {
-                return false;
-            }
-
-            if (this.$.textFlow) {
-                if (index >= this.$.textFlow.textLength()) {
-                    return false;
-                }
-            }
-
-            return true;
-        },
-
-        _commitChangedAttributes: function ($) {
-            this.callBase();
-
-            if (this._hasSome($, ['_anchorIndex', '_cursorIndex'])) {
-                this.$.textRange.set({
-                    activeIndex: this.$._cursorIndex,
-                    anchorIndex: this.$._anchorIndex
-                });
-            }
-
-        },
-
         _getPositionForTextIndex: function (index) {
-            if (!this.$addedToDom || !this.$.text.$el.childNodes.length) {
+            var $textEl = this.$.text.$el;
+            if (!this.$addedToDom || !$textEl.childNodes.length) {
                 return null;
             }
 
@@ -260,8 +235,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 line = -1,
                 isIndexEndOfLine = false;
 
-            while (i < this.$.text.$el.childNodes.length && textLength <= index) {
-                child = this.$.text.$el.childNodes[i];
+            console.log(index);
+
+            while (i < $textEl.childNodes.length && textLength <= index) {
+                child = $textEl.childNodes[i];
                 childLength = child.textContent.length;
                 if (child.getAttribute('y')) {
                     textLength++;
@@ -274,36 +251,42 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     break;
                 }
             }
-            if (child.textContent === "" && child.getAttribute('y')) {
-                pos = {
-                    x: child.getAttribute("x"),
-                    y: parseFloat(child.getAttribute("y"))
-                };
-            } else {
-                if (isIndexEndOfLine) {
-                    pos = this.$.text.$el.getEndPositionOfChar(index - line - 1);
-                } else {
-                    pos = this.$.text.$el.getStartPositionOfChar(index - line);
-                }
-            }
-            var lineHeight = parseFloat(child.getAttribute('data-height')),
-                fontSize = parseFloat(child.getAttribute("font-size"));
 
-            if (pos) {
-                return {
-                    x: pos.x,
-                    y: pos.y - 2 * fontSize + lineHeight,
-                    height: fontSize,
-                    line: line
-                };
+            if (child) {
+                if (child.textContent === "" && child.getAttribute('y')) {
+                    pos = {
+                        x: child.getAttribute("x"),
+                        y: parseFloat(child.getAttribute("y"))
+                    };
+                } else {
+                    if (isIndexEndOfLine) {
+                        pos = $textEl.getEndPositionOfChar(index - line - 1);
+                    } else {
+                        pos = $textEl.getStartPositionOfChar(index - line);
+                    }
+                }
+                var lineHeight = parseFloat(child.getAttribute('data-height')),
+                    fontSize = parseFloat(child.getAttribute("font-size"));
+
+                if (pos) {
+                    return {
+                        x: pos.x,
+                        y: pos.y - 2 * fontSize + lineHeight,
+                        height: fontSize,
+                        line: line
+                    };
+                } else {
+                    return null;
+                }
             } else {
                 return null;
             }
+
         },
 
         addChar: function (chr) {
             if (this.$.textFlow) {
-                var operation = new InsertTextOperation(new TextRange({activeIndex: this.$._cursorIndex, anchorIndex: this.$._anchorIndex}), this.$.textFlow, chr);
+                var operation = new InsertTextOperation(this.$.selection, this.$.textFlow, chr);
                 operation.doOperation();
                 this._setCursorAfterOperation(1);
             }
@@ -312,26 +295,30 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         _setCursorAfterOperation: function (add) {
             add = add || 0;
 
-            var cursorIndex = this.$._cursorIndex <= this.$._anchorIndex ? this.$._cursorIndex : this.$._anchorIndex;
-            this.set({
-                _cursorIndex: cursorIndex + add,
-                _anchorIndex: cursorIndex + add
+            var cursorIndex = this.$.selection.$.activeIndex <= this.$.selection.$.anchorIndex ? this.$.selection.$.activeIndex : this.$.selection.$.anchorIndex;
+            this.$.selection.set({
+                activeIndex: cursorIndex + add,
+                anchorIndex: cursorIndex + add
             }, {force: true});
         },
 
         _onDomAdded: function () {
             this.callBase();
+            if (this.$.selection) {
+                this._renderSelection(this.$.selection);
+            }
             var self = this;
-            if(this.$.selectable){
-                this.$stage.$window.setInterval(function () {
-                    var showCursor;
-                    if (self.$showCursor && self.$.showSelection) {
-                        showCursor = !self.$.cursor.$.visible;
-                    } else {
-                        showCursor = false;
-                    }
-                    self.$.cursor.set('visible', showCursor);
-                }, 550);
+
+            if (this.$.selectable) {
+//                this.$stage.$window.setInterval(function () {
+//                    var showCursor;
+//                    if (self.$showCursor && self.$.showSelection) {
+//                        showCursor = !self.$.cursor.$.visible;
+//                    } else {
+//                        showCursor = false;
+//                    }
+//                    self.$.cursor.set('visible', showCursor);
+//                }, 550);
             }
         },
 
@@ -345,7 +332,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             text.$el.textContent = "";
 
             text.set("visible", false);
-            this.$.selection.$el.data = null;
+            this.$.selectionGroup.$el.data = null;
 
             if (!composedTextFlow) {
                 return;
@@ -411,13 +398,13 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                         // add empty selection element
                         var selectionRect = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "rect");
-                        selectionRect.setAttribute("style", "fill: blue;");
+                        selectionRect.setAttribute("style", "fill: #a8cbf9;");
                         selectionRect.setAttribute("y", y - maxFontSize);
                         selectionRect.setAttribute("height", lineHeight);
                         selectionRect.setAttribute("width", 0);
                         selectionRect.setAttribute("class", "text-selection");
 
-                        this.$.selection.$el.appendChild(selectionRect);
+                        this.$.selectionGroup.$el.appendChild(selectionRect);
 
                         y += lineHeight - textHeight;
 
@@ -426,7 +413,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
 
             text.set("visible", true);
-            this._render_cursorIndex(this.$._cursorIndex);
+            console.log("renderselection");
+            this._renderSelection(this.$.selection);
         },
 
         _transformStyle: function (style, map) {
@@ -453,8 +441,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
             var index = this._getCursorIndexForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
             if (index > -1) {
-                this.set({
-                    '_cursorIndex': index
+                this.$.selection.set({
+                    'activeIndex': index
                 });
             }
             this.$mouseDown = false;
@@ -474,8 +462,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             var index = this._getCursorIndexForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
             if (index > -1) {
                 this.$mouseDown = true;
-                this.set('_anchorIndex', index);
-                this.set('_cursorIndex', index);
+                this.$.selection.set({
+                    activeIndex: index,
+                    anchorIndex: index
+                });
             }
         },
 
@@ -486,13 +476,13 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
 
             if (this.$mouseDown) {
-                e.stopPropagation();
-                e.preventDefault();
+//                e.stopPropagation();
+//                e.preventDefault();
                 var domEvent = e.pointerEvent,
                     target = e.target;
                 var index = this._getCursorIndexForMousePosition({x: domEvent.clientX, y: domEvent.clientY}, target);
                 if (index > -1) {
-                    this.set('_cursorIndex', index);
+                    this.$.selection.set('activeIndex', index);
                 }
             }
         },
