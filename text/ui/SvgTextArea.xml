@@ -5,6 +5,7 @@
     <rect cid="anchor" visible="false" width="1" height="10" class="text-anchor" />
 
     <text cid="text" text-rendering="geometricprecision"
+          xml:space="preserve"
           onpointerup="_onTextMouseUp"
           onpointerdown="_onTextMouseDown" onpointermove="_onTextMouseMove"/>
 </ui:SvgTextAreaClass>
