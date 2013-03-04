@@ -41,7 +41,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         ctor: function () {
-            this.$showCursor = false;
+            this.$showCursor = true;
             this.callBase();
             this.bind('selection', 'change', this._onTextSelectionChange, this);
         },
@@ -188,7 +188,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     textWidth = textBox.width,
                     textX = textBox.x || 0;
 
-                this.$showCursor = cursorPos === anchorPos;
                 // go through all selection rectangles
                 for (var i = 0; i < this.$.selectionGroup.$el.childNodes.length; i++) {
                     rect = this.$.selectionGroup.$el.childNodes[i];
@@ -311,15 +310,15 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             var self = this;
 
             if (this.$.selectable) {
-//                this.$stage.$window.setInterval(function () {
-//                    var showCursor;
-//                    if (self.$showCursor && self.$.showSelection) {
-//                        showCursor = !self.$.cursor.$.visible;
-//                    } else {
-//                        showCursor = false;
-//                    }
-//                    self.$.cursor.set('visible', showCursor);
-//                }, 550);
+                this.$stage.$window.setInterval(function () {
+                    var showCursor;
+                    if (self.$showCursor && self.$.showSelection) {
+                        showCursor = !self.$.cursor.$.visible;
+                    } else {
+                        showCursor = false;
+                    }
+                    self.$.cursor.set('visible', showCursor);
+                }, 550);
             }
         },
 
