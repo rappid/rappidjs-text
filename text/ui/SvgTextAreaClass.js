@@ -538,7 +538,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                             if (i > 0) {
                                 index++;
                             }
-                            if (Math.round(parseFloat(y), 2) >= startPos.y) {
+                            if (Math.round(parseFloat(y), 2) >= Math.round(startPos.y,2)) {
                                 break;
                             }
                         }
