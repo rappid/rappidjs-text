@@ -309,11 +309,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 this.$stage.$window.setInterval(function () {
                     var showCursor;
                     if (self.$showCursor && self.$.showSelection) {
-                        showCursor = !self.$.cursor.$.visible;
+                        showCursor = !self.$.cursor.$.selected;
                     } else {
                         showCursor = false;
                     }
-                    self.$.cursor.set('visible', showCursor);
+                    self.$.cursor.set('selected', showCursor);
                 }, 550);
             }
         },
