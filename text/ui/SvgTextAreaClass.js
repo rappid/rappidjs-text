@@ -328,9 +328,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             text.$el.textContent = "";
 
             text.set("visible", false);
-            var $selectionGroup = this.$.selectionGroup.$el;
-            while ($selectionGroup.firstChild) {
-                $selectionGroup.removeChild($selectionGroup.firstChild);
+            var selectionGroup = this.$.selectionGroup.$el;
+
+            while (selectionGroup.firstChild) {
+                selectionGroup.removeChild(selectionGroup.firstChild);
             }
 
             if (!composedTextFlow) {
@@ -384,7 +385,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                                 style.x = x;
                                 style.y = y;
                             }
-                            style["data-height"] = textHeight;
+                            style["data-height"] = line.children[l].measure.height;
                             for (var key in style) {
                                 if (style.hasOwnProperty(key)) {
                                     tspan.setAttribute(key, style[key]);
@@ -403,7 +404,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         selectionRect.setAttribute("width", 0);
                         selectionRect.setAttribute("class", "text-selection");
 
-                        $selectionGroup.appendChild(selectionRect);
+                        selectionGroup.appendChild(selectionRect);
 
                         y += lineHeight - textHeight;
 
