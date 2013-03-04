@@ -395,6 +395,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                                     tspan.setAttribute(key, style[key]);
                                 }
                             }
+                            tspan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space", "preserve");
                             tspan.textContent = lineElement.$.text;
                             text.$el.appendChild(tspan);
                         }
