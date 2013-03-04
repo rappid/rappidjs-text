@@ -215,7 +215,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         width = 0;
                     }
                     rect.setAttribute('x', x);
-                    rect.setAttribute('width', width);
+                    rect.setAttribute('width', width > 0 ? width : 0);
                 }
             }
 
@@ -259,9 +259,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     };
                 } else {
                     if (isIndexEndOfLine) {
-                        pos = textEl.getEndPositionOfChar(index - line - 1);
+                        i = index - line - 1;
+                        pos = textEl.getEndPositionOfChar(i >= textEl.textContent.length ? textEl.textContent.length - 1 : i);
                     } else {
-                        pos = textEl.getStartPositionOfChar(index - line);
+                        i = index - line;
+                        pos = textEl.getStartPositionOfChar(i >= textEl.textContent.length ? textEl.textContent.length - 1 : i);
                     }
                 }
                 var lineHeight = parseFloat(child.getAttribute('data-height')),
@@ -388,7 +390,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                                 style.y = y;
                             }
                             style["data-height"] = textHeight;
-
                             for (var key in style) {
                                 if (style.hasOwnProperty(key)) {
                                     tspan.setAttribute(key, style[key]);
@@ -537,10 +538,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         y = child.getAttribute('y');
 
                         if (y) {
-                            if(i > 0){
+                            if (i > 0) {
                                 index++;
                             }
-                            if(Math.round(parseFloat(y),2) >= startPos.y){
+                            if (Math.round(parseFloat(y), 2) >= startPos.y) {
                                 break;
                             }
                         }
