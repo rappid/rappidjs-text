@@ -453,9 +453,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 return;
             }
 
-            var target = e.target;
+            e.preventDefault();
 
-//            e.stopPropagation();
+            var target = e.target;
 
             var index = this._getCursorIndexForMousePosition(this._getMousePositionForEvent(e), target);
             if (index > -1) {
@@ -474,11 +474,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
 
             if (this.$mouseDown) {
-//                e.stopPropagation();
-//                e.preventDefault();
-                var domEvent = e.pointerEvent,
-                    target = e.target;
-                var index = this._getCursorIndexForMousePosition(this._getMousePositionForEvent(e), target);
+                var target = e.target,
+                    index = this._getCursorIndexForMousePosition(this._getMousePositionForEvent(e), target);
+
                 if (index > -1) {
                     this.$.selection.set('activeIndex', index);
                 }
