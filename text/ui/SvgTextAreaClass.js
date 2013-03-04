@@ -36,10 +36,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         $classAttributes: ['scale', 'textRange', 'text', 'selection', 'selectionGroup', 'cursor', 'textFlow', 'width', 'height', 'anchor'],
 
-        getSelection: function () {
-            return this.$.selection;
-        },
-
         ctor: function () {
             this.$showCursor = true;
             this.callBase();
