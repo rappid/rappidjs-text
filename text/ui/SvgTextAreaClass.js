@@ -453,6 +453,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 return;
             }
 
+            e.preventDefault();
+
             var target = e.target;
 
             var index = this._getCursorIndexForMousePosition(this._getMousePositionForEvent(e), target);
