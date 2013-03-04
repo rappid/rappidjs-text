@@ -205,15 +205,21 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
             }
 
             var startPosition = spanPositions[startLeaf.$cid];
-            var firstLeafOffset = startPosition - wordStartPosition;
+            var firstLeafOffset;
+
+            if (startPosition) {
+                firstLeafOffset = startPosition - wordStartPosition;
+            } else {
+                firstLeafOffset = wordStartPosition;
+            }
 
             for (var i = 0; i < leaves.length; i++) {
                 leaf = leaves[i];
 
-                var length = leaf.textLength();
+                var length = leaf.textLength() - firstLeafOffset;
 
                 wordSpans.push(new Composer.WordSpan({
-                    text: word.substr(wordPosition, length - firstLeafOffset),
+                    text: word.substr(wordPosition, length),
                     originalSpan: leaf
                 }));
 
@@ -223,192 +229,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
 
             return wordSpans;
 
-        },
-
-        _composeTextOld: function (paragraph, layout) {
-            layout = layout || new Layout();
-
-            if (!(layout instanceof Layout)) {
-                layout = new Layout(layout);
-            }
-
-            var lines = [], i,
-                ret = new Composer.BlockElement(paragraph),
-                measurer = this.$measurer;
-
-            ret.children = lines;
-
-            var line = new Composer.Line();
-            lines.push(line);
-
-            var layoutWidth = layout.$.width;
-
-            if (layoutWidth) {
-                // break into lines
-                var text = paragraph.text(),
-                    lineWidth = 0,
-                    softLines = text.split("\n"),
-                    charPosition = 0,
-                    leafStartPosition = 0,
-                    softLine,
-                    words,
-                    word,
-                    start,
-                    end,
-                    startLeaf,
-                    endLeaf,
-                    leaves,
-                    leaf,
-                    wordWidth;
-
-                for (var j = 0; j < softLines.length; j++) {
-
-                    softLine = softLines[j];
-                    words = softLine.split(" ");
-
-                    for (var k = 0; k < words.length; k++) {
-                        word = words[k];
-                        start = charPosition;
-                        end = charPosition + word.length;
-
-                        startLeaf = paragraph.findLeaf(start + 1);
-                        endLeaf = paragraph.findLeaf(end);
-
-                        leaves = [startLeaf];
-
-                        if (startLeaf !== endLeaf) {
-                            leaf = startLeaf;
-                            // find all leaves
-                            do {
-                                leaf = leaf.getNextLeaf(paragraph);
-                                leaves.push(leaf);
-                            } while (leaf && leaf !== endLeaf);
-                        }
-
-                        var wordSpans = [],
-                            inlineWordSpans = [];
-
-                        // create new span elements for split words
-                        if (leaves.length === 1) {
-                            // word exists of just one leaf
-                            wordSpans = [new Composer.WordSpan({
-                                text: word,
-                                originalSpan: startLeaf
-                            })];
-
-                            if (word.length + 1 === startLeaf.textLength()) {
-                                // word + whitespace ends on this span, set the start leaf position
-                                leafStartPosition = end + 1;
-                            }
-
-                        } else {
-                            // word consists of multiple spans
-                            var wordPosition = start,
-                                wordStartPosition = 0,
-                                leafPosition = leafStartPosition,
-                                wordSpanTotalLength = 0;
-
-                            for (var l = 0; l < leaves.length; l++) {
-                                leaf = leaves[l];
-                                var leafLength = leaf.textLength();
-                                var wordSpanLength = leafPosition + leafLength - wordPosition;
-                                wordSpans.push(new Composer.WordSpan({
-                                    text: word.substr(wordStartPosition, wordSpanLength),
-                                    originalSpan: leaf
-                                }));
-
-                                wordSpanTotalLength += wordSpanLength;
-                                wordStartPosition += wordSpanLength;
-                                leafPosition += leafLength;
-                                wordPosition += wordSpanLength;
-
-                                if (l !== leaves.length - 1) {
-                                    leafStartPosition += leafLength;
-                                } else if (wordSpanTotalLength === word.length) {
-                                    leafStartPosition = end + 1;
-                                }
-
-                            }
-
-                        }
-
-                        wordWidth = 0;
-                        var inlineElement;
-
-                        for (i = 0; i < wordSpans.length; i++) {
-                            inlineElement = Composer.InlineElement.createFromElement(wordSpans[i], measurer);
-                            inlineWordSpans.push(inlineElement);
-                            wordWidth += inlineElement.measure.width;
-                        }
-
-                        if (lineWidth + wordWidth <= layoutWidth) {
-                            // word fits line, add it to line
-
-                            lineWidth += wordWidth;
-                            // TODO: white space width
-
-                        } else if (wordWidth < layoutWidth || true) { // FIXME: if the word is larger than the layout, split it up on chars
-                            // word must be placed on a new line
-
-                            if (line.children.length > 0) {
-                                var lastLineElement = line.children[line.children.length - 1];
-                                lastLineElement.item.$.text = lastLineElement.item.$.text.substr(0, lastLineElement.item.$.text.length - 1);
-                            }
-
-                            line = new Composer.Line();
-                            lines.push(line);
-                            lineWidth = wordWidth;
-                        }
-
-                        if (k !== words.length - 1) {
-                            // not the last word on the soft line
-                            inlineElement.item.$.text += " ";
-
-                            var withWhiteSpace = Composer.InlineElement.createFromElement(inlineElement.item, measurer);
-                            inlineWordSpans[inlineWordSpans.length - 1] = withWhiteSpace;
-                            lineWidth += (withWhiteSpace.measure.width - inlineElement.measure.width);
-
-                            charPosition++;
-                        }
-
-
-                        for (i = 0; i < inlineWordSpans.length; i++) {
-                            line.addInlineElement(inlineWordSpans[i]);
-                        }
-
-                        charPosition += word.length;
-
-                    }
-
-
-                    charPosition++;
-                }
-
-            } else {
-                // one line -> push all spans to line
-
-                for (i = 0; i < paragraph.$.children.$items.length; i++) {
-                    line.addInlineElement(Composer.InlineElement.createFromElement(
-                        paragraph.$.children.$items[i], measurer));
-                }
-
-            }
-
-            var height = 0,
-                width = 0;
-
-            for (i = 0; i < lines.length; i++) {
-                var measure = lines[i]._measure();
-                height += measure.lineHeight;
-                width = Math.max(width, width);
-            }
-
-            ret.height = height;
-            ret.width = width;
-
-            return ret;
         }
-
     });
 
 
