@@ -139,7 +139,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                 operation.doOperation();
                 this._setCursorAfterOperation(1);
-            } else if(keyCode === 65 && e.ctrlKey){
+            } else if(keyCode === 65 && (e.metaKey || e.ctrlKey)){
                 e.preventDefault();
                 e.stopPropagation();
 
