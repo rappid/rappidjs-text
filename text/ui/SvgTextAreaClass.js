@@ -81,7 +81,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                 this._setCursorAfterOperation(this.$.selection.$.anchorIndex === cursorIndex ? -1 : 0);
             } else if (keyCode === 46) {
-                e.preventDefault();
                 e.stopPropagation();
                 // delete operation
                 cursorIndex = this.$.selection.$.activeIndex;
@@ -140,6 +139,14 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                 operation.doOperation();
                 this._setCursorAfterOperation(1);
+            } else if(keyCode === 65 && e.ctrlKey){
+                e.preventDefault();
+                e.stopPropagation();
+
+                this.$.selection.set({
+                    anchorIndex: 0,
+                    activeIndex: this.$.textFlow.textLength() - 1
+                })
             }
         },
 
@@ -149,6 +156,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             if (!this.$.editable) {
                 return;
             }
+
+            e.preventDefault();
 
             if (e.charCode) {
                 // insert text
