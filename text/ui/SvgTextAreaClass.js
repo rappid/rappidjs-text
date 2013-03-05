@@ -407,12 +407,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                         // add empty selection element
                         var selectionRect = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "rect");
-                        selectionRect.setAttribute("style", "fill: #a8cbf9;");
                         selectionRect.setAttribute("y", y - maxFontSize);
                         selectionRect.setAttribute("height", lineHeight);
                         selectionRect.setAttribute("width", 0);
                         selectionRect.setAttribute("class", "text-selection");
-
                         selectionGroup.appendChild(selectionRect);
 
                         y += lineHeight - textHeight;
