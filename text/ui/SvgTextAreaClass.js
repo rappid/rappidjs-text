@@ -82,6 +82,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 this._setCursorAfterOperation(this.$.selection.$.anchorIndex === cursorIndex ? -1 : 0);
             } else if (keyCode === 46) {
                 e.stopPropagation();
+                e.preventDefault();
+
                 // delete operation
                 cursorIndex = this.$.selection.$.activeIndex;
                 anchorIndex = this.$.selection.$.anchorIndex;
