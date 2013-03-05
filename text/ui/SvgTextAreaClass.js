@@ -463,7 +463,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 return;
             }
 
-            e.preventDefault();
+            if(!e.isTouch){
+                e.preventDefault();
+            }
 
             var target = e.target;
 
