@@ -457,12 +457,17 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
             var target = e.target;
 
-            var index = this._getCursorIndexForMousePosition(this._getMousePositionForEvent(e), target);
+            var index = this._getCursorIndexForMousePosition(this._getMousePositionForEvent(e), target),
+                anchorIndex = index;
             if (index > -1) {
+                var pointerEvent = e.pointerEvent;
+                if(pointerEvent.shiftKey){
+                    anchorIndex = this.$.selection.$.anchorIndex;
+                }
                 this.$mouseDown = true;
                 this.$.selection.set({
                     activeIndex: index,
-                    anchorIndex: index
+                    anchorIndex: anchorIndex
                 });
             }
         },
