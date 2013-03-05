@@ -160,6 +160,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             e.preventDefault();
 
             if (e.charCode) {
+                e.stopPropagation();
                 // insert text
                 this.addChar(String.fromCharCode(e.charCode));
             }
