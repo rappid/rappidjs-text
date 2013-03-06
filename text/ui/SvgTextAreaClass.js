@@ -159,7 +159,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 return;
             }
 
-            e.preventDefault();
+            if(!this.$stage.$browser.hasTouch){
+                e.preventDefault();
+            }
 
             if (e.charCode) {
                 e.stopPropagation();
