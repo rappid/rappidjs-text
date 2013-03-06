@@ -208,7 +208,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
             var firstLeafOffset;
 
             if (startPosition) {
-                firstLeafOffset = startPosition - wordStartPosition;
+                firstLeafOffset = wordStartPosition - startPosition;
             } else {
                 firstLeafOffset = wordStartPosition;
             }
