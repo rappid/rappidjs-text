@@ -254,7 +254,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 }
                 textLength += childLength;
                 i++;
-                if (index > 0 && textLength === index) {
+                if (index >= 0 && textLength === index) {
                     isIndexEndOfLine = true;
                     break;
                 }
