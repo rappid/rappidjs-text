@@ -172,14 +172,14 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         _renderSelection: function (selection) {
-            if (!selection) {
+            if (!selection || !this.$.selectable) {
                 return;
             }
             var cursorPos = this._getPositionForTextIndex(selection.$.activeIndex),
                 anchorPos;
             if (cursorPos) {
                 this.$.cursor.set(cursorPos);
-                if (selection.$.anchorIndex > -1 && selection.$.anchorIndex !== selection.$.index) {
+                if (selection.$.anchorIndex > -1 && selection.$.anchorIndex !== selection.$.activeIndex) {
                     anchorPos = this._getPositionForTextIndex(selection.$.anchorIndex);
                 } else {
                     anchorPos = cursorPos;
