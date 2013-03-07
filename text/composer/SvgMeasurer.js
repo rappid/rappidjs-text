@@ -116,7 +116,6 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
                 container.appendChild(text);
 
                 box = text.getBBox();
-                console.log(box);
                 container.removeChild(text);
                 this.measureCache[cacheId] = box;
             } else {
