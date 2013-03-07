@@ -111,6 +111,12 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     case 39:
                         cursorIndex++;
                         break;
+                    case 38:
+                        cursorIndex = this._getPreviousLineIndex(cursorIndex);
+                        break;
+                    case 40:
+                        cursorIndex = this._getNextLineIndex(cursorIndex);
+                        break;
                 }
                 var indices = {
                     anchorIndex: anchorIndex,
@@ -141,7 +147,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                 operation.doOperation();
                 this._setCursorAfterOperation(1);
-            } else if(keyCode === 65 && (e.metaKey || e.ctrlKey)){
+            } else if (keyCode === 65 && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault();
                 e.stopPropagation();
 
@@ -159,7 +165,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 return;
             }
 
-            if(!this.$stage.$browser.hasTouch){
+            if (!this.$stage.$browser.hasTouch) {
                 e.preventDefault();
             }
 
@@ -169,6 +175,59 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 this.addChar(String.fromCharCode(e.charCode));
             }
 
+        },
+
+        _getNextLineIndex: function(cursorIndex){
+            var bbox = this.$.cursor.$el.getBBox(),
+                point = this.getSvgRoot().$el.createSVGPoint();
+            point.y = bbox.y + bbox.height * 1.5;
+            point.x = bbox.x;
+            var index = this._getCursorIndexForRelativePosition(point);
+            if (index < 0) {
+                var tSpanIndex = this.$.cursor.$.tSpanIndex,
+                    i = tSpanIndex,
+                    j = 0,
+                    tspans = this.$.text.$el.childNodes;
+                index = 0;
+                while (i < tspans.length && !tspans[i].getAttribute("y")) {
+                    i++;
+                }
+                while (j < i) {
+                    index += tspans[j].textContent.length;
+                    if (j > 0 && tspans[j].getAttribute("y")) {
+                        index++;
+                    }
+                    j++;
+                }
+                index++;
+            }
+            return index;
+        },
+
+        _getPreviousLineIndex: function(cursorIndex){
+            var bbox = this.$.cursor.$el.getBBox(),
+                point = this.getSvgRoot().$el.createSVGPoint();
+            point.y = bbox.y - bbox.height * 0.5;
+            point.x = bbox.x;
+            var index = this._getCursorIndexForRelativePosition(point);
+            if (index < 0) {
+                var tSpanIndex = this.$.cursor.$.tSpanIndex,
+                    i = tSpanIndex,
+                    j = 0,
+                    tspans = this.$.text.$el.childNodes;
+                index = 0;
+                while (i >= 0 && !tspans[i].getAttribute("y")) {
+                    i--;
+                }
+                while (j < i) {
+                    index += tspans[j].textContent.length;
+                    if (j > 0 && tspans[j].getAttribute("y")) {
+                        index++;
+                    }
+                    j++;
+                }
+            }
+            return index !== 0 ? index : cursorIndex;
         },
 
         _renderSelection: function (selection) {
@@ -259,6 +318,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     break;
                 }
             }
+            i = i >= textEl.childNodes.length ? textEl.childNodes.length - 1 : i;
 
             if (child) {
                 var lineHeight = parseFloat(child.getAttribute('data-height')),
@@ -271,11 +331,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     };
                 } else {
                     if (isIndexEndOfLine) {
-                        i = index - line - 1;
-                        pos = textEl.getEndPositionOfChar(i >= textEl.textContent.length ? textEl.textContent.length - 1 : i);
+                        index = index - line - 1;
+                        pos = textEl.getEndPositionOfChar(index >= textEl.textContent.length ? textEl.textContent.length - 1 : index);
                     } else {
-                        i = index - line;
-                        pos = textEl.getStartPositionOfChar(i >= textEl.textContent.length ? textEl.textContent.length - 1 : i);
+                        index = index - line;
+                        pos = textEl.getStartPositionOfChar(index >= textEl.textContent.length ? textEl.textContent.length - 1 : index);
                     }
                     pos.y = pos.y - fontSize;
                 }
@@ -284,7 +344,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         x: pos.x,
                         y: pos.y,
                         height: lineHeight,
-                        line: line
+                        line: line,
+                        tSpanIndex: i
                     };
                 } else {
                     return null;
@@ -465,7 +526,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 return;
             }
 
-            if(!e.isTouch){
+            if (!e.isTouch) {
                 e.preventDefault();
             }
 
@@ -475,7 +536,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 anchorIndex = index;
             if (index > -1) {
                 var pointerEvent = e.pointerEvent;
-                if(pointerEvent.shiftKey){
+                if (pointerEvent.shiftKey) {
                     anchorIndex = this.$.selection.$.anchorIndex;
                 }
                 this.$mouseDown = true;
@@ -493,8 +554,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
 
             if (this.$mouseDown) {
-                var target = e.target,
-                    index = this._getCursorIndexForMousePosition(this._getMousePositionForEvent(e), target);
+                var index = this._getCursorIndexForMousePosition(this._getMousePositionForEvent(e));
 
                 if (index > -1) {
                     this.$.selection.set('activeIndex', index);
@@ -510,50 +570,55 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 return {x: pointerEvent.clientX, y: pointerEvent.clientY};
             }
         },
+        _getCursorIndexForRelativePosition: function (point) {
+            var target = this.$.text,
+                num = target.$el.getCharNumAtPosition(point),
+                child;
 
-        _getCursorIndexForMousePosition: function (mousePosition, target) {
-            var svgRoot = target.getSvgRoot(),
+            var index = num;
+            if (num > -1) {
+                var startPos = target.$el.getStartPositionOfChar(num),
+                    endPos = target.$el.getEndPositionOfChar(num);
+                if (Math.abs(point.x - startPos.x) > Math.abs(point.x - endPos.x)) {
+                    index++;
+                }
+                var i = 0,
+                    y;
+                while (i < this.$.text.$el.childNodes.length) {
+                    child = this.$.text.$el.childNodes[i];
+                    y = child.getAttribute('y');
+
+                    if (y) {
+                        if (i > 0) {
+                            index++;
+                        }
+                        if (Math.round(parseFloat(y), 2) >= Math.round(startPos.y, 2)) {
+                            break;
+                        }
+                    }
+                    i++;
+                }
+            }
+
+            return index;
+
+        },
+        _getCursorIndexForMousePosition: function (mousePosition) {
+            var target = this.$.text,
+                svgRoot = target.getSvgRoot(),
                 num;
 
             if (svgRoot) {
-                var point = svgRoot.$el.createSVGPoint(),
-                    child;
+                var point = svgRoot.$el.createSVGPoint();
 
                 point.x = mousePosition.x;
                 point.y = mousePosition.y;
 
-                var matrix = this.$.text.$el.getScreenCTM();
+                var matrix = target.$el.getScreenCTM();
 
                 point = point.matrixTransform(matrix.inverse());
 
-                num = target.$el.getCharNumAtPosition(point);
-
-                var index = num;
-                if (num > -1) {
-                    var startPos = target.$el.getStartPositionOfChar(num),
-                        endPos = target.$el.getEndPositionOfChar(num);
-                    if (Math.abs(point.x - startPos.x) > Math.abs(point.x - endPos.x)) {
-                        index++;
-                    }
-                    var i = 0,
-                        y;
-                    while (i < this.$.text.$el.childNodes.length) {
-                        child = this.$.text.$el.childNodes[i];
-                        y = child.getAttribute('y');
-
-                        if (y) {
-                            if (i > 0) {
-                                index++;
-                            }
-                            if (Math.round(parseFloat(y), 2) >= Math.round(startPos.y,2)) {
-                                break;
-                            }
-                        }
-                        i++;
-                    }
-                }
-
-                return index;
+                return this._getCursorIndexForRelativePosition(point);
             }
             return num;
 
