@@ -28,6 +28,8 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                         composed: self._compose(textFlow, layout)
                     };
 
+                    result.measure = self.$measurer.measureComposedTextFlow(result);
+
                     callback(null, result);
                 }
             });
