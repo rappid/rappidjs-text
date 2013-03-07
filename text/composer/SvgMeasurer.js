@@ -116,14 +116,14 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
                 container.appendChild(text);
 
                 box = text.getBBox();
-
+                console.log(box);
                 container.removeChild(text);
                 this.measureCache[cacheId] = box;
             } else {
                 box = this.measureCache[cacheId];
             }
 
-            return new Metric(box.width / 100 * fontSize, box.height / 100 * fontSize);
+            return new Metric(box.width / 100 * fontSize, (box.height - (box.height + box.y))  / 100 * fontSize);
 
         }
 

@@ -272,8 +272,9 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
 
             var composeStyle = item.composeStyle() || {};
             var height = (composeStyle.fontSize || 0);
-            measure.height = height;
+            measure.fontHeight = height;
             measure.lineHeight = height * (composeStyle.lineHeight || 1);
+
         }
 
     }, {
@@ -317,9 +318,8 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
 
             for (var i = 0; i < this.children.length; i++) {
                 var inlineElement = this.children[i],
-                    composeStyle = inlineElement.item.composeStyle() || {},
                     height = inlineElement.measure.height || 0,
-                    lineHeight = height * (composeStyle.lineHeight || 1);
+                    lineHeight = inlineElement.measure.lineHeight;
 
                 ret.height = Math.max(ret.height, height);
                 ret.lineHeight = Math.max(ret.lineHeight, lineHeight);
