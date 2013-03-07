@@ -557,6 +557,16 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
             return num;
 
+        },
+
+        _onTextAreaMove: function (e) {
+
+            if (!this.$.selectable) {
+                return;
+            }
+
+            e.stopPropagation();
+            e.preventDefault();
         }
 
     });
