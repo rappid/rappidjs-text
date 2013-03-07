@@ -11,7 +11,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             width: 100,
             height: 100,
             scale: 1,
-
+            focused: false,
             editable: true,
             selectable: true,
             showSelection: true
@@ -323,7 +323,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             if (this.$.selectable) {
                 this.$stage.$window.setInterval(function () {
                     var showCursor;
-                    if (self.$showCursor && self.$.showSelection) {
+                    if (self.$.focused && self.$showCursor && self.$.showSelection) {
                         showCursor = !self.$.cursor.$.selected;
                     } else {
                         showCursor = false;
@@ -511,16 +511,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
         },
 
-        _onTextAreaMove: function (e) {
-
-            if (!this.$.selectable) {
-                return;
-            }
-
-            e.stopPropagation();
-            e.preventDefault();
-        },
-
         _getCursorIndexForMousePosition: function (mousePosition, target) {
             var svgRoot = target.getSvgRoot(),
                 num;
@@ -567,6 +557,16 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
             return num;
 
+        },
+
+        _onTextAreaMove: function (e) {
+
+            if (!this.$.selectable) {
+                return;
+            }
+
+            e.stopPropagation();
+            e.preventDefault();
         }
 
     });
