@@ -18,6 +18,10 @@ define(["js/core/Base", "text/entity/SpanElement"], function(Base, SpanElement) 
 
         measureText: function (span) {
             throw new Error("Not implemented");
+        },
+
+        measureComposedTextFlow: function(compositionResult) {
+            return null
         }
 
     });
