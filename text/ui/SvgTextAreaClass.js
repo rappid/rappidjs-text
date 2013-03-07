@@ -511,16 +511,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
         },
 
-        _onTextAreaMove: function (e) {
-
-            if (!this.$.selectable) {
-                return;
-            }
-
-            e.stopPropagation();
-            e.preventDefault();
-        },
-
         _getCursorIndexForMousePosition: function (mousePosition, target) {
             var svgRoot = target.getSvgRoot(),
                 num;
