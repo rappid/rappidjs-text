@@ -261,10 +261,13 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
 
             if (child) {
+                var lineHeight = parseFloat(child.getAttribute('data-height')),
+                    fontSize = parseFloat(child.getAttribute("font-size"));
+
                 if (child.textContent === "" && child.getAttribute('y')) {
                     pos = {
                         x: child.getAttribute("x"),
-                        y: parseFloat(child.getAttribute("y"))
+                        y: parseFloat(child.getAttribute("y")) - (lineHeight - fontSize)
                     };
                 } else {
                     if (isIndexEndOfLine) {
@@ -274,15 +277,13 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         i = index - line;
                         pos = textEl.getStartPositionOfChar(i >= textEl.textContent.length ? textEl.textContent.length - 1 : i);
                     }
+                    pos.y = pos.y - fontSize;
                 }
-                var lineHeight = parseFloat(child.getAttribute('data-height')),
-                    fontSize = parseFloat(child.getAttribute("font-size"));
-
                 if (pos) {
                     return {
                         x: pos.x,
-                        y: pos.y - 2 * fontSize + lineHeight,
-                        height: fontSize,
+                        y: pos.y,
+                        height: lineHeight,
                         line: line
                     };
                 } else {
@@ -371,7 +372,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                             textHeight = line.getTextHeight(),
                             maxFontSize = 0;
 
-
                         y += textHeight;
 
                         for (var l = 0; l < line.children.length; l++) {
@@ -399,7 +399,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                                 style.x = x;
                                 style.y = y;
                             }
-                            style["data-height"] = line.children[l].measure.height;
+                            style["data-height"] = line.children[l].measure.lineHeight;
                             for (var key in style) {
                                 if (style.hasOwnProperty(key)) {
                                     tspan.setAttribute(key, style[key]);
