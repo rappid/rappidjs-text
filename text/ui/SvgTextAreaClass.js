@@ -48,6 +48,27 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
         },
 
+        _renderFocused: function(focused){
+            if(focused){
+                if (this.$.selectable) {
+                    var self = this;
+                    this.$blinkInterval = setInterval(function () {
+                        var showCursor;
+                        if (self.$.focused && self.$.showSelection) {
+                            showCursor = !self.$.cursor.$.selected;
+                        } else {
+                            showCursor = false;
+                        }
+                        self.$.cursor.set('selected', showCursor);
+                    }, 550);
+                }
+            } else if(this.$blinkInterval){
+                this.$.cursor.set('selected', false);
+                clearInterval(this.$blinkInterval);
+            }
+
+        },
+
         _commitTextFlow: function (textFlow) {
             if (this.$.selection) {
                 this.$.selection.set('textFlow', textFlow);
@@ -377,19 +398,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             this.callBase();
             if (this.$.selection) {
                 this._renderSelection(this.$.selection);
-            }
-            var self = this;
-
-            if (this.$.selectable) {
-                this.$stage.$window.setInterval(function () {
-                    var showCursor;
-                    if (self.$.focused && self.$showCursor && self.$.showSelection) {
-                        showCursor = !self.$.cursor.$.selected;
-                    } else {
-                        showCursor = false;
-                    }
-                    self.$.cursor.set('selected', showCursor);
-                }, 550);
             }
         },
 
