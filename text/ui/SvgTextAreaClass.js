@@ -217,7 +217,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             var index = this._getCursorIndexForRelativePosition(point);
             if (index < 0) {
                 var tSpanIndex = this.$.cursor.$.tSpanIndex,
-                    i = tSpanIndex,
+                    i = tSpanIndex + 1,
                     j = 0,
                     tspans = this.$.text.$el.childNodes;
                 index = 0;
@@ -231,7 +231,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     }
                     j++;
                 }
-                index++;
             }
             return index;
         },
@@ -370,6 +369,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     }
                     pos.y = pos.y - 2*fontSize + lineHeight;
                 }
+                console.log(i);
                 if (pos) {
                     return {
                         x: pos.x,
