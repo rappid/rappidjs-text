@@ -34,7 +34,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             "textAnchor": "text-anchor"
         },
 
-        $classAttributes: ['scale', 'textRange', 'text', 'selection', 'selectionGroup', 'cursor', 'textFlow', 'width', 'height', 'anchor'],
+        $classAttributes: ['scale', 'focused', 'showSelection', 'editable', 'selectable', 'textRange', 'text', 'selection', 'selectionGroup', 'cursor', 'textFlow', 'width', 'height'],
 
         ctor: function () {
             this.$showCursor = true;

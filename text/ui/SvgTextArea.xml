@@ -3,7 +3,6 @@
     <g cid="selectionGroup" visible="{showSelection}"/>
 
     <rect cid="cursor" width="1" height="10" class="text-cursor"/>
-    <rect cid="anchor" visible="false" width="1" height="10" class="text-anchor" />
 
     <text cid="text"
           xml:space="preserve"
