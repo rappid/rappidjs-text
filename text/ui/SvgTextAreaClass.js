@@ -192,7 +192,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 while (i < tspans.length && !tspans[i].getAttribute("y")) {
                     i++;
                 }
-                while (j < i) {
+                while (j <= i) {
                     index += tspans[j].textContent.length;
                     if (j > 0 && tspans[j].getAttribute("y")) {
                         index++;
@@ -312,14 +312,12 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     line++;
                 }
                 textLength += childLength;
-                i++;
                 if (index >= 0 && textLength === index) {
                     isIndexEndOfLine = true;
                     break;
                 }
+                i++;
             }
-            i = i >= textEl.childNodes.length ? textEl.childNodes.length - 1 : i;
-
             if (child) {
                 var lineHeight = parseFloat(child.getAttribute('data-height')),
                     fontSize = parseFloat(child.getAttribute("font-size"));
@@ -336,6 +334,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     } else {
                         index = index - line;
                         pos = textEl.getStartPositionOfChar(index >= textEl.textContent.length ? textEl.textContent.length - 1 : index);
+                        i--;
                     }
                     pos.y = pos.y - fontSize;
                 }
