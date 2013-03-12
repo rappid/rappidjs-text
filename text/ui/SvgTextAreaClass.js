@@ -346,7 +346,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 if (child.textContent === "" && child.getAttribute('y')) {
                     pos = {
                         x: child.getAttribute("x"),
-                        y: parseFloat(child.getAttribute("y")) - (lineHeight - fontSize)
+                        y: parseFloat(child.getAttribute("y"))
                     };
                 } else {
                     if (isIndexEndOfLine) {
@@ -357,7 +357,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         pos = textEl.getStartPositionOfChar(index >= textEl.textContent.length ? textEl.textContent.length - 1 : index);
                         i--;
                     }
-                    pos.y = pos.y - fontSize;
+                    pos.y = pos.y - 2*fontSize + lineHeight;
                 }
                 if (pos) {
                     return {
