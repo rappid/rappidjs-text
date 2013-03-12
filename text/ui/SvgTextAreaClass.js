@@ -40,6 +40,17 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             this.$showCursor = true;
             this.callBase();
             this.bind('selection', 'change', this._onTextSelectionChange, this);
+
+        },
+
+        _initializationComplete: function() {
+            this.callBase();
+
+            var browser = this.$stage.$browser;
+
+            if (browser && !(browser.os.indexOf("unix") !== -1 && browser.name === "chrome")) {
+                this.$.text.set("text-rendering", "geometricPrecision");
+            }
         },
 
         _onTextSelectionChange: function (e) {
