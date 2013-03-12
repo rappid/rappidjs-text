@@ -59,6 +59,27 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
         },
 
+        _renderFocused: function(focused){
+            if(focused){
+                if (this.$.selectable) {
+                    var self = this;
+                    this.$blinkInterval = setInterval(function () {
+                        var showCursor;
+                        if (self.$.focused && self.$.showSelection) {
+                            showCursor = !self.$.cursor.$.selected;
+                        } else {
+                            showCursor = false;
+                        }
+                        self.$.cursor.set('selected', showCursor);
+                    }, 550);
+                }
+            } else if(this.$blinkInterval){
+                this.$.cursor.set('selected', false);
+                clearInterval(this.$blinkInterval);
+            }
+
+        },
+
         _commitTextFlow: function (textFlow) {
             if (this.$.selection) {
                 this.$.selection.set('textFlow', textFlow);
@@ -203,7 +224,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 while (i < tspans.length && !tspans[i].getAttribute("y")) {
                     i++;
                 }
-                while (j < i) {
+                while (j <= i) {
                     index += tspans[j].textContent.length;
                     if (j > 0 && tspans[j].getAttribute("y")) {
                         index++;
@@ -323,14 +344,12 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     line++;
                 }
                 textLength += childLength;
-                i++;
                 if (index >= 0 && textLength === index) {
                     isIndexEndOfLine = true;
                     break;
                 }
+                i++;
             }
-            i = i >= textEl.childNodes.length ? textEl.childNodes.length - 1 : i;
-
             if (child) {
                 var lineHeight = parseFloat(child.getAttribute('data-height')),
                     fontSize = parseFloat(child.getAttribute("font-size"));
@@ -347,6 +366,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     } else {
                         index = index - line;
                         pos = textEl.getStartPositionOfChar(index >= textEl.textContent.length ? textEl.textContent.length - 1 : index);
+                        i--;
                     }
                     pos.y = pos.y - fontSize;
                 }
@@ -389,19 +409,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             this.callBase();
             if (this.$.selection) {
                 this._renderSelection(this.$.selection);
-            }
-            var self = this;
-
-            if (this.$.selectable) {
-                this.$stage.$window.setInterval(function () {
-                    var showCursor;
-                    if (self.$.focused && self.$showCursor && self.$.showSelection) {
-                        showCursor = !self.$.cursor.$.selected;
-                    } else {
-                        showCursor = false;
-                    }
-                    self.$.cursor.set('selected', showCursor);
-                }, 550);
             }
         },
 
@@ -482,15 +489,16 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                             text.$el.appendChild(tspan);
                         }
 
+                        y += lineHeight - textHeight;
                         // add empty selection element
                         var selectionRect = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "rect");
-                        selectionRect.setAttribute("y", y - maxFontSize);
+
+                        selectionRect.setAttribute("y", y - lineHeight);
                         selectionRect.setAttribute("height", lineHeight);
                         selectionRect.setAttribute("width", 0);
                         selectionRect.setAttribute("class", "text-selection");
                         selectionGroup.appendChild(selectionRect);
 
-                        y += lineHeight - textHeight;
 
                     }
                 }
