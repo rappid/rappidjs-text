@@ -369,7 +369,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     }
                     pos.y = pos.y - 2*fontSize + lineHeight;
                 }
-                console.log(i);
+
                 if (pos) {
                     return {
                         x: pos.x,
