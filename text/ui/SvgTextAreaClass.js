@@ -258,7 +258,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     j++;
                 }
             }
-            return index !== 0 ? index : cursorIndex;
+            return index > -1 ? index : cursorIndex;
         },
 
         _renderSelection: function (selection) {
@@ -612,34 +612,42 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         maxLength += lastChild.textContent.length;
                     }
                     y = child.getAttribute("y");
-                    lastChild = child;
                     if(y){
-                        if(y && !child.textContent.length){
+                        y = parseFloat(y);
+                        if(j > 0){
                             maxLength++;
                         }
-                        y = parseFloat(y);
                         if(y > point.y){
                             // child with bigger y -> last child is right line
                             break;
                         }
                     }
-
+                    lastChild = child;
                 }
-                if(lastChild && !lastChild.textContent){
-                    return maxLength;
+                // we are in a line with empty child -> return maxLength as index
+                if(child && !child.textContent){
+                    return j === 0 ? 0: maxLength;
                 }
 
-                var textLength = target.$el.textContent.length;
+                var textLength = target.$el.textContent.length,
+                    maxY = 0;
                 for (var k = 0; k <= textLength; k++) {
                     endPos = target.$el.getEndPositionOfChar(k);
-                    if (endPos.x >= point.x && endPos.y >= point.y) {
-                        startPos = target.$el.getStartPositionOfChar(k);
-                        index = k;
+                    if(maxY && endPos.y > maxY){
+                        index = k-1;
                         break;
                     }
+                    if(endPos.y >= point.y){
+                        if(!maxY){
+                            maxY = endPos.y;
+                        }
+                        if (endPos.x >= point.x) {
+                            startPos = target.$el.getStartPositionOfChar(k);
+                            index = k;
+                            break;
+                        }
+                    }
                 }
-
-                index = k;
             }
 
             if(startPos && endPos){
