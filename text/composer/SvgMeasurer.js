@@ -89,7 +89,7 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
             style.fontSize = 100;
 
             var text = document.createElementNS(SVG_NAMESPACE, "text");
-            text.textContent = span.$.text;
+            text.textContent = span.$.text || "_";
 
             var cacheId = span.$.text + "&";
 
@@ -114,8 +114,10 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
 
                 var container = this.svg.$el;
                 container.appendChild(text);
-
                 box = text.getBBox();
+                if(!span.$.text){
+                    box.width = 0;
+                }
                 container.removeChild(text);
                 this.measureCache[cacheId] = box;
             } else {
