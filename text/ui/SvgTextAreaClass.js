@@ -43,7 +43,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         },
 
-        _initializationComplete: function() {
+        _initializationComplete: function () {
             this.callBase();
 
             var browser = this.$stage.$browser;
@@ -59,8 +59,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
         },
 
-        _renderFocused: function(focused){
-            if(focused){
+        _renderFocused: function (focused) {
+            if (focused) {
                 if (this.$.selectable) {
                     var self = this;
                     this.$blinkInterval = setInterval(function () {
@@ -73,7 +73,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         self.$.cursor.set('selected', showCursor);
                     }, 550);
                 }
-            } else if(this.$blinkInterval){
+            } else if (this.$blinkInterval) {
                 this.$.cursor.set('selected', false);
                 clearInterval(this.$blinkInterval);
             }
@@ -209,7 +209,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         },
 
-        _getNextLineIndex: function(cursorIndex){
+        _getNextLineIndex: function (cursorIndex) {
             var bbox = this.$.cursor.$el.getBBox(),
                 point = this.getSvgRoot().$el.createSVGPoint();
             point.y = bbox.y + bbox.height * 1.5;
@@ -224,7 +224,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 while (i < tspans.length && !tspans[i].getAttribute("y")) {
                     i++;
                 }
-                while (j <= i) {
+                while (j < tspans.length && j <= i) {
                     index += tspans[j].textContent.length;
                     if (j > 0 && tspans[j].getAttribute("y")) {
                         index++;
@@ -235,7 +235,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             return index;
         },
 
-        _getPreviousLineIndex: function(cursorIndex){
+        _getPreviousLineIndex: function (cursorIndex) {
             var bbox = this.$.cursor.$el.getBBox(),
                 point = this.getSvgRoot().$el.createSVGPoint();
             point.y = bbox.y - bbox.height * 0.5;
@@ -250,7 +250,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 while (i >= 0 && !tspans[i].getAttribute("y")) {
                     i--;
                 }
-                while (j < i) {
+                while (j < tspans.length && j < i) {
                     index += tspans[j].textContent.length;
                     if (j > 0 && tspans[j].getAttribute("y")) {
                         index++;
@@ -367,7 +367,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         pos = textEl.getStartPositionOfChar(index >= textEl.textContent.length ? textEl.textContent.length - 1 : index);
                         i--;
                     }
-                    pos.y = pos.y - 2*fontSize + lineHeight;
+                    pos.y = pos.y - 2 * fontSize + lineHeight;
                 }
 
                 if (pos) {
