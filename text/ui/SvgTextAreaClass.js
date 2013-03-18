@@ -367,8 +367,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         pos = textEl.getStartPositionOfChar(index >= textEl.textContent.length ? textEl.textContent.length - 1 : index);
                         i--;
                     }
-                    pos.y = pos.y - 2 * fontSize + lineHeight;
                 }
+
+                pos.y = pos.y - 2 * fontSize + lineHeight;
 
                 if (pos) {
                     return {
@@ -594,39 +595,74 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 num = target.$el.getCharNumAtPosition(point),
                 child,
                 startPos,
-                endPos;
+                endPos,
+                y;
 
             var index = num;
             if (num > -1) {
                 startPos = target.$el.getStartPositionOfChar(num);
                 endPos = target.$el.getEndPositionOfChar(num);
-                if (Math.abs(point.x - startPos.x) > Math.abs(point.x - endPos.x)) {
-                    index++;
-                }
             } else {
+                var maxLength = 0,
+                    lastChild;
+                // find right line of position
+                for(var j = 0; j < this.$.text.$el.childNodes.length; j++){
+                    child = target.$el.childNodes[j];
+                    if(lastChild){
+                        maxLength += lastChild.textContent.length;
+                    }
+                    y = child.getAttribute("y");
+                    lastChild = child;
+                    if(y){
+                        if(y && !child.textContent.length){
+                            maxLength++;
+                        }
+                        y = parseFloat(y);
+                        if(y > point.y){
+                            // child with bigger y -> last child is right line
+                            break;
+                        }
+                    }
+
+                }
+                if(lastChild && !lastChild.textContent){
+                    return maxLength;
+                }
+
                 var textLength = target.$el.textContent.length;
-                for (var k = 0; k < textLength; k++) {
-                    startPos = target.$el.getStartPositionOfChar(k);
-                    if (startPos.x >= point.x && startPos.y >= point.y) {
-                        endPos = target.$el.getStartPositionOfChar(k);
+                for (var k = 0; k <= textLength; k++) {
+                    endPos = target.$el.getEndPositionOfChar(k);
+                    if (endPos.x >= point.x && endPos.y >= point.y) {
+                        startPos = target.$el.getStartPositionOfChar(k);
                         index = k;
                         break;
                     }
                 }
+
                 index = k;
             }
 
-            var i = 0,
-                y;
+            if(startPos && endPos){
+                if (Math.abs(point.x - startPos.x) > Math.abs(point.x - endPos.x)) {
+                    index++;
+                }
+            } else {
+                return -1;
+            }
+
+
+            var i = 0;
             while (i < this.$.text.$el.childNodes.length) {
                 child = this.$.text.$el.childNodes[i];
                 y = child.getAttribute('y');
 
                 if (y) {
+                    y = Math.round(parseFloat(y), 2);
                     if (i > 0) {
                         index++;
                     }
-                    if (Math.round(parseFloat(y), 2) >= Math.round(startPos.y, 2)) {
+
+                    if (y >= point.y || y >= Math.round(startPos.y, 2)) {
                         break;
                     }
                 }
