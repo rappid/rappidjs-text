@@ -191,15 +191,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         handleKeyPress: function (e) {
-            var keyCode = e.keyCode;
-
             if (!this.$.editable) {
                 return;
             }
 
-            if (!this.$stage.$browser.hasTouch) {
-                e.preventDefault();
-            }
+            e.preventDefault();
 
             if (e.charCode) {
                 e.stopPropagation();
@@ -523,20 +519,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             return ret;
         },
 
-        _onTextMouseUp: function (e) {
-
+        _onTextMouseUp: function () {
             if (!this.$.selectable) {
                 return;
             }
 
-            var target = e.target;
-
-            var index = this._getCursorIndexForMousePosition(this._getMousePositionForEvent(e));
-            if (index > -1) {
-                this.$.selection.set({
-                    'activeIndex': index
-                });
-            }
             this.$mouseDown = false;
         },
 
@@ -550,10 +537,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 e.preventDefault();
             }
 
-            var target = e.target;
-
             var index = this._getCursorIndexForMousePosition(this._getMousePositionForEvent(e)),
                 anchorIndex = index;
+
+
             if (index > -1) {
                 var pointerEvent = e.pointerEvent;
                 if (pointerEvent.shiftKey) {
@@ -574,6 +561,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
 
             if (this.$mouseDown) {
+                e.preventDefault();
+                e.stopPropagation();
+
                 var index = this._getCursorIndexForMousePosition(this._getMousePositionForEvent(e));
 
                 if (index > -1) {
@@ -584,7 +574,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         _getMousePositionForEvent: function (e) {
             var pointerEvent = e.pointerEvent;
-            if (e.isTouch) {
+
+            if (this.$stage.$browser.isIOS) {
                 return {x: pointerEvent.pageX, y: pointerEvent.pageY};
             } else {
                 return {x: pointerEvent.clientX, y: pointerEvent.clientY};
@@ -599,14 +590,16 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 y;
 
             var index = num;
+
             if (num > -1) {
                 startPos = target.$el.getStartPositionOfChar(num);
                 endPos = target.$el.getEndPositionOfChar(num);
             } else {
                 var maxLength = 0,
                     lastChild;
+
                 // find right line of position
-                for(var j = 0; j < this.$.text.$el.childNodes.length; j++){
+                for(var j = 0; j < target.$el.childNodes.length; j++){
                     child = target.$el.childNodes[j];
                     if(lastChild){
                         maxLength += lastChild.textContent.length;
@@ -624,6 +617,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     }
                     lastChild = child;
                 }
+
+
                 // we are in a line with empty child -> return maxLength as index
                 if(child && !child.textContent){
                     return j === 0 ? 0: maxLength;
@@ -631,22 +626,28 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                 var textLength = target.$el.textContent.length,
                     maxY = 0;
+
+
                 for (var k = 0; k <= textLength; k++) {
                     endPos = target.$el.getEndPositionOfChar(k);
-                    if(maxY && endPos.y > maxY){
-                        index = k-1;
-                        break;
-                    }
-                    if(endPos.y >= point.y){
-                        if(!maxY){
-                            maxY = endPos.y;
-                        }
-                        if (endPos.x >= point.x) {
-                            startPos = target.$el.getStartPositionOfChar(k);
-                            index = k;
+
+                    if(endPos){
+                        if(maxY && endPos.y > maxY){
+                            index = k-1;
                             break;
                         }
+                        if(endPos.y >= point.y){
+                            if(!maxY){
+                                maxY = endPos.y;
+                            }
+                            if (endPos.x >= point.x) {
+                                startPos = target.$el.getStartPositionOfChar(k);
+                                index = k;
+                                break;
+                            }
+                        }
                     }
+
                 }
             }
 
@@ -657,6 +658,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             } else {
                 return -1;
             }
+
 
 
             var i = 0;
