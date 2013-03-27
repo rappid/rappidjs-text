@@ -487,14 +487,17 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         }
 
                         y += lineHeight - textHeight;
-                        // add empty selection element
-                        var selectionRect = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "rect");
 
-                        selectionRect.setAttribute("y", y - lineHeight);
-                        selectionRect.setAttribute("height", lineHeight);
-                        selectionRect.setAttribute("width", 0);
-                        selectionRect.setAttribute("class", "text-selection");
-                        selectionGroup.appendChild(selectionRect);
+                        if(line.children.length){
+                            // add empty selection element
+                            var selectionRect = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "rect");
+
+                            selectionRect.setAttribute("y", y - lineHeight);
+                            selectionRect.setAttribute("height", lineHeight);
+                            selectionRect.setAttribute("width", 0);
+                            selectionRect.setAttribute("class", "text-selection");
+                            selectionGroup.appendChild(selectionRect);
+                        }
 
 
                     }
