@@ -1,0 +1,333 @@
+{
+    "methods": [
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "group"
+                },
+                {
+                    "name": "layout"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/Composer.js",
+            "lineNumbers": [
+                38,
+                71
+            ],
+            "definedBy": "text.composer.Composer",
+            "name": "_compose",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "element"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/SvgTextComposer.js",
+            "lineNumbers": [
+                33,
+                46
+            ],
+            "name": "_composeElement",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "paragraph"
+                },
+                {
+                    "name": "softLine"
+                },
+                {
+                    "name": "softLineStartPosition"
+                },
+                {
+                    "name": "spanPositions"
+                },
+                {
+                    "name": "layout"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/Composer.js",
+            "lineNumbers": [
+                114,
+                189
+            ],
+            "definedBy": "text.composer.Composer",
+            "name": "_composeSoftLine",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "element"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/SvgTextComposer.js",
+            "lineNumbers": [
+                53,
+                68
+            ],
+            "name": "_composeStyle",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "paragraph"
+                },
+                {
+                    "name": "layout"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/Composer.js",
+            "lineNumbers": [
+                73,
+                112
+            ],
+            "definedBy": "text.composer.Composer",
+            "name": "_composeText",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "types": [
+                        "Function"
+                    ],
+                    "name": "fnc",
+                    "optional": false
+                },
+                {
+                    "types": [
+                        "String"
+                    ],
+                    "name": "cacheId",
+                    "optional": true
+                },
+                {
+                    "types": [
+                        "Number"
+                    ],
+                    "name": "delay",
+                    "optional": true
+                },
+                {
+                    "types": [
+                        "Object"
+                    ],
+                    "name": "scope",
+                    "optional": true
+                },
+                {
+                    "types": [
+                        "Array"
+                    ],
+                    "name": "parameters",
+                    "optional": true
+                },
+                {
+                    "types": [
+                        "String"
+                    ],
+                    "name": "strategy",
+                    "optional": true,
+                    "defaultValue": "loop",
+                    "description": "loop will trigger the function at least every delay, wait will clear the timeout"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "js/core/Base.js",
+            "lineNumbers": [
+                80,
+                114
+            ],
+            "description": "",
+            "private": "",
+            "definedBy": "js.core.Base",
+            "name": "_debounceFunctionCall",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "element"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/SvgTextComposer.js",
+            "lineNumbers": [
+                48,
+                51
+            ],
+            "name": "_getLineHeightForElement",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "paragraph"
+                },
+                {
+                    "name": "word"
+                },
+                {
+                    "name": "wordStartPosition"
+                },
+                {
+                    "name": "spanPositions"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/Composer.js",
+            "lineNumbers": [
+                191,
+                234
+            ],
+            "definedBy": "text.composer.Composer",
+            "name": "_getWordSpans",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "textFlow"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/SvgTextComposer.js",
+            "lineNumbers": [
+                17,
+                31
+            ],
+            "definedBy": "text.composer.Composer",
+            "overwritesMethod": true,
+            "name": "compose",
+            "visibility": "public"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "svgElement"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/SvgTextComposer.js",
+            "lineNumbers": [
+                12,
+                15
+            ],
+            "definedBy": "js.core.Base",
+            "overwritesMethod": true,
+            "name": "ctor",
+            "visibility": "public"
+        },
+        {
+            "type": "Method",
+            "parameter": [],
+            "annotations": {},
+            "definedInFile": "js/core/Base.js",
+            "lineNumbers": [
+                37,
+                39
+            ],
+            "description": "this is an empty function doing nothing. It can be used as fallback if a method requires a\ncallback function, which hasn't been passed.\n\n```\nfunction myFunction(callback) {\ncallback = callback || this.emptyCallback;\n}\n```\n",
+            "returns": {
+                "types": [
+                    "Function"
+                ],
+                "description": "a function doing nothing"
+            },
+            "definedBy": "js.core.Base",
+            "name": "emptyCallback",
+            "visibility": "public"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "types": [
+                        "String",
+                        "Array"
+                    ],
+                    "name": "message",
+                    "optional": false,
+                    "description": "the message to log"
+                },
+                {
+                    "types": [
+                        "String"
+                    ],
+                    "name": "level",
+                    "optional": true,
+                    "defaultValue": "\"info\"",
+                    "description": "the service level of (debug, info, warn, error)"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "js/core/Base.js",
+            "lineNumbers": [
+                47,
+                68
+            ],
+            "description": "logs messages to configured logging functions\n",
+            "definedBy": "js.core.Base",
+            "name": "log",
+            "visibility": "public"
+        },
+        {
+            "type": "Method",
+            "parameter": [],
+            "annotations": {},
+            "definedInFile": "js/core/Base.js",
+            "lineNumbers": [
+                21,
+                23
+            ],
+            "description": "determinate if the application runs in the browser or on node\n",
+            "returns": {
+                "types": [
+                    "Boolean"
+                ],
+                "description": "true if the application runs in a browser"
+            },
+            "definedBy": "js.core.Base",
+            "name": "runsInBrowser",
+            "visibility": "public"
+        }
+    ],
+    "staticMethods": [],
+    "defaults": {},
+    "properties": {},
+    "fqClassName": "text.composer.SvgTextComposer",
+    "inherit": "text.composer.Composer",
+    "dependencies": [
+        "js.svg.SvgElement",
+        "text.composer.Composer",
+        "text.entity.ParagraphElement"
+    ],
+    "type": "js",
+    "file": "text/composer/SvgTextComposer.js",
+    "package": "text.composer",
+    "inheritancePath": [
+        "text.composer.Composer",
+        "js.core.Base"
+    ]
+}

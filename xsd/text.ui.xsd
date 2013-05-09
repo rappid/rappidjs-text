@@ -1,0 +1,70 @@
+<schema targetNamespace="text.ui"
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    xmlns:ns1="js.svg"
+    xmlns:ns="text.ui">
+    <import namespace="js.svg"/>
+    <element name="SvgTextArea" type="ns:SvgTextArea"/>
+    <element name="SvgTextAreaClass" type="ns:SvgTextAreaClass"/>
+    <element name="SvgTextArea" type="ns:SvgTextArea"/>
+    <complexType name="SvgTextArea">
+        <complexContent>
+            <extension base="ns:SvgTextAreaClass">
+                <annotation>
+                    <documentation source="http://www.rappidjs.com/#/api/text.ui.SvgTextArea"></documentation>
+                </annotation>
+                <sequence>
+                    <any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+                </sequence>
+                <attribute name="onpointermove" default="_onTextAreaMove"/>
+                <attribute name="tagName" default="g"/>
+                <attribute name="selection"/>
+                <attribute name="composedTextFlow"/>
+                <attribute name="textFlow" default="{composedTextFlow.textFlow}"/>
+                <attribute name="width" default="100"/>
+                <attribute name="height" default="100"/>
+                <attribute name="scale" default="1"/>
+                <attribute name="focused"/>
+                <attribute name="editable" default="true"/>
+                <attribute name="selectable" default="true"/>
+                <attribute name="showSelection" default="true"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="SvgTextAreaClass">
+        <complexContent>
+            <extension base="ns1:SvgElement">
+                <annotation>
+                    <documentation source="http://www.rappidjs.com/#/api/text.ui.SvgTextAreaClass"></documentation>
+                </annotation>
+                <sequence>
+                    <any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+                </sequence>
+                <attribute name="tagName" default="g"/>
+                <attribute name="selection"/>
+                <attribute name="composedTextFlow"/>
+                <attribute name="textFlow" default="{composedTextFlow.textFlow}"/>
+                <attribute name="width" default="100"/>
+                <attribute name="height" default="100"/>
+                <attribute name="scale" default="1"/>
+                <attribute name="focused"/>
+                <attribute name="editable" default="true"/>
+                <attribute name="selectable" default="true"/>
+                <attribute name="showSelection" default="true"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="SvgTextArea">
+        <complexContent>
+            <extension base="ns1:SvgElement">
+                <annotation>
+                    <documentation source="http://www.rappidjs.com/#/api/SvgTextArea"></documentation>
+                </annotation>
+                <sequence>
+                    <any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+                </sequence>
+                <attribute name="tagName" default="text"/>
+                <attribute name="composedTextFlow"/>
+            </extension>
+        </complexContent>
+    </complexType>
+</schema>

@@ -1,0 +1,98 @@
+{
+    "methods": [
+        {
+            "type": "Method",
+            "parameter": [],
+            "annotations": {},
+            "definedInFile": "text/composer/Composer.js",
+            "lineNumbers": [
+                314,
+                332
+            ],
+            "name": "_measure",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "inlineElement"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/Composer.js",
+            "lineNumbers": [
+                294,
+                297
+            ],
+            "name": "addInlineElement",
+            "visibility": "public"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "item"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/Composer.js",
+            "lineNumbers": [
+                290,
+                292
+            ],
+            "name": "ctor",
+            "visibility": "public"
+        },
+        {
+            "type": "Method",
+            "parameter": [],
+            "annotations": {},
+            "definedInFile": "text/composer/Composer.js",
+            "lineNumbers": [
+                304,
+                307
+            ],
+            "name": "getHeight",
+            "visibility": "public"
+        },
+        {
+            "type": "Method",
+            "parameter": [],
+            "annotations": {},
+            "definedInFile": "text/composer/Composer.js",
+            "lineNumbers": [
+                309,
+                312
+            ],
+            "name": "getTextHeight",
+            "visibility": "public"
+        },
+        {
+            "type": "Method",
+            "parameter": [],
+            "annotations": {},
+            "definedInFile": "text/composer/Composer.js",
+            "lineNumbers": [
+                299,
+                302
+            ],
+            "name": "getWidth",
+            "visibility": "public"
+        }
+    ],
+    "staticMethods": [],
+    "defaults": {},
+    "properties": {},
+    "fqClassName": "text.composer.Composer.Line",
+    "dependencies": [
+        "js.core.Base",
+        "js.core.Bindable",
+        "text.entity.Layout",
+        "text.entity.ParagraphElement",
+        "text.entity.SpanElement"
+    ],
+    "type": "js",
+    "file": "text/composer/Composer.js",
+    "package": "text.composer"
+}

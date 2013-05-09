@@ -1,0 +1,46 @@
+{
+    "methods": [
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "item"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/Composer.js",
+            "lineNumbers": [
+                253,
+                256
+            ],
+            "name": "ctor",
+            "visibility": "public"
+        },
+        {
+            "type": "Method",
+            "parameter": [],
+            "annotations": {},
+            "definedInFile": "text/composer/Composer.js",
+            "lineNumbers": [
+                258,
+                266
+            ],
+            "name": "getHeight",
+            "visibility": "public"
+        }
+    ],
+    "staticMethods": [],
+    "defaults": {},
+    "properties": {},
+    "fqClassName": "text.composer.Composer.BlockElement",
+    "dependencies": [
+        "js.core.Base",
+        "js.core.Bindable",
+        "text.entity.Layout",
+        "text.entity.ParagraphElement",
+        "text.entity.SpanElement"
+    ],
+    "type": "js",
+    "file": "text/composer/Composer.js",
+    "package": "text.composer"
+}

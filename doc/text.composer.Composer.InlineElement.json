@@ -1,0 +1,57 @@
+{
+    "methods": [
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "item"
+                },
+                {
+                    "name": "measure"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/Composer.js",
+            "lineNumbers": [
+                271,
+                280
+            ],
+            "name": "ctor",
+            "visibility": "public"
+        }
+    ],
+    "staticMethods": [
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "element"
+                },
+                {
+                    "name": "measurer"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/Composer.js",
+            "lineNumbers": [
+                283,
+                285
+            ],
+            "name": "createFromElement",
+            "visibility": "public"
+        }
+    ],
+    "defaults": {},
+    "properties": {},
+    "fqClassName": "text.composer.Composer.InlineElement",
+    "dependencies": [
+        "js.core.Base",
+        "js.core.Bindable",
+        "text.entity.Layout",
+        "text.entity.ParagraphElement",
+        "text.entity.SpanElement"
+    ],
+    "type": "js",
+    "file": "text/composer/Composer.js",
+    "package": "text.composer"
+}

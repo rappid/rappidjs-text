@@ -1,6 +1,6 @@
 define(['text/entity/FlowElement'], function (FlowElement) {
 
-    return FlowElement.inherit('text.entity.FlowElement', {
+    return FlowElement.inherit('text.entity.FlowLeafElement', {
         isLeaf: true,
 
 

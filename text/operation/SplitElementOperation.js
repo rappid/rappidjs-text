@@ -1,7 +1,7 @@
 define(['text/operation/FlowOperation', 'text/entity/ParagraphElement', 'text/entity/SpanElement', 'text/entity/FlowGroupElement'], function (FlowOperation, ParagraphElement, SpanElement, FlowGroupElement) {
     var undefined;
 
-    return FlowOperation.inherit('text.operation.SplitParagraphOperation', {
+    return FlowOperation.inherit('text.operation.SplitElementOperation', {
 
         ctor: function (textRange, targetElement) {
             this.$textRange = textRange;

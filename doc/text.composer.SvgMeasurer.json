@@ -1,0 +1,116 @@
+{
+    "methods": [
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "svg"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/SvgMeasurer.js",
+            "lineNumbers": [
+                7,
+                18
+            ],
+            "name": "ctor",
+            "visibility": "public"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "font"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/SvgMeasurer.js",
+            "lineNumbers": [
+                38,
+                43
+            ],
+            "name": "getFontInformation",
+            "visibility": "public"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "textFlow"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/SvgMeasurer.js",
+            "lineNumbers": [
+                45,
+                69
+            ],
+            "name": "getUsedFonts",
+            "visibility": "public"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "textFlow"
+                },
+                {
+                    "name": "callback"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/SvgMeasurer.js",
+            "lineNumbers": [
+                20,
+                36
+            ],
+            "name": "loadAssets",
+            "visibility": "public"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "span"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/composer/SvgMeasurer.js",
+            "lineNumbers": [
+                79,
+                129
+            ],
+            "name": "measureText",
+            "visibility": "public"
+        }
+    ],
+    "staticMethods": [],
+    "defaults": {},
+    "properties": {
+        "$transformMap": {
+            "name": "$transformMap",
+            "visibility": "private",
+            "definedInFile": "text/composer/SvgMeasurer.js",
+            "lineNumbers": [
+                72,
+                77
+            ],
+            "propertyType": "complex",
+            "value": " {\n            \"fontFamily\": \"font-family\",\n            \"fontWeight\": \"font-weight\",\n            \"fontStyle\": \"font-style\",\n            \"fontSize\": \"font-size\"\n        }"
+        }
+    },
+    "fqClassName": "text.composer.SvgMeasurer",
+    "inherit": "text.composer.Measurer",
+    "dependencies": [
+        "flow",
+        "text.composer.Measurer",
+        "text.metric.Metric",
+        "underscore"
+    ],
+    "type": "js",
+    "file": "text/composer/SvgMeasurer.js",
+    "package": "text.composer",
+    "inheritancePath": [
+        "text.composer.Measurer"
+    ]
+}
