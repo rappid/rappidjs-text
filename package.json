@@ -10,7 +10,7 @@
     "description": "Text layout library for rAppid.js.",
     "lib": "piwik",
     "scripts": {
-        "test": "mocha -R spec --ignore-leaks"
+        "test": "mocha -R spec"
     },
     "repository": {
         "type": "git",
