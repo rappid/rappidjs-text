@@ -421,7 +421,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             text.set("visible", false);
             var selectionGroup = this.$.selectionGroup.$el;
 
-            while (selectionGroup.firstChild) {
+            while (selectionGroup && selectionGroup.firstChild) {
                 selectionGroup.removeChild(selectionGroup.firstChild);
             }
 
@@ -496,7 +496,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                             selectionRect.setAttribute("height", lineHeight);
                             selectionRect.setAttribute("width", 0);
                             selectionRect.setAttribute("class", "text-selection");
-                            selectionGroup.appendChild(selectionRect);
+                            selectionGroup && selectionGroup.appendChild(selectionRect);
                         }
 
 
