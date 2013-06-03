@@ -61,21 +61,22 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         _renderFocused: function (focused) {
             if (focused) {
-                if (this.$.selectable) {
-                    var self = this;
-                    this.$blinkInterval = setInterval(function () {
-                        var showCursor;
-                        if (self.$.focused && self.$.showSelection) {
-                            showCursor = !self.$.cursor.$.selected;
-                        } else {
-                            showCursor = false;
-                        }
-                        self.$.cursor.set('selected', showCursor);
-                    }, 550);
+                var self = this;
+                this.$blinkInterval = setInterval(function () {
+                    var showCursor;
+                    if (self.$.focused && self.$.showSelection) {
+                        showCursor = !self.$.cursor.$.selected;
+                    } else {
+                        showCursor = false;
+                    }
+                    self.$.cursor.set('selected', showCursor);
+                }, 550);
+
+            } else {
+                if (this.$blinkInterval) {
+                    clearInterval(this.$blinkInterval);
                 }
-            } else if (this.$blinkInterval) {
                 this.$.cursor.set('selected', false);
-                clearInterval(this.$blinkInterval);
             }
 
         },
@@ -258,7 +259,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         _renderSelection: function (selection) {
-            if (!selection || !this.$.selectable) {
+            if (!selection) {
                 return;
             }
             var cursorPos = this._getPositionForTextIndex(selection.$.activeIndex),
@@ -285,32 +286,35 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     textX = textBox.x || 0;
 
                 // go through all selection rectangles
-                for (var i = 0; i < this.$.selectionGroup.$el.childNodes.length; i++) {
-                    rect = this.$.selectionGroup.$el.childNodes[i];
-                    x = 0;
-                    height = parseFloat(rect.getAttribute("height"));
-                    y = Math.round(parseFloat(rect.getAttribute("y")) + height, 2);
-                    if (i >= startPos.line && i <= endPos.line) {
-                        if (i === startPos.line) {
-                            x = startPos.x;
-                        } else {
-                            x = textX;
-                        }
-                        if (cursorPos !== anchorPos) {
-                            if (i === endPos.line) {
-                                width = endPos.x - x;
+                if (this.$.selectionGroup.isRendered()) {
+
+                    for (var i = 0; i < this.$.selectionGroup.$el.childNodes.length; i++) {
+                        rect = this.$.selectionGroup.$el.childNodes[i];
+                        x = 0;
+                        height = parseFloat(rect.getAttribute("height"));
+                        y = Math.round(parseFloat(rect.getAttribute("y")) + height, 2);
+                        if (i >= startPos.line && i <= endPos.line) {
+                            if (i === startPos.line) {
+                                x = startPos.x;
                             } else {
-                                width = textX + (textWidth - x);
+                                x = textX;
+                            }
+                            if (cursorPos !== anchorPos) {
+                                if (i === endPos.line) {
+                                    width = endPos.x - x;
+                                } else {
+                                    width = textX + (textWidth - x);
+                                }
+                            } else {
+                                width = 0;
                             }
                         } else {
+                            x = 0;
                             width = 0;
                         }
-                    } else {
-                        x = 0;
-                        width = 0;
+                        rect.setAttribute('x', x);
+                        rect.setAttribute('width', width > 0 ? width : 0);
                     }
-                    rect.setAttribute('x', x);
-                    rect.setAttribute('width', width > 0 ? width : 0);
                 }
             }
 
@@ -488,7 +492,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                         y += lineHeight - textHeight;
 
-                        if(line.children.length){
+                        if (line.children.length) {
                             // add empty selection element
                             var selectionRect = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "rect");
 
@@ -532,10 +536,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         _onTextMouseDown: function (e) {
 
-            if (!this.$.selectable) {
-                return;
-            }
-
             if (!e.isTouch) {
                 e.preventDefault();
             }
@@ -550,6 +550,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     anchorIndex = this.$.selection.$.anchorIndex;
                 }
                 this.$mouseDown = true;
+
                 this.$.selection.set({
                     activeIndex: index,
                     anchorIndex: anchorIndex
@@ -602,18 +603,18 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     lastChild;
 
                 // find right line of position
-                for(var j = 0; j < target.$el.childNodes.length; j++){
+                for (var j = 0; j < target.$el.childNodes.length; j++) {
                     child = target.$el.childNodes[j];
-                    if(lastChild){
+                    if (lastChild) {
                         maxLength += lastChild.textContent.length;
                     }
                     y = child.getAttribute("y");
-                    if(y){
+                    if (y) {
                         y = parseFloat(y);
-                        if(j > 0){
+                        if (j > 0) {
                             maxLength++;
                         }
-                        if(y > point.y){
+                        if (y > point.y) {
                             // child with bigger y -> last child is right line
                             break;
                         }
@@ -623,8 +624,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
 
                 // we are in a line with empty child -> return maxLength as index
-                if(child && !child.textContent){
-                    return j === 0 ? 0: maxLength;
+                if (child && !child.textContent) {
+                    return j === 0 ? 0 : maxLength;
                 }
 
                 var textLength = target.$el.textContent.length,
@@ -634,13 +635,13 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 for (var k = 0; k <= textLength; k++) {
                     endPos = target.$el.getEndPositionOfChar(k);
 
-                    if(endPos){
-                        if(maxY && endPos.y > maxY){
-                            index = k-1;
+                    if (endPos) {
+                        if (maxY && endPos.y > maxY) {
+                            index = k - 1;
                             break;
                         }
-                        if(endPos.y >= point.y){
-                            if(!maxY){
+                        if (endPos.y >= point.y) {
+                            if (!maxY) {
                                 maxY = endPos.y;
                             }
                             if (endPos.x >= point.x) {
@@ -654,14 +655,13 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 }
             }
 
-            if(startPos && endPos){
+            if (startPos && endPos) {
                 if (Math.abs(point.x - startPos.x) > Math.abs(point.x - endPos.x)) {
                     index++;
                 }
             } else {
                 return -1;
             }
-
 
 
             var i = 0;
@@ -686,7 +686,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             return index;
 
         },
-        _getCursorIndexForMousePosition: function(mousePosition) {
+        _getCursorIndexForMousePosition: function (mousePosition) {
             var target = this.$.text,
                 svgRoot = target.getSvgRoot(),
                 num;
