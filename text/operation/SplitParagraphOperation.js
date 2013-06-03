@@ -10,7 +10,7 @@ define(['text/operation/SplitElementOperation', 'text/entity/ParagraphElement'],
             var activeIndex = this.$textRange.$.activeIndex;
 
             if(!(this.$targetElement instanceof ParagraphElement)){
-                var leaf = this.$targetElement.findLeaf(activeIndex);
+                var leaf = this.$targetElement.findLeaf(activeIndex) || this.$targetElement.getLastLeaf();
                 if(leaf && leaf.$parent){
                     originalParagraph = leaf.$parent;
                 } else {
