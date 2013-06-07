@@ -8,7 +8,7 @@
         "Marcus Krejpowicz <marcus@rappidjs.com>"
     ],
     "description": "Text layout library for rAppid.js.",
-    "lib": "piwik",
+    "lib": "text",
     "scripts": {
         "test": "mocha -R spec"
     },
