@@ -89,7 +89,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         handleKeyDown: function (e) {
 
-            if (!this.$.editable) {
+            if (!this.$.editable || !this.$.focused) {
                 return;
             }
 
