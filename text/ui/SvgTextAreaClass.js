@@ -333,6 +333,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 pos,
                 childLength,
                 line = -1,
+                boxedIndex,
                 isIndexEndOfLine = false;
 
             while (i < textEl.childNodes.length && textLength <= index) {
@@ -361,10 +362,12 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 } else {
                     if (isIndexEndOfLine) {
                         index = index - line - 1;
-                        pos = textEl.getEndPositionOfChar(index >= textEl.textContent.length ? textEl.textContent.length - 1 : index);
+                        boxedIndex = Math.max(Math.min(index, textEl.textContent.length - 1), 0);
+                        pos = textEl.getEndPositionOfChar(boxedIndex);
                     } else {
                         index = index - line;
-                        pos = textEl.getStartPositionOfChar(index >= textEl.textContent.length ? textEl.textContent.length - 1 : index);
+                        boxedIndex = Math.max(Math.min(index, textEl.textContent.length - 1), 0);
+                        pos = textEl.getStartPositionOfChar(boxedIndex);
                         i--;
                     }
                 }
