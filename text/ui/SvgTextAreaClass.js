@@ -258,8 +258,14 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             return index > -1 ? index : cursorIndex;
         },
 
+        _renderShowSelection: function (showSelection, wasShowSelection) {
+            if (!wasShowSelection) {
+                this._renderSelection(this.$.selection);
+            }
+        },
+
         _renderSelection: function (selection) {
-            if (!selection) {
+            if (!selection || !this.$.showSelection) {
                 return;
             }
             var cursorPos = this._getPositionForTextIndex(selection.$.activeIndex),
@@ -333,7 +339,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 pos,
                 childLength,
                 line = -1,
-                boxedIndex,
+                boxedIndex = 0,
                 isIndexEndOfLine = false;
 
             while (i < textEl.childNodes.length && textLength <= index) {
@@ -363,6 +369,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     if (isIndexEndOfLine) {
                         index = index - line - 1;
                         boxedIndex = Math.max(Math.min(index, textEl.textContent.length - 1), 0);
+                        console.log(textEl.textContent);
                         pos = textEl.getEndPositionOfChar(boxedIndex);
                     } else {
                         index = index - line;
