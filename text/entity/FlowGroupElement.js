@@ -188,7 +188,7 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
         },
 
         shallowCopy: function (relativeStart, relativeEnd) {
-            if(relativeEnd === undefined){
+            if (relativeEnd === undefined) {
                 relativeEnd = -1;
             }
 
@@ -202,16 +202,16 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
                 child;
 
 
-            for(var i = 0; i < size; i++){
+            for (var i = 0; i < size; i++) {
                 child = this.getChildAt(i);
                 childLength = child.textLength();
-                if(i >= startIndex && i <= endIndex){
+                if (i >= startIndex && i <= endIndex) {
                     from = 0;
                     to = -1;
-                    if(textLength + childLength >= relativeStart){
+                    if (textLength + childLength >= relativeStart) {
                         from = relativeStart - textLength;
                     }
-                    if(relativeEnd > -1 && textLength + childLength > relativeEnd){
+                    if (relativeEnd > -1 && textLength + childLength > relativeEnd) {
                         to = relativeEnd - textLength;
                     }
                     copy.addChild(child.shallowCopy(from, to));
@@ -228,15 +228,15 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
                 textLength = 0;
 
             var childIndex = this.findChildIndexAtPosition(position);
-            if(childIndex > -1){
+            if (childIndex > -1) {
                 child = this.getChildAt(childIndex);
-                for(var i = 0; i < childIndex; i++){
+                for (var i = 0; i < childIndex; i++) {
                     textLength += this.getChildAt(i).textLength();
                 }
 
                 child.splitAtPosition(position - textLength);
 
-                while(childIndex + 1 < this.$.children.size()){
+                while (childIndex + 1 < this.$.children.size()) {
                     this.$.children.removeAt(childIndex + 1);
                 }
 
