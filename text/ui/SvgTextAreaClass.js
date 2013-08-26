@@ -369,15 +369,15 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     if (isIndexEndOfLine) {
                         index = index - line - 1;
                         boxedIndex = Math.max(Math.min(index, textEl.textContent.length - 1), 0);
-                        console.log(textEl.textContent);
-                        pos = textEl.getEndPositionOfChar(boxedIndex);
+                        pos = this._convertPositionForIE(textEl.getEndPositionOfChar(boxedIndex));
                     } else {
                         index = index - line;
                         boxedIndex = Math.max(Math.min(index, textEl.textContent.length - 1), 0);
-                        pos = textEl.getStartPositionOfChar(boxedIndex);
+                        pos = this._convertPositionForIE(textEl.getStartPositionOfChar(boxedIndex));
                         i--;
                     }
                 }
+
 
                 pos.y = pos.y - 2 * fontSize + lineHeight;
 
@@ -595,6 +595,29 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 return {x: pointerEvent.clientX, y: pointerEvent.clientY};
             }
         },
+        /***
+         * Converts the absolute position to relative coordinates if browser is IE
+         *
+         * @param {Object} pos
+         * @returns {Object}
+         * @private
+         */
+        _convertPositionForIE: function(pos){
+            if(this.$stage.$browser.name.indexOf("ie") > -1){
+                // IE9 returns the cursor Position in absolute coordinates
+                var textEl = this.$.text.$el,
+                    textPos = this.$.text.$el.getClientRects()[0],
+                    rootPos = this.getSvgRoot().$el.getClientRects()[0],
+                    bbox = textEl.getBBox(),
+                    factor = this.globalToLocalFactor();
+
+                return {
+                    x: bbox.x + (pos.x - (textPos.left - rootPos.left) ) * factor.x,
+                    y: bbox.y + (pos.y - (textPos.top - rootPos.top) ) * factor.y
+                };
+            }
+            return pos;
+        },
         _getCursorIndexForRelativePosition: function (point) {
             var target = this.$.text,
                 num = target.$el.getCharNumAtPosition(point),
@@ -606,8 +629,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             var index = num;
 
             if (num > -1) {
-                startPos = target.$el.getStartPositionOfChar(num);
-                endPos = target.$el.getEndPositionOfChar(num);
+                startPos = this._convertPositionForIE(target.$el.getStartPositionOfChar(num));
+                endPos = this._convertPositionForIE(target.$el.getEndPositionOfChar(num));
             } else {
                 var maxLength = 0,
                     lastChild;
