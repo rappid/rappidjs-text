@@ -602,19 +602,18 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
          * @returns {Object}
          * @private
          */
-        _convertPositionForIE: function(pos){
-            if(this.$stage.$browser.name.indexOf("ie") > -1){
+        _convertPositionForIE: function (pos) {
+            if (this.$stage.$browser.name.indexOf("ie") > -1) {
                 // IE9 returns the cursor Position in absolute coordinates
                 var textEl = this.$.text.$el,
-                    textPos = this.$.text.$el.getClientRects()[0],
-                    rootPos = this.getSvgRoot().$el.getClientRects()[0],
-                    bbox = textEl.getBBox(),
-                    factor = this.globalToLocalFactor();
+                    rootPos = this.getSvgRoot().$el.getClientRects()[0];
 
-                return {
-                    x: bbox.x + (pos.x - (textPos.left - rootPos.left) ) * factor.x,
-                    y: bbox.y + (pos.y - (textPos.top - rootPos.top) ) * factor.y
-                };
+                var matrix = textEl.getScreenCTM();
+                var point = this.getSvgRoot().$el.createSVGPoint();
+                point.x = rootPos.left + pos.x;
+                point.y = rootPos.top + pos.y;
+
+                return  point.matrixTransform(matrix.inverse());
             }
             return pos;
         },
