@@ -115,6 +115,12 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
                 var container = this.svg.$el;
                 container.appendChild(text);
                 box = text.getBBox();
+                box = {
+                    width: box.width,
+                    height: box.height,
+                    y: box.y,
+                    x: box.x
+                };
                 if(!span.$.text){
                     box.width = 0;
                 }
