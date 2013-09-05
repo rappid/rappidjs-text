@@ -603,7 +603,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
          * @private
          */
         _convertPositionForIE: function (pos) {
-            if (this.$stage.$browser.name.indexOf("ie9") > -1) {
+            var stage = this.$stage;
+
+            if (stage && stage.$browser && stage.$browser.name.indexOf("ie9") > -1) {
                 // IE9 returns the cursor Position in absolute coordinates
                 var textEl = this.$.text.$el,
                     rootPos = this.getSvgRoot().$el.getClientRects()[0];
