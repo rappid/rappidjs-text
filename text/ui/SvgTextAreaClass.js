@@ -432,90 +432,110 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
             text.$el.textContent = "";
 
-            text.set("visible", false);
             var selectionGroup = this.$.selectionGroup.$el;
 
             while (selectionGroup && selectionGroup.firstChild) {
                 selectionGroup.removeChild(selectionGroup.firstChild);
             }
 
-            if (!composedTextFlow) {
-                return;
-            }
+            text.set("visible", false);
 
-            // transform the tree into a list of paragraphs and lines
+            if (composedTextFlow && composedTextFlow.$el) {
 
-            var y = 0,
-                tspan;
+                var node;
+                for (var h = 0; h < composedTextFlow.$el.childNodes.length; h++) {
+                    node = composedTextFlow.$el.childNodes[h];
+                    text.$el.appendChild(node.cloneNode(true));
 
-            for (var i = 0; i < composedTextFlow.composed.children.length; i++) {
-                var paragraph = composedTextFlow.composed.children[i],
-                    paragraphStyle = paragraph.item.composeStyle();
+                }
+                for (h = 0; h < composedTextFlow.$selectionGroup.childNodes.length; h++) {
+                    node = composedTextFlow.$selectionGroup.childNodes[h];
+                    selectionGroup.appendChild(node.cloneNode(true));
+                }
 
-                for (var j = 0; j < paragraph.children.length; j++) {
-                    var softLine = paragraph.children[j];
+            } else {
 
-                    for (var k = 0; k < softLine.children.length; k++) {
 
-                        var line = softLine.children[k],
-                            lineHeight = line.getHeight(),
-                            textHeight = line.getTextHeight(),
-                            maxFontSize = 0;
+                if (!composedTextFlow) {
+                    return;
+                }
 
-                        y += textHeight;
+                // transform the tree into a list of paragraphs and lines
 
-                        for (var l = 0; l < line.children.length; l++) {
-                            var lineElement = line.children[l].item;
-                            tspan = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "tspan");
+                var y = 0,
+                    tspan;
 
-                            var style = this._transformStyle(lineElement.composeStyle(), this.$tSpanTransformMap);
+                for (var i = 0; i < composedTextFlow.composed.children.length; i++) {
+                    var paragraph = composedTextFlow.composed.children[i],
+                        paragraphStyle = paragraph.item.composeStyle();
 
-                            maxFontSize = Math.max(style["font-size"], maxFontSize);
+                    for (var j = 0; j < paragraph.children.length; j++) {
+                        var softLine = paragraph.children[j];
 
-                            if (l === 0) {
-                                // apply paragraph style
-                                _.extend(style, this._transformStyle(paragraphStyle, this.$textTransformMap));
+                        for (var k = 0; k < softLine.children.length; k++) {
 
-                                var x = 0;
+                            var line = softLine.children[k],
+                                lineHeight = line.getHeight(),
+                                textHeight = line.getTextHeight(),
+                                maxFontSize = 0;
 
-                                switch (style["text-anchor"]) {
-                                    case "middle":
-                                        x = this.$.width / 2;
-                                        break;
-                                    case "end":
-                                        x = this.$.width;
+                            y += textHeight;
+
+                            for (var l = 0; l < line.children.length; l++) {
+                                var lineElement = line.children[l].item;
+                                tspan = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "tspan");
+
+                                var style = this._transformStyle(lineElement.composeStyle(), this.$tSpanTransformMap);
+
+                                maxFontSize = Math.max(style["font-size"], maxFontSize);
+
+                                if (l === 0) {
+                                    // apply paragraph style
+                                    _.extend(style, this._transformStyle(paragraphStyle, this.$textTransformMap));
+
+                                    var x = 0;
+
+                                    switch (style["text-anchor"]) {
+                                        case "middle":
+                                            x = this.$.width / 2;
+                                            break;
+                                        case "end":
+                                            x = this.$.width;
+                                    }
+
+                                    style.x = x;
+                                    style.y = y;
                                 }
-
-                                style.x = x;
-                                style.y = y;
-                            }
-                            style["data-height"] = line.children[l].measure.lineHeight;
-                            for (var key in style) {
-                                if (style.hasOwnProperty(key)) {
-                                    tspan.setAttribute(key, style[key]);
+                                style["data-height"] = line.children[l].measure.lineHeight;
+                                for (var key in style) {
+                                    if (style.hasOwnProperty(key)) {
+                                        tspan.setAttribute(key, style[key]);
+                                    }
                                 }
+                                tspan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space", "preserve");
+                                tspan.textContent = lineElement.$.text;
+                                text.$el.appendChild(tspan);
                             }
-                            tspan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space", "preserve");
-                            tspan.textContent = lineElement.$.text;
-                            text.$el.appendChild(tspan);
+
+                            y += lineHeight - textHeight;
+
+                            if (line.children.length) {
+                                // add empty selection element
+                                var selectionRect = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "rect");
+
+                                selectionRect.setAttribute("y", y - lineHeight);
+                                selectionRect.setAttribute("height", lineHeight);
+                                selectionRect.setAttribute("width", 0);
+                                selectionRect.setAttribute("class", "text-selection");
+                                selectionGroup && selectionGroup.appendChild(selectionRect);
+                            }
                         }
-
-                        y += lineHeight - textHeight;
-
-                        if (line.children.length) {
-                            // add empty selection element
-                            var selectionRect = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "rect");
-
-                            selectionRect.setAttribute("y", y - lineHeight);
-                            selectionRect.setAttribute("height", lineHeight);
-                            selectionRect.setAttribute("width", 0);
-                            selectionRect.setAttribute("class", "text-selection");
-                            selectionGroup && selectionGroup.appendChild(selectionRect);
-                        }
-
-
                     }
                 }
+
+
+                composedTextFlow.$selectionGroup = selectionGroup.cloneNode(true);
+                composedTextFlow.$el = text.$el.cloneNode(true);
             }
 
             text.set("visible", true);

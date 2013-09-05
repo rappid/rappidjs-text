@@ -1,6 +1,6 @@
 <ui:SvgTextAreaClass xmlns:ui="text.ui" xmlns="http://www.w3.org/2000/svg"
                      onpointermove="_onTextAreaMove">
-    <g cid="selectionGroup" visible="{showSelection}"/>
+    <g cid="selectionGroup"/>
 
     <rect cid="cursor" width="1" height="10" class="text-cursor"/>
 
