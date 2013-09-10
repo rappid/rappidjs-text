@@ -595,8 +595,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
 
             if (this.$mouseDown) {
-                e.preventDefault();
                 e.stopPropagation();
+                e.preventDefault();
 
                 var index = this._getCursorIndexForMousePosition(this._getMousePositionForEvent(e));
 
@@ -604,6 +604,57 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     this.$.selection.set('activeIndex', index);
                 }
             }
+        },
+
+        _onTextDoubleClick: function (e) {
+            e.pointerEvent = e.domEvent;
+
+            var index = this._getCursorIndexForMousePosition(this._getMousePositionForEvent(e));
+
+            if (index > -1) {
+                var text = this.$.textFlow.text(0, -1, "\n"),
+                    lines = text.split("\n");
+
+                var i = 0,
+                    l = 0,
+                    k = 0,
+                    startPosition = 0,
+                    lineLength = 0,
+                    endPosition = 0,
+                    elements;
+
+                while (l < lines.length && lineLength < index) {
+                    startPosition = lineLength;
+                    lineLength += lines[l].length + 1;
+                    if (lineLength > index) {
+                        i = 0;
+                        k = 0;
+                        elements = lines[l].split(" ");
+                        endPosition = startPosition;
+
+                        while (i < elements.length && endPosition < index) {
+
+                            if(elements[i].length){
+                                startPosition = endPosition + (i > 0 ? 1 : 0);
+                                endPosition = startPosition + elements[i].length;
+                                k++;
+                            }
+                            i++;
+                        }
+                    }
+                    l++;
+                }
+
+                if(endPosition >= text.length){
+                    endPosition--;
+                }
+
+                this.$.selection.set({
+                    activeIndex: endPosition,
+                    anchorIndex: startPosition
+                });
+            }
+
         },
 
         _getMousePositionForEvent: function (e) {
@@ -767,7 +818,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 return;
             }
 
-            e.stopPropagation();
+            e.stopImmediatePropagation();
             e.preventDefault();
         }
 
