@@ -1,4 +1,4 @@
-<ui:SvgTextAreaClass xmlns:ui="text.ui" xmlns="http://www.w3.org/2000/svg"
+<ui:SvgTextAreaClass xmlns:ui="text.ui" xmlns="http://www.w3.org/2000/svg" xmlns:js="js.core"
                      onpointermove="_onTextAreaMove">
     <g cid="selectionGroup"/>
 
@@ -9,4 +9,15 @@
           ondblclick="_onTextDoubleClick"
           onpointerup="_onTextMouseUp"
           onpointerdown="_onTextMouseDown" onpointermove="_onTextMouseMove"/>
+
+    <js:Template name="editBox">
+        <div xmlns="http://www.w3.org/1999/xhtml" contenteditable="true" zIndex="-1000" position="absolute"
+             onpaste="_handlePaste"
+             oncut="_handleCut"
+             onkeydown="_handleEditBoxKeyDown"
+
+             onkeypress="_handleEditBoxKeyPress">
+            {_selectedText}
+        </div>
+    </js:Template>
 </ui:SvgTextAreaClass>

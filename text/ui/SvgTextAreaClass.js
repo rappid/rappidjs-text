@@ -1,5 +1,7 @@
 define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operation/SplitParagraphOperation', 'text/operation/ApplyStyleToElementOperation', 'text/entity/TextFlow', 'text/entity/ParagraphElement', 'text/entity/SpanElement', 'text/entity/TextRange', 'text/operation/DeleteOperation', 'underscore'], function (SvgElement, InsertTextOperation, SplitParagraphOperation, ApplyStyleToElementOperation, TextFlow, ParagraphElement, SpanElement, TextRange, DeleteOperation, _) {
 
+    var editBoxInstance = null;
+
     return SvgElement.inherit('text.ui.SvgTextAreaClass', {
 
         defaults: {
@@ -14,7 +16,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             focused: false,
             editable: true,
             selectable: true,
-            showSelection: true
+            showSelection: true,
+            _selectedText: null
         },
 
         $tSpanTransformMap: {
@@ -59,12 +62,22 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
         },
 
+        render: function () {
+            var ret = this.callBase();
+            if (!editBoxInstance && !this.$stage.$browser.hasTouch) {
+                editBoxInstance = this.$templates.editBox.createInstance();
+                this.$stage.addChild(editBoxInstance);
+            }
+
+            return ret;
+        },
+
         _renderFocused: function (focused) {
             if (focused) {
                 var self = this;
                 this.$blinkInterval = setInterval(function () {
                     var showCursor;
-                    if (self.$.focused && self.$.showSelection) {
+                    if (self.isFocused() && self.$.showSelection) {
                         showCursor = !self.$.cursor.$.selected;
                     } else {
                         showCursor = false;
@@ -87,9 +100,21 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
         },
 
-        handleKeyDown: function (e) {
+        _handleEditBoxKeyDown: function (e) {
+            var domEvent = e.domEvent;
+            e.target.$._currentTextArea.handleKeyDown(domEvent);
 
-            if (!this.$.editable || !this.$.focused) {
+        },
+
+        _handleEditBoxKeyPress: function (e) {
+            e = e.domEvent;
+            if (!(e.metaKey || e.ctrlKey)) {
+                editBoxInstance.$._currentTextArea.handleKeyPress(e);
+            }
+        },
+
+        handleKeyDown: function (e) {
+            if (!this.$.editable || (!this.isFocused())) {
                 return;
             }
 
@@ -161,6 +186,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     indices.anchorIndex = cursorIndex;
                 }
                 this.$.selection.set(indices);
+
+                this._afterSelectionFinished();
             } else if (keyCode === 13) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -187,7 +214,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 this.$.selection.set({
                     anchorIndex: 0,
                     activeIndex: this.$.textFlow.textLength() - 1
-                })
+                });
+
+                this._afterSelectionFinished();
             }
         },
 
@@ -286,6 +315,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     y,
                     height,
                     x,
+                    elementX,
                     width,
                     textBox = this.$.text.$el.getBBox(),
                     textWidth = textBox.width,
@@ -296,33 +326,87 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                     for (var i = 0; i < this.$.selectionGroup.$el.childNodes.length; i++) {
                         rect = this.$.selectionGroup.$el.childNodes[i];
-                        x = 0;
+                        elementX = (parseFloat(rect.getAttribute("data-x")) || 0);
+                        textWidth = parseFloat(rect.getAttribute("data-max-width"));
                         height = parseFloat(rect.getAttribute("height"));
                         y = Math.round(parseFloat(rect.getAttribute("y")) + height, 2);
                         if (i >= startPos.line && i <= endPos.line) {
+                            // if line is where the cursor is
                             if (i === startPos.line) {
                                 x = startPos.x;
                             } else {
-                                x = textX;
+                                // else it's the start of the text
+                                x = textX + elementX;
                             }
+
                             if (cursorPos !== anchorPos) {
+                                // if  it is the element in the endPos line
                                 if (i === endPos.line) {
                                     width = endPos.x - x;
+                                } else if (i === startPos.line) {
+                                    width = textWidth - (x - textX - elementX);
                                 } else {
-                                    width = textX + (textWidth - x);
+                                    width = textWidth
                                 }
                             } else {
+                                x = elementX;
                                 width = 0;
                             }
                         } else {
-                            x = 0;
+                            x = elementX;
                             width = 0;
                         }
                         rect.setAttribute('x', x);
                         rect.setAttribute('width', width > 0 ? width : 0);
                     }
                 }
+                if (this.$.textFlow && editBoxInstance) {
+                    var start = selection.$.anchorIndex > selection.$.activeIndex ? selection.$.activeIndex : selection.$.anchorIndex,
+                        end = selection.$.anchorIndex <= selection.$.activeIndex ? selection.$.activeIndex : selection.$.anchorIndex;
+
+                    var matrix = this.$el.getScreenCTM();
+                    var point = this.getSvgRoot().$el.createSVGPoint();
+                    point.x = anchorPos.x;
+                    point.y = anchorPos.y;
+
+                    point = point.matrixTransform(matrix);
+
+                    editBoxInstance.$el.innerHTML = this.$.textFlow.text(start, end, "\n");
+                    editBoxInstance.set('_currentTextArea', this);
+
+                    editBoxInstance.set({
+                        left: point.x,
+                        top: point.y,
+                        width: textBox.width,
+                        height: textBox.height
+                    });
+
+                }
             }
+
+
+        },
+
+        _handlePaste: function () {
+            var self = editBoxInstance.$._currentTextArea,
+                range = self.$.selection;
+
+            setTimeout(function () {
+                var text = editBoxInstance.$el.textContent.replace("\n", " ");
+                var operation = new InsertTextOperation(range, self.$.textFlow, text);
+                operation.doOperation();
+                self._setCursorAfterOperation(0);
+            }, 100);
+        },
+
+        _handleCut: function () {
+            var self = editBoxInstance.$._currentTextArea,
+                range = self.$.selection;
+            setTimeout(function () {
+                var operation = new InsertTextOperation(range, self.$.textFlow, "");
+                operation.doOperation();
+                self._setCursorAfterOperation(0);
+            }, 100);
 
         },
 
@@ -429,8 +513,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             if (!text) {
                 return;
             }
-
-            text.$el.textContent = "";
+            while(text.$el.childNodes.length){
+                text.$el.removeChild(text.$el.childNodes[0]);
+            }
 
             var selectionGroup = this.$.selectionGroup.$el;
 
@@ -438,7 +523,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 selectionGroup.removeChild(selectionGroup.firstChild);
             }
 
-            text.set("visible", false);
 
             if (composedTextFlow && composedTextFlow.$el) {
 
@@ -463,7 +547,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 // transform the tree into a list of paragraphs and lines
 
                 var y = 0,
-                    tspan;
+                    tspan,
+                    firstTSpans = [];
 
                 for (var i = 0; i < composedTextFlow.composed.children.length; i++) {
                     var paragraph = composedTextFlow.composed.children[i],
@@ -477,13 +562,17 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                             var line = softLine.children[k],
                                 lineHeight = line.getHeight(),
                                 textHeight = line.getTextHeight(),
-                                maxFontSize = 0;
+                                maxFontSize = 0,
+                                firstTspan;
 
                             y += textHeight;
 
                             for (var l = 0; l < line.children.length; l++) {
                                 var lineElement = line.children[l].item;
                                 tspan = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "tspan");
+                                if (l == 0) {
+                                    firstTspan = tspan;
+                                }
 
                                 var style = this._transformStyle(lineElement.composeStyle(), this.$tSpanTransformMap);
 
@@ -519,26 +608,45 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                             y += lineHeight - textHeight;
 
-                            if (line.children.length) {
-                                // add empty selection element
-                                var selectionRect = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "rect");
 
-                                selectionRect.setAttribute("y", y - lineHeight);
-                                selectionRect.setAttribute("height", lineHeight);
-                                selectionRect.setAttribute("width", 0);
-                                selectionRect.setAttribute("class", "text-selection");
-                                selectionGroup && selectionGroup.appendChild(selectionRect);
+                            if (softLine.children.length && firstTspan) {
+                                firstTSpans.push({
+                                    x: firstTspan.getStartPositionOfChar(0).x,
+                                    maxWidth: line.measure.width,
+                                    y: y,
+                                    lineHeight: lineHeight
+                                });
                             }
+
+
                         }
                     }
                 }
 
+                var textLeft = text.$el.getBoundingClientRect().left - this.$el.getBoundingClientRect().left;
+
+                for (i = 0; i < firstTSpans.length; i++) {
+                    firstTspan = firstTSpans[i];
+                    // add empty selection element
+                    var selectionRect = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "rect");
+                    selectionRect.setAttribute("data-x", firstTspan.x - textLeft);
+                    selectionRect.setAttribute("data-max-width", firstTspan.maxWidth);
+                    selectionRect.setAttribute("y", firstTspan.y - firstTspan.lineHeight);
+                    selectionRect.setAttribute("height", firstTspan.lineHeight);
+                    selectionRect.setAttribute("width", 0);
+                    selectionRect.setAttribute("class", "text-selection");
+                    selectionGroup && selectionGroup.appendChild(selectionRect);
+                }
 
                 composedTextFlow.$selectionGroup = selectionGroup.cloneNode(true);
                 composedTextFlow.$el = text.$el.cloneNode(true);
             }
 
-            text.set("visible", true);
+            if(this.$stage.$browser.isIOS){
+                // needed for iOS to do a proper refresh
+                text.$el.style.display = "none";
+                text.$el.style.display = "inherit";
+            }
 
             this._renderSelection(this.$.selection);
         },
@@ -561,7 +669,17 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 return;
             }
 
+            this._afterSelectionFinished();
+
             this.$mouseDown = false;
+        },
+
+        _afterSelectionFinished: function () {
+            if (editBoxInstance) {
+                editBoxInstance.set('focused', true);
+                editBoxInstance.focus();
+                document.execCommand('selectAll', false, null);
+            }
         },
 
         _onTextMouseDown: function (e) {
@@ -586,6 +704,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     anchorIndex: anchorIndex
                 });
             }
+        },
+
+        isFocused: function () {
+            return this.$.focused || (editBoxInstance.$._currentTextArea === this && editBoxInstance.$.focused);
         },
 
         _onTextMouseMove: function (e) {
@@ -634,7 +756,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                         while (i < elements.length && endPosition <= index) {
 
-                            if(elements[i].length){
+                            if (elements[i].length) {
                                 startPosition = endPosition + (i > 0 ? 1 : 0);
                                 endPosition = startPosition + elements[i].length;
                                 k++;
@@ -645,7 +767,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     l++;
                 }
 
-                if(endPosition >= text.length){
+                if (endPosition >= text.length) {
                     endPosition--;
                 }
 
@@ -653,6 +775,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     activeIndex: endPosition,
                     anchorIndex: startPosition
                 });
+
+                this._afterSelectionFinished();
             }
 
         },
