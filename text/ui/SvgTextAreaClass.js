@@ -513,7 +513,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             if (!text) {
                 return;
             }
-            while(text.$el.childNodes.length){
+            while (text.$el.childNodes.length) {
                 text.$el.removeChild(text.$el.childNodes[0]);
             }
 
@@ -611,7 +611,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                             if (softLine.children.length && firstTspan) {
                                 firstTSpans.push({
-                                    x: this._convertPositionForIE(firstTspan.getStartPositionOfChar(0)).x,
+                                    x: firstTspan.textContent != "" ? this._convertPositionForIE(firstTspan.getStartPositionOfChar(0)).x : (line.measure.width / 2),
                                     maxWidth: line.measure.width,
                                     y: y,
                                     lineHeight: lineHeight
@@ -640,7 +640,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 composedTextFlow.$el = text.$el.cloneNode(true);
             }
 
-            if(this.$stage.$browser.isIOS){
+            if (this.$stage.$browser.isIOS) {
                 // needed for iOS to do a proper refresh
                 text.$el.style.display = "none";
                 text.$el.style.display = "inherit";
