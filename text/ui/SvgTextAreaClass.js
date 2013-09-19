@@ -319,7 +319,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     width,
                     textBox = this.$.text.$el.getBBox(),
                     textWidth = textBox.width,
-                    textX = textBox.x || 0;
+                    textX = 0;
 
                 // go through all selection rectangles
                 if (this.$.selectionGroup.isRendered()) {
@@ -611,7 +611,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                             if (softLine.children.length && firstTspan) {
                                 firstTSpans.push({
-                                    x: firstTspan.getStartPositionOfChar(0).x,
+                                    x: this._convertPositionForIE(firstTspan.getStartPositionOfChar(0)).x,
                                     maxWidth: line.measure.width,
                                     y: y,
                                     lineHeight: lineHeight
@@ -623,13 +623,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     }
                 }
 
-                var textLeft = text.$el.getBoundingClientRect().left - this.$el.getBoundingClientRect().left;
-
                 for (i = 0; i < firstTSpans.length; i++) {
                     firstTspan = firstTSpans[i];
                     // add empty selection element
                     var selectionRect = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "rect");
-                    selectionRect.setAttribute("data-x", firstTspan.x - textLeft);
+                    selectionRect.setAttribute("data-x", firstTspan.x);
                     selectionRect.setAttribute("data-max-width", firstTspan.maxWidth);
                     selectionRect.setAttribute("y", firstTspan.y - firstTspan.lineHeight);
                     selectionRect.setAttribute("height", firstTspan.lineHeight);
@@ -790,6 +788,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 return {x: pointerEvent.clientX, y: pointerEvent.clientY};
             }
         },
+
         /***
          * Converts the absolute position to relative coordinates if browser is IE
          *
