@@ -641,7 +641,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 composedTextFlow.$el = text.$el.cloneNode(true);
             }
 
-            if (this.$stage.$browser.isIOS) {
+            if (this.$stage.$browser.isSafari) {
                 // needed for iOS to do a proper refresh
                 text.$el.style.display = "none";
                 text.$el.style.display = "inherit";
