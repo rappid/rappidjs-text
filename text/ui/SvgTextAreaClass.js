@@ -740,7 +740,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
             var index = this._getCursorIndexForMousePosition(this._getMousePositionForEvent(e));
 
-            if (index > -1) {
+            if (index > -1 && this.$.textFlow) {
                 var text = this.$.textFlow.text(0, -1, "\n"),
                     lines = text.split("\n");
 
