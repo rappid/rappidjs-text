@@ -504,6 +504,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             this.callBase();
             if (this.$.selection) {
                 this._renderSelection(this.$.selection);
+                this._afterSelectionFinished();
             }
         },
 
