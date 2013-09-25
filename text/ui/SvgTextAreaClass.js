@@ -577,6 +577,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                                 maxFontSize = 0,
                                 firstTspan;
 
+
                             y += textHeight;
 
                             for (var l = 0; l < line.children.length; l++) {
@@ -585,6 +586,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                                 if (l == 0) {
                                     firstTspan = tspan;
                                 }
+
 
                                 var style = this._transformStyle(lineElement.composeStyle(), this.$tSpanTransformMap);
 
@@ -619,22 +621,19 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                             }
 
                             y += lineHeight - textHeight;
-
-
-                            if (softLine.children.length && firstTspan) {
-                                firstTSpans.push({
-                                    x: firstTspan.textContent != "" ? this._convertPositionForIE(firstTspan.getStartPositionOfChar(0)).x : (line.measure.width / 2),
-                                    maxWidth: line.measure.width,
-                                    y: y,
-                                    lineHeight: lineHeight
-                                });
-                            }
-
-
+                        }
+                        if (softLine.children.length && firstTspan) {
+                            firstTSpans.push({
+                                x: firstTspan.textContent != "" ? this._convertPositionForIE(firstTspan.getStartPositionOfChar(0)).x : (line.measure.width / 2),
+                                maxWidth: line.measure.width,
+                                y: y,
+                                lineHeight: lineHeight
+                            });
                         }
                     }
                 }
 
+                console.log(firstTSpans.length);
                 for (i = 0; i < firstTSpans.length; i++) {
                     firstTspan = firstTSpans[i];
                     // add empty selection element
