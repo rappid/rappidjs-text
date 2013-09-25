@@ -395,7 +395,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 var text = editBoxInstance.$el.textContent.replace("\n", " ");
                 var operation = new InsertTextOperation(range, self.$.textFlow, text);
                 operation.doOperation();
-                self._setCursorAfterOperation(0);
+                self.$.selection.set({
+                    activeIndex: text.length,
+                    anchorIndex: text.length
+                });
             }, 100);
         },
 
