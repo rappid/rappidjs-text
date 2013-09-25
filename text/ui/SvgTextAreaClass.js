@@ -396,8 +396,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 var operation = new InsertTextOperation(range, self.$.textFlow, text);
                 operation.doOperation();
                 self.$.selection.set({
-                    activeIndex: text.length,
-                    anchorIndex: text.length
+                    activeIndex: self.$.selection.$.anchorIndex + text.length,
+                    anchorIndex: self.$.selection.$.anchorIndex + text.length
                 });
             }, 100);
         },
