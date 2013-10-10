@@ -392,13 +392,15 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 range = self.$.selection;
 
             setTimeout(function () {
-                var text = editBoxInstance.$el.textContent.replace("\n", " ");
-                var operation = new InsertTextOperation(range, self.$.textFlow, text);
-                operation.doOperation();
-                self.$.selection.set({
-                    activeIndex: self.$.selection.$.anchorIndex + text.length,
-                    anchorIndex: self.$.selection.$.anchorIndex + text.length
-                });
+                if(self.$.textFlow){
+                    var text = editBoxInstance.$el.textContent.replace("\n", " ");
+                    var operation = new InsertTextOperation(range, self.$.textFlow, text);
+                    operation.doOperation();
+                    self.$.selection.set({
+                        activeIndex: self.$.selection.$.anchorIndex + text.length,
+                        anchorIndex: self.$.selection.$.anchorIndex + text.length
+                    });
+                }
             }, 100);
         },
 
@@ -406,9 +408,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             var self = editBoxInstance.$._currentTextArea,
                 range = self.$.selection;
             setTimeout(function () {
-                var operation = new InsertTextOperation(range, self.$.textFlow, "");
-                operation.doOperation();
-                self._setCursorAfterOperation(0);
+                if(self.$.textFlow){
+                    var operation = new InsertTextOperation(range, self.$.textFlow, "");
+                    operation.doOperation();
+                    self._setCursorAfterOperation(0);
+                }
             }, 100);
 
         },
