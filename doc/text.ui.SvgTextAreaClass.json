@@ -6,8 +6,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                93,
-                95
+                94,
+                96
             ],
             "description": "Returns the ENVIRONMENT object",
             "returns": {
@@ -25,8 +25,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                101,
-                103
+                102,
+                104
             ],
             "description": "Returns the start parameter of the application",
             "returns": {
@@ -48,8 +48,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                198,
-                200
+                204,
+                206
             ],
             "definedBy": "js.core.Component",
             "name": "_addConfiguration",
@@ -65,8 +65,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                191,
-                196
+                197,
+                202
             ],
             "definedBy": "js.core.Component",
             "name": "_addTemplate",
@@ -76,10 +76,22 @@
             "type": "Method",
             "parameter": [],
             "annotations": {},
+            "definedInFile": "text/ui/SvgTextAreaClass.js",
+            "lineNumbers": [
+                690,
+                696
+            ],
+            "name": "_afterSelectionFinished",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [],
+            "annotations": {},
             "definedInFile": "js/core/EventDispatcher.js",
             "lineNumbers": [
-                198,
-                200
+                201,
+                203
             ],
             "definedBy": "js.core.EventDispatcher",
             "name": "_beforeDestroy",
@@ -91,8 +103,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                251,
-                260
+                309,
+                318
             ],
             "definedBy": "js.core.Bindable",
             "name": "_bindBus",
@@ -108,11 +120,28 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                274,
-                281
+                303,
+                310
             ],
             "definedBy": "js.core.DomElement",
             "name": "_bindDomEvents",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "child"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "js/core/DomElement.js",
+            "lineNumbers": [
+                404,
+                431
+            ],
+            "definedBy": "js.core.DomElement",
+            "name": "_calculationAnimationDuration",
             "visibility": "protected"
         },
         {
@@ -121,8 +150,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                537,
-                539
+                554,
+                556
             ],
             "private": "This method is called after all children are initialized",
             "definedBy": "js.core.Component",
@@ -139,8 +168,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                366,
-                383
+                372,
+                389
             ],
             "definedBy": "js.core.Component",
             "name": "_cleanUpDescriptor",
@@ -152,8 +181,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                388,
-                399
+                523,
+                532
             ],
             "definedBy": "js.core.DomElement",
             "name": "_clearRenderedChildren",
@@ -176,8 +205,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                481,
-                507
+                526,
+                552
             ],
             "description": "Returns a copy of the attribute. This method is a hook for further cloning options",
             "private": "",
@@ -208,8 +237,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                764,
-                766
+                808,
+                810
             ],
             "description": "called after attributes has set and some of the has been changed\n",
             "abstract": "",
@@ -224,8 +253,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                668,
-                671
+                713,
+                716
             ],
             "definedBy": "js.core.Bindable",
             "name": "_commitInvalidatedAttributes",
@@ -241,10 +270,54 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                83,
-                87
+                97,
+                101
             ],
             "name": "_commitTextFlow",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "visible"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "js/core/DomElement.js",
+            "lineNumbers": [
+                445,
+                456
+            ],
+            "definedBy": "js.core.DomElement",
+            "name": "_commitVisible",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "types": [
+                        "Object"
+                    ],
+                    "name": "pos",
+                    "optional": false
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/ui/SvgTextAreaClass.js",
+            "lineNumbers": [
+                814,
+                830
+            ],
+            "description": "Converts the absolute position to relative coordinates if browser is IE\n",
+            "returns": {
+                "types": [
+                    "Object"
+                ]
+            },
+            "private": "",
+            "name": "_convertPositionForIE",
             "visibility": "protected"
         },
         {
@@ -270,8 +343,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                447,
-                479
+                464,
+                496
             ],
             "description": "Create {@link Component} for DOM Node with given attributes",
             "definedBy": "js.core.Component",
@@ -288,8 +361,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                605,
-                610
+                751,
+                756
             ],
             "definedBy": "js.core.DomElement",
             "name": "_createDOMEventHandler",
@@ -308,8 +381,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                266,
-                272
+                295,
+                301
             ],
             "definedBy": "js.core.DomElement",
             "name": "_createDomElement",
@@ -323,13 +396,16 @@
                 },
                 {
                     "name": "rootScope"
+                },
+                {
+                    "name": "attributes"
                 }
             ],
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                504,
-                512
+                521,
+                529
             ],
             "definedBy": "js.core.Component",
             "name": "_createTextElement",
@@ -401,8 +477,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                513,
-                515
+                558,
+                560
             ],
             "description": "",
             "returns": {
@@ -422,8 +498,8 @@
             "annotations": {},
             "definedInFile": "js/core/EventDispatcher.js",
             "lineNumbers": [
-                206,
-                212
+                209,
+                215
             ],
             "definedBy": "js.core.EventDispatcher",
             "name": "_destroyCompleted",
@@ -435,8 +511,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                273,
-                286
+                331,
+                344
             ],
             "definedBy": "js.core.Bindable",
             "name": "_extract",
@@ -457,8 +533,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                524,
-                552
+                569,
+                597
             ],
             "description": "generates a default chain containing the values from this instance and base classes\n",
             "returns": {
@@ -501,13 +577,16 @@
                 },
                 {
                     "name": "rootScope"
+                },
+                {
+                    "name": "attributes"
                 }
             ],
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                518,
-                532
+                535,
+                549
             ],
             "description": "Converts all child nodes of a descriptor to instances of Components or TextElement",
             "definedBy": "js.core.Component",
@@ -524,8 +603,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                689,
-                708
+                932,
+                951
             ],
             "name": "_getCursorIndexForMousePosition",
             "visibility": "protected"
@@ -540,8 +619,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                587,
-                688
+                831,
+                931
             ],
             "name": "_getCursorIndexForRelativePosition",
             "visibility": "protected"
@@ -556,8 +635,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                398,
-                400
+                404,
+                406
             ],
             "definedBy": "js.core.Component",
             "name": "_getEventName",
@@ -573,8 +652,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                415,
-                418
+                421,
+                424
             ],
             "definedBy": "js.core.Component",
             "name": "_getEventTypeForAttribute",
@@ -586,8 +665,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                784,
-                792
+                932,
+                940
             ],
             "definedBy": "js.core.DomElement",
             "name": "_getHtmlTag",
@@ -603,8 +682,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                401,
-                412
+                534,
+                546
             ],
             "definedBy": "js.core.DomElement",
             "name": "_getIndexOfPlaceHolder",
@@ -637,8 +716,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                578,
-                586
+                797,
+                805
             ],
             "name": "_getMousePositionForEvent",
             "visibility": "protected"
@@ -653,8 +732,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                208,
-                232
+                238,
+                262
             ],
             "name": "_getNextLineIndex",
             "visibility": "protected"
@@ -669,8 +748,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                590,
-                604
+                734,
+                750
             ],
             "definedBy": "js.core.DomElement",
             "name": "_getNextVisibleChild",
@@ -686,8 +765,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                319,
-                385
+                420,
+                498
             ],
             "name": "_getPositionForTextIndex",
             "visibility": "protected"
@@ -702,8 +781,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                234,
-                258
+                264,
+                288
             ],
             "name": "_getPreviousLineIndex",
             "visibility": "protected"
@@ -727,6 +806,62 @@
         },
         {
             "type": "Method",
+            "parameter": [],
+            "annotations": {},
+            "definedInFile": "text/ui/SvgTextAreaClass.js",
+            "lineNumbers": [
+                407,
+                418
+            ],
+            "name": "_handleCut",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "e"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/ui/SvgTextAreaClass.js",
+            "lineNumbers": [
+                103,
+                107
+            ],
+            "name": "_handleEditBoxKeyDown",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "e"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/ui/SvgTextAreaClass.js",
+            "lineNumbers": [
+                109,
+                114
+            ],
+            "name": "_handleEditBoxKeyPress",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [],
+            "annotations": {},
+            "definedInFile": "text/ui/SvgTextAreaClass.js",
+            "lineNumbers": [
+                390,
+                405
+            ],
+            "name": "_handlePaste",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
             "parameter": [
                 {
                     "name": "attributes"
@@ -738,8 +873,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                768,
-                777
+                812,
+                821
             ],
             "definedBy": "js.core.Bindable",
             "name": "_hasAll",
@@ -758,8 +893,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                779,
-                788
+                823,
+                832
             ],
             "definedBy": "js.core.Bindable",
             "name": "_hasSome",
@@ -771,8 +906,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                46,
-                54
+                49,
+                57
             ],
             "definedBy": "js.core.Bindable",
             "overwritesMethod": true,
@@ -785,8 +920,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                164,
-                174
+                213,
+                223
             ],
             "description": "starts the initialization of the `Bindable` if it hasn't initialized yet.\n\nIt calls the following methods:\n\n* initialize();\n* _initializeBindings();\n",
             "private": "",
@@ -817,8 +952,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                291,
-                362
+                349,
+                399
             ],
             "description": "Initialize all Binding and Event attributes",
             "definedBy": "js.core.Bindable",
@@ -831,8 +966,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                364,
-                366
+                401,
+                403
             ],
             "definedBy": "js.core.Bindable",
             "name": "_initializeBindingsBeforeComplete",
@@ -848,8 +983,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                219,
-                224
+                225,
+                230
             ],
             "definedBy": "js.core.Component",
             "name": "_initializeChildren",
@@ -891,8 +1026,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                149,
-                152
+                198,
+                201
             ],
             "description": "\ninvokes the `_initialize` method. This method is a hook function and is overwritten by js.core.Component\n",
             "private": "",
@@ -910,8 +1045,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                283,
-                285
+                312,
+                314
             ],
             "definedBy": "js.core.DomElement",
             "name": "_initializeRenderer",
@@ -930,8 +1065,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                420,
-                439
+                426,
+                456
             ],
             "definedBy": "js.core.Component",
             "name": "_initializeXamlEventAttributes",
@@ -943,8 +1078,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                224,
-                248
+                273,
+                306
             ],
             "definedBy": "js.core.Bindable",
             "name": "_inject",
@@ -956,8 +1091,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                189,
-                191
+                238,
+                240
             ],
             "description": "\nreturns the chained object defining the required injections\n",
             "returns": {
@@ -976,11 +1111,28 @@
             "annotations": {},
             "definedInFile": "js/core/EventDispatcher.js",
             "lineNumbers": [
-                202,
-                204
+                205,
+                207
             ],
             "definedBy": "js.core.EventDispatcher",
             "name": "_innerDestroy",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "child"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "js/core/DomElement.js",
+            "lineNumbers": [
+                501,
+                520
+            ],
+            "definedBy": "js.core.DomElement",
+            "name": "_internalRemoveChild",
             "visibility": "protected"
         },
         {
@@ -995,8 +1147,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                406,
-                413
+                412,
+                419
             ],
             "description": "Returns true if event is defined in Component event list",
             "definedBy": "js.core.Component",
@@ -1017,8 +1169,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                465,
-                481
+                599,
+                615
             ],
             "description": "Returns wether a attribute key is a dom attribute or not\nTherefor it looks in the $classAttributes array.",
             "returns": {
@@ -1041,8 +1193,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                385,
-                387
+                391,
+                393
             ],
             "definedBy": "js.core.Component",
             "name": "_isEventAttribute",
@@ -1058,8 +1210,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                390,
-                392
+                396,
+                398
             ],
             "definedBy": "js.core.Component",
             "name": "_isFunctionAttribute",
@@ -1075,8 +1227,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                394,
-                396
+                400,
+                402
             ],
             "definedBy": "js.core.Component",
             "name": "_isXamlEventAttribute",
@@ -1094,8 +1246,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                552,
-                567
+                569,
+                584
             ],
             "description": "determinate the local-name of a DomNode\n",
             "definedBy": "js.core.Component",
@@ -1112,8 +1264,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                724,
-                735
+                872,
+                883
             ],
             "definedBy": "js.core.DomElement",
             "name": "_mapDOMEventType",
@@ -1125,8 +1277,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                405,
-                410
+                518,
+                524
             ],
             "definedBy": "js.core.DomElement",
             "overwritesMethod": true,
@@ -1143,8 +1295,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                710,
-                718
+                953,
+                961
             ],
             "name": "_onTextAreaMove",
             "visibility": "protected"
@@ -1159,8 +1311,24 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                533,
-                558
+                744,
+                795
+            ],
+            "name": "_onTextDoubleClick",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "e"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/ui/SvgTextAreaClass.js",
+            "lineNumbers": [
+                698,
+                720
             ],
             "name": "_onTextMouseDown",
             "visibility": "protected"
@@ -1175,8 +1343,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                560,
-                576
+                726,
+                742
             ],
             "name": "_onTextMouseMove",
             "visibility": "protected"
@@ -1187,8 +1355,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                525,
-                531
+                680,
+                688
             ],
             "name": "_onTextMouseUp",
             "visibility": "protected"
@@ -1203,8 +1371,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                56,
-                60
+                59,
+                63
             ],
             "name": "_onTextSelectionChange",
             "visibility": "protected"
@@ -1215,8 +1383,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                381,
-                383
+                418,
+                420
             ],
             "definedBy": "js.core.Bindable",
             "name": "_postConstruct",
@@ -1228,8 +1396,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                385,
-                387
+                422,
+                424
             ],
             "definedBy": "js.core.Bindable",
             "name": "_preDestroy",
@@ -1271,8 +1439,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                372,
-                386
+                486,
+                499
             ],
             "definedBy": "js.core.DomElement",
             "name": "_removeRenderedChild",
@@ -1291,8 +1459,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                428,
-                450
+                562,
+                584
             ],
             "definedBy": "js.core.DomElement",
             "name": "_renderAttribute",
@@ -1311,8 +1479,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                452,
-                456
+                586,
+                590
             ],
             "definedBy": "js.core.DomElement",
             "name": "_renderAttributeInternal",
@@ -1328,8 +1496,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                418,
-                426
+                552,
+                560
             ],
             "definedBy": "js.core.DomElement",
             "name": "_renderAttributes",
@@ -1348,8 +1516,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                308,
-                331
+                352,
+                402
             ],
             "definedBy": "js.core.DomElement",
             "name": "_renderChild",
@@ -1365,8 +1533,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                287,
-                294
+                316,
+                323
             ],
             "definedBy": "js.core.DomElement",
             "name": "_renderChildren",
@@ -1385,8 +1553,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                362,
-                370
+                476,
+                484
             ],
             "definedBy": "js.core.DomElement",
             "name": "_renderClass",
@@ -1405,8 +1573,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                353,
-                360
+                467,
+                474
             ],
             "definedBy": "js.core.DomElement",
             "name": "_renderComponentClass",
@@ -1422,8 +1590,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                412,
-                510
+                526,
+                665
             ],
             "name": "_renderComposedTextFlow",
             "visibility": "protected"
@@ -1438,11 +1606,28 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                296,
-                306
+                340,
+                350
             ],
             "definedBy": "js.core.DomElement",
             "name": "_renderContentChildren",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "enabled"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "js/core/DomElement.js",
+            "lineNumbers": [
+                325,
+                338
+            ],
+            "definedBy": "js.core.DomElement",
+            "name": "_renderEnabled",
             "visibility": "protected"
         },
         {
@@ -1455,8 +1640,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                62,
-                81
+                75,
+                95
             ],
             "name": "_renderFocused",
             "visibility": "protected"
@@ -1508,8 +1693,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                337,
-                343
+                437,
+                443
             ],
             "description": "",
             "private": "",
@@ -1527,10 +1712,29 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                260,
-                317
+                296,
+                388
             ],
             "name": "_renderSelection",
+            "visibility": "protected"
+        },
+        {
+            "type": "Method",
+            "parameter": [
+                {
+                    "name": "showSelection"
+                },
+                {
+                    "name": "wasShowSelection"
+                }
+            ],
+            "annotations": {},
+            "definedInFile": "text/ui/SvgTextAreaClass.js",
+            "lineNumbers": [
+                290,
+                294
+            ],
+            "name": "_renderShowSelection",
             "visibility": "protected"
         },
         {
@@ -1556,8 +1760,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                344,
-                352
+                458,
+                466
             ],
             "definedBy": "js.core.DomElement",
             "name": "_renderVisible",
@@ -1611,8 +1815,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                491,
-                507
+                625,
+                641
             ],
             "description": "sets the attribute as part of the rendering cycle on the element\n",
             "private": "",
@@ -1630,8 +1834,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                395,
-                403
+                508,
+                516
             ],
             "name": "_setCursorAfterOperation",
             "visibility": "protected"
@@ -1642,8 +1846,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                206,
-                209
+                255,
+                258
             ],
             "description": "sets up the Bindable or Component. It will inject the required injections and\nalso will bind the application wide `MessageBus` to all methods annotated with the\n`.bus()` method annotation\n\nFor `Components` the setUp method is invoked automatically during the add of the Component.\nFor non `Components`\n\n",
             "private": "",
@@ -1660,8 +1864,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                219,
-                222
+                268,
+                271
             ],
             "description": "tears down the Bindable or Component. It will remove the injected variables and\nalso will unbind the annotated event handlers from the application wide `MessageBus`\n",
             "private": "",
@@ -1685,8 +1889,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                512,
-                523
+                667,
+                678
             ],
             "name": "_transformStyle",
             "visibility": "protected"
@@ -1697,8 +1901,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                262,
-                271
+                320,
+                329
             ],
             "definedBy": "js.core.Bindable",
             "name": "_unbindBus",
@@ -1714,8 +1918,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                387,
-                393
+                500,
+                506
             ],
             "name": "addChar",
             "visibility": "public"
@@ -1737,8 +1941,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                130,
-                161
+                131,
+                167
             ],
             "description": "adds a children",
             "definedBy": "js.core.Component",
@@ -1755,8 +1959,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                647,
-                665
+                793,
+                813
             ],
             "definedBy": "js.core.DomElement",
             "name": "addClass",
@@ -1772,8 +1976,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                569,
-                577
+                586,
+                594
             ],
             "definedBy": "js.core.Component",
             "name": "baseUrl",
@@ -1805,8 +2009,8 @@
             "annotations": {},
             "definedInFile": "js/core/EventDispatcher.js",
             "lineNumbers": [
-                75,
-                87
+                72,
+                88
             ],
             "description": "Binds a callback and a scope to a given eventType\n",
             "definedBy": "js.core.EventDispatcher",
@@ -1826,8 +2030,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                693,
-                708
+                841,
+                856
             ],
             "definedBy": "js.core.DomElement",
             "name": "bindDomEvent",
@@ -1839,8 +2043,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                558,
-                562
+                692,
+                696
             ],
             "definedBy": "js.core.DomElement",
             "name": "bringToFront",
@@ -1852,8 +2056,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                109,
-                111
+                110,
+                112
             ],
             "description": "provides access to the MessageBus",
             "returns": {
@@ -1871,8 +2075,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                805,
-                807
+                849,
+                851
             ],
             "description": "Clears all attributes",
             "returns": {
@@ -1894,10 +2098,10 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                454,
-                474
+                499,
+                519
             ],
-            "description": "This method returns a copy of the Object",
+            "description": "This method returns a copy of the Object with all attributes on the $",
             "returns": {
                 "types": [
                     "js.core.Bindable"
@@ -1924,8 +2128,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                497,
-                502
+                514,
+                519
             ],
             "definedBy": "js.core.Component",
             "name": "createBinding",
@@ -1937,8 +2141,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                356,
-                364
+                362,
+                370
             ],
             "definedBy": "js.core.Component",
             "name": "createChildren",
@@ -1971,8 +2175,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                488,
-                495
+                505,
+                512
             ],
             "description": "",
             "returns": {
@@ -1990,8 +2194,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                39,
-                44
+                42,
+                47
             ],
             "definedBy": "js.core.Base",
             "overwritesMethod": true,
@@ -2004,8 +2208,8 @@
             "annotations": {},
             "definedInFile": "js/core/EventDispatcher.js",
             "lineNumbers": [
-                185,
-                196
+                188,
+                199
             ],
             "description": "Clears up the instance",
             "definedBy": "js.core.EventDispatcher",
@@ -2022,8 +2226,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                530,
-                532
+                664,
+                666
             ],
             "definedBy": "js.core.DomElement",
             "name": "dom",
@@ -2076,8 +2280,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                217,
-                241
+                238,
+                262
             ],
             "definedBy": "js.core.DomElement",
             "name": "findContent",
@@ -2089,8 +2293,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                737,
-                741
+                885,
+                889
             ],
             "definedBy": "js.core.DomElement",
             "name": "focus",
@@ -2120,8 +2324,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                680,
-                744
+                725,
+                788
             ],
             "description": "evaluates a path to retrieve a value\n",
             "returns": {
@@ -2138,8 +2342,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                194,
-                215
+                215,
+                236
             ],
             "definedBy": "js.core.DomElement",
             "name": "getContentPlaceHolders",
@@ -2155,8 +2359,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                169,
-                186
+                177,
+                197
             ],
             "definedBy": "js.core.DomElement",
             "name": "getPlaceHolder",
@@ -2172,8 +2376,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                400,
-                409
+                441,
+                454
             ],
             "definedBy": "js.core.Bindable",
             "name": "getScopeForFncName",
@@ -2189,8 +2393,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                389,
-                398
+                426,
+                439
             ],
             "definedBy": "js.core.Bindable",
             "name": "getScopeForKey",
@@ -2223,8 +2427,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                208,
-                217
+                214,
+                223
             ],
             "description": "Goes up the tree and searches for a template component with the given name.\nReturns null if no template was found.",
             "returns": {
@@ -2234,6 +2438,19 @@
             },
             "definedBy": "js.core.Component",
             "name": "getTemplate",
+            "visibility": "public"
+        },
+        {
+            "type": "Method",
+            "parameter": [],
+            "annotations": {},
+            "definedInFile": "js/core/DomElement.js",
+            "lineNumbers": [
+                205,
+                213
+            ],
+            "definedBy": "js.core.DomElement",
+            "name": "getViewChildren",
             "visibility": "public"
         },
         {
@@ -2263,8 +2480,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                764,
-                782
+                912,
+                930
             ],
             "definedBy": "js.core.DomElement",
             "name": "globalToLocal",
@@ -2293,8 +2510,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                89,
-                191
+                116,
+                221
             ],
             "name": "handleKeyDown",
             "visibility": "public"
@@ -2309,8 +2526,8 @@
             "annotations": {},
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                193,
-                206
+                223,
+                236
             ],
             "name": "handleKeyPress",
             "visibility": "public"
@@ -2330,8 +2547,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                752,
-                754
+                796,
+                798
             ],
             "description": "determinate if a attribute is available\n",
             "returns": {
@@ -2354,8 +2571,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                643,
-                645
+                789,
+                791
             ],
             "definedBy": "js.core.DomElement",
             "name": "hasClass",
@@ -2374,8 +2591,8 @@
             },
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                523,
-                529
+                657,
+                663
             ],
             "definedBy": "js.core.DomElement",
             "name": "html",
@@ -2387,8 +2604,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                179,
-                180
+                228,
+                229
             ],
             "description": "the initialize method is a hook function to add a custom logic during the initiation process.",
             "definedBy": "js.core.Bindable",
@@ -2405,8 +2622,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                880,
-                897
+                941,
+                958
             ],
             "definedBy": "js.core.Bindable",
             "name": "isDeepEqual",
@@ -2439,8 +2656,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                898,
-                900
+                959,
+                961
             ],
             "definedBy": "js.core.Bindable",
             "name": "isEqual",
@@ -2450,10 +2667,22 @@
             "type": "Method",
             "parameter": [],
             "annotations": {},
+            "definedInFile": "text/ui/SvgTextAreaClass.js",
+            "lineNumbers": [
+                722,
+                724
+            ],
+            "name": "isFocused",
+            "visibility": "public"
+        },
+        {
+            "type": "Method",
+            "parameter": [],
+            "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                414,
-                416
+                548,
+                550
             ],
             "definedBy": "js.core.DomElement",
             "name": "isRendered",
@@ -2486,8 +2715,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                743,
-                762
+                891,
+                910
             ],
             "definedBy": "js.core.DomElement",
             "name": "localToGlobal",
@@ -2570,8 +2799,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                188,
-                192
+                199,
+                203
             ],
             "definedBy": "js.core.DomElement",
             "name": "remove",
@@ -2583,8 +2812,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                185,
-                189
+                191,
+                195
             ],
             "definedBy": "js.core.Component",
             "name": "removeAllChildren",
@@ -2600,8 +2829,8 @@
             "annotations": {},
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                163,
-                183
+                169,
+                189
             ],
             "definedBy": "js.core.Component",
             "name": "removeChild",
@@ -2617,8 +2846,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                667,
-                691
+                815,
+                839
             ],
             "definedBy": "js.core.DomElement",
             "name": "removeClass",
@@ -2628,12 +2857,13 @@
             "type": "Method",
             "parameter": [],
             "annotations": {},
-            "definedInFile": "js/core/DomElement.js",
+            "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                243,
-                264
+                65,
+                73
             ],
             "definedBy": "js.core.DomElement",
+            "overwritesMethod": true,
             "name": "render",
             "visibility": "public"
         },
@@ -2706,8 +2936,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                563,
-                567
+                697,
+                701
             ],
             "definedBy": "js.core.DomElement",
             "name": "sendToBack",
@@ -2744,8 +2974,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                564,
-                650
+                609,
+                695
             ],
             "description": "Sets new values for attributes and notify about changes\n",
             "returns": {
@@ -2771,8 +3001,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                533,
-                556
+                667,
+                690
             ],
             "definedBy": "js.core.DomElement",
             "name": "setChildIndex",
@@ -2788,8 +3018,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                568,
-                575
+                702,
+                713
             ],
             "definedBy": "js.core.DomElement",
             "name": "setChildInvisible",
@@ -2805,8 +3035,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                576,
-                589
+                714,
+                733
             ],
             "definedBy": "js.core.DomElement",
             "name": "setChildVisible",
@@ -2825,8 +3055,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                652,
-                666
+                697,
+                711
             ],
             "definedBy": "js.core.Bindable",
             "name": "setLater",
@@ -2838,8 +3068,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                421,
-                449
+                466,
+                494
             ],
             "description": "Writes attributes back to the source",
             "definedBy": "js.core.Bindable",
@@ -2911,8 +3141,8 @@
             "annotations": {},
             "definedInFile": "js/core/EventDispatcher.js",
             "lineNumbers": [
-                96,
-                157
+                97,
+                160
             ],
             "description": "Triggers a specific event and the * event\n",
             "definedBy": "js.core.EventDispatcher",
@@ -2943,8 +3173,8 @@
             "annotations": {},
             "definedInFile": "js/core/EventDispatcher.js",
             "lineNumbers": [
-                165,
-                180
+                168,
+                183
             ],
             "description": "Unbinds callbacks for events\n",
             "definedBy": "js.core.EventDispatcher",
@@ -2964,8 +3194,8 @@
             "annotations": {},
             "definedInFile": "js/core/DomElement.js",
             "lineNumbers": [
-                709,
-                722
+                857,
+                870
             ],
             "definedBy": "js.core.DomElement",
             "name": "unbindDomEvent",
@@ -2994,8 +3224,8 @@
             "annotations": {},
             "definedInFile": "js/core/Bindable.js",
             "lineNumbers": [
-                796,
-                799
+                840,
+                843
             ],
             "description": "Unset attribute on $",
             "returns": {
@@ -3016,8 +3246,8 @@
             "visibility": "public",
             "value": "g",
             "lineNumbers": [
-                6,
-                6
+                8,
+                8
             ]
         },
         "$internalText": {
@@ -3026,8 +3256,8 @@
             "visibility": "private",
             "value": "",
             "lineNumbers": [
-                7,
-                7
+                9,
+                9
             ]
         },
         "selection": {
@@ -3035,8 +3265,8 @@
             "defaultType": "factory",
             "visibility": "public",
             "lineNumbers": [
-                8,
-                8
+                10,
+                10
             ]
         },
         "composedTextFlow": {
@@ -3045,8 +3275,8 @@
             "visibility": "public",
             "value": null,
             "lineNumbers": [
-                9,
-                9
+                11,
+                11
             ]
         },
         "textFlow": {
@@ -3055,8 +3285,8 @@
             "visibility": "public",
             "value": "{composedTextFlow.textFlow}",
             "lineNumbers": [
-                10,
-                10
+                12,
+                12
             ]
         },
         "width": {
@@ -3065,8 +3295,8 @@
             "visibility": "public",
             "value": 100,
             "lineNumbers": [
-                11,
-                11
+                13,
+                13
             ]
         },
         "height": {
@@ -3075,8 +3305,8 @@
             "visibility": "public",
             "value": 100,
             "lineNumbers": [
-                12,
-                12
+                14,
+                14
             ]
         },
         "scale": {
@@ -3085,8 +3315,8 @@
             "visibility": "public",
             "value": 1,
             "lineNumbers": [
-                13,
-                13
+                15,
+                15
             ]
         },
         "focused": {
@@ -3095,8 +3325,8 @@
             "visibility": "public",
             "value": false,
             "lineNumbers": [
-                14,
-                14
+                16,
+                16
             ]
         },
         "editable": {
@@ -3105,8 +3335,8 @@
             "visibility": "public",
             "value": true,
             "lineNumbers": [
-                15,
-                15
+                17,
+                17
             ]
         },
         "selectable": {
@@ -3115,8 +3345,8 @@
             "visibility": "public",
             "value": true,
             "lineNumbers": [
-                16,
-                16
+                18,
+                18
             ]
         },
         "showSelection": {
@@ -3125,8 +3355,18 @@
             "visibility": "public",
             "value": true,
             "lineNumbers": [
-                17,
-                17
+                19,
+                19
+            ]
+        },
+        "_selectedText": {
+            "name": "_selectedText",
+            "defaultType": "value",
+            "visibility": "private",
+            "value": null,
+            "lineNumbers": [
+                20,
+                20
             ]
         },
         "transformations": {
@@ -3250,16 +3490,42 @@
             ],
             "definedBy": "js.core.DomElement"
         },
+        "animationClass": {
+            "name": "animationClass",
+            "defaultType": "value",
+            "visibility": "public",
+            "value": null,
+            "lineNumbers": [
+                67,
+                67
+            ],
+            "description": "",
+            "definedBy": "js.core.DomElement"
+        },
         "visible": {
             "name": "visible",
             "defaultType": "value",
             "visibility": "public",
             "value": true,
             "lineNumbers": [
-                69,
-                69
+                73,
+                73
             ],
             "description": "sets the visibility of an component. If the value is false the component is removed from the DOM.\n",
+            "types": [
+                "Boolean"
+            ],
+            "definedBy": "js.core.DomElement"
+        },
+        "enabled": {
+            "name": "enabled",
+            "defaultType": "value",
+            "visibility": "public",
+            "value": true,
+            "lineNumbers": [
+                78,
+                78
+            ],
             "types": [
                 "Boolean"
             ],
@@ -3270,8 +3536,8 @@
             "defaultType": "factory",
             "visibility": "public",
             "lineNumbers": [
-                66,
-                66
+                67,
+                67
             ],
             "description": "the cid is a unique identifier for the component within a xaml class. \\\nThe corresponding component will be automatically added to the $ of the instance of the xaml class.\n",
             "types": [
@@ -3301,8 +3567,8 @@
             "visibility": "private",
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                20,
-                26
+                23,
+                29
             ],
             "propertyType": "complex",
             "value": " {\n            \"fontFamily\": \"font-family\",\n            \"fontWeight\": \"font-weight\",\n            \"fontStyle\": \"font-style\",\n            \"fontSize\": \"font-size\",\n            \"color\": \"fill\"\n        }"
@@ -3312,8 +3578,8 @@
             "visibility": "private",
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                28,
-                35
+                31,
+                38
             ],
             "propertyType": "complex",
             "value": " {\n            \"fontFamily\": \"font-family\",\n            \"fontWeight\": \"font-weight\",\n            \"fontStyle\": \"font-style\",\n            \"fontSize\": \"font-size\",\n            \"color\": \"fill\",\n            \"textAnchor\": \"text-anchor\"\n        }"
@@ -3323,8 +3589,8 @@
             "visibility": "private",
             "definedInFile": "text/ui/SvgTextAreaClass.js",
             "lineNumbers": [
-                37,
-                37
+                40,
+                40
             ],
             "propertyType": "complex",
             "value": " ['scale', 'focused', 'showSelection', 'editable', 'selectable', 'textRange', 'text', 'selection', 'selectionGroup', 'cursor', 'textFlow', 'width', 'height']",
@@ -3336,8 +3602,8 @@
             "visibility": "private",
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                69,
-                69
+                70,
+                70
             ],
             "propertyType": "value",
             "definedBy": "js.core.Component"
@@ -3347,8 +3613,8 @@
             "visibility": "private",
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                74,
-                74
+                75,
+                75
             ],
             "propertyType": "value",
             "description": "if set all children from the descriptor will be placed into a\njs.core.Content block with the name of $defaultContentName",
@@ -3359,8 +3625,8 @@
             "visibility": "private",
             "definedInFile": "js/core/Component.js",
             "lineNumbers": [
-                76,
-                76
+                77,
+                77
             ],
             "propertyType": "value",
             "definedBy": "js.core.Component"

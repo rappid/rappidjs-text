@@ -78,7 +78,7 @@
             "definedInFile": "text/composer/SvgMeasurer.js",
             "lineNumbers": [
                 79,
-                129
+                135
             ],
             "name": "measureText",
             "visibility": "public"

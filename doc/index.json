@@ -1,6 +1,5 @@
 {
     "classes": [
-        "SvgTextArea",
         "text.composer.Composer",
         "text.composer.Composer.BlockElement",
         "text.composer.Composer.Element",
