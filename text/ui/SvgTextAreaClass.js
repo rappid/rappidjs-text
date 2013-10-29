@@ -102,7 +102,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         _handleEditBoxKeyDown: function (e) {
             var domEvent = e.domEvent;
-            e.target.$._currentTextArea.handleKeyDown(domEvent);
+
+            var currentTextArea = e.target.$._currentTextArea;
+            if(currentTextArea){
+                currentTextArea.handleKeyDown(domEvent);
+            }
 
         },
 
