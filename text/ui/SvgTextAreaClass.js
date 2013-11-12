@@ -67,6 +67,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             if (!editBoxInstance && !this.$stage.$browser.hasTouch) {
                 editBoxInstance = this.$templates.editBox.createInstance();
                 this.$stage.addChild(editBoxInstance);
+                editBoxInstance.bind('on:blur', function(){
+                    editBoxInstance.set('focused', false);
+                });
             }
 
             return ret;
@@ -724,7 +727,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         isFocused: function () {
-            return this.$.focused || (editBoxInstance.$._currentTextArea === this && editBoxInstance.$.focused);
+            return this.$.focused && (editBoxInstance.$._currentTextArea === this && editBoxInstance.$.focused);
         },
 
         _onTextMouseMove: function (e) {
