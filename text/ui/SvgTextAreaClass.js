@@ -67,7 +67,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             if (!editBoxInstance && !this.$stage.$browser.hasTouch) {
                 editBoxInstance = this.$templates.editBox.createInstance();
                 this.$stage.addChild(editBoxInstance);
-                editBoxInstance.bind('on:blur', function(){
+                editBoxInstance.bind('on:blur', function () {
                     editBoxInstance.set('focused', false);
                 });
             }
@@ -107,7 +107,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             var domEvent = e.domEvent;
 
             var currentTextArea = e.target.$._currentTextArea;
-            if(currentTextArea){
+            if (currentTextArea) {
                 currentTextArea.handleKeyDown(domEvent);
             }
 
@@ -183,6 +183,32 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         cursorIndex = this._getNextLineIndex(cursorIndex);
                         break;
                 }
+
+                if ((e.altKey || e.ctrlKey) && (keyCode == 37 || keyCode == 39)) {
+                    var totalLength = this.$.textFlow.textLength();
+                    var text = this.$.textFlow.text(0, totalLength, " "),
+                        words = text.split(" "),
+                        length = 0,
+                        oldLength;
+                    for (var i = 0; i < words.length; i++) {
+                        oldLength = length;
+                        length += (words[i].length);
+                        if (cursorIndex >= oldLength && cursorIndex <= length) {
+                            switch (keyCode) {
+                                case 37:
+                                    cursorIndex = oldLength;
+                                    break;
+                                case 39:
+                                    cursorIndex = Math.min(length + 1, totalLength - 1);
+                                    break;
+
+                            }
+                            break;
+                        }
+                        length++;
+                    }
+                }
+
                 var indices = {
                     anchorIndex: anchorIndex,
                     activeIndex: cursorIndex
@@ -399,7 +425,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 range = self.$.selection;
 
             setTimeout(function () {
-                if(self.$.textFlow){
+                if (self.$.textFlow) {
                     var text = editBoxInstance.$el.textContent.replace("\n", " ");
                     var operation = new InsertTextOperation(range, self.$.textFlow, text);
                     operation.doOperation();
@@ -415,7 +441,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             var self = editBoxInstance.$._currentTextArea,
                 range = self.$.selection;
             setTimeout(function () {
-                if(self.$.textFlow){
+                if (self.$.textFlow) {
                     var operation = new InsertTextOperation(range, self.$.textFlow, "");
                     operation.doOperation();
                     self._setCursorAfterOperation(0);
