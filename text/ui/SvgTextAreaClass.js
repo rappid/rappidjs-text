@@ -194,14 +194,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         oldLength = length;
                         length += (words[i].length);
                         if (cursorIndex >= oldLength && cursorIndex <= length) {
-                            switch (keyCode) {
-                                case 37:
-                                    cursorIndex = oldLength;
-                                    break;
-                                case 39:
-                                    cursorIndex = Math.min(length + 1, totalLength - 1);
-                                    break;
-
+                            if (keyCode == 37) {
+                                cursorIndex = oldLength;
+                            } else {
+                                cursorIndex = Math.min(length + 1, totalLength - 1);
                             }
                             break;
                         }
