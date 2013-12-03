@@ -113,6 +113,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
 
         _composeSoftLine: function (paragraph, softLine, softLineStartPosition, spanPositions, layout) {
 
+            var lastLineElement;
             layout = layout || new Layout();
 
             if (!(layout instanceof Layout)) {
@@ -135,9 +136,10 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
 
                 var wordWidth = 0,
                     inlineElement,
-                    inlineWordSpans = [];
+                    inlineWordSpans = [],
+                    i;
 
-                for (var i = 0; i < wordSpans.length; i++) {
+                for (i = 0; i < wordSpans.length; i++) {
                     inlineElement = Composer.InlineElement.createFromElement(wordSpans[i], measurer);
                     inlineWordSpans.push(inlineElement);
                     wordWidth += inlineElement.measure.width;
@@ -151,16 +153,89 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                     // TODO: white space width
 
 
-                } else if (wordWidth < layoutWidth || true) { // FIXME: if the word is larger than the layout, split it up on chars
+                } else if (wordWidth < layoutWidth) {
                     // word must be placed on a new line
                     if (line.children.length > 0) {
-                        var lastLineElement = line.children[line.children.length - 1];
+                        lastLineElement = line.children[line.children.length - 1];
                         lastLineElement.item.$.text = lastLineElement.item.$.text.substr(0, lastLineElement.item.$.text.length - 1);
                     }
 
                     line = new Composer.Line();
                     lines.push(line);
                     lineWidth = wordWidth;
+                } else {
+                    // split word at char and place it on new lines
+
+                    inlineWordSpans = [];
+
+                    var width = 0;
+                    var wordSpanClone;
+
+                    if (line.children.length > 0) {
+                        // start with a fresh line
+
+                        lastLineElement = line.children[line.children.length - 1];
+                        lastLineElement.item.$.text = lastLineElement.item.$.text.substr(0, lastLineElement.item.$.text.length - 1);
+
+                        line = new Composer.Line();
+                        lines.push(line);
+                    }
+
+                    lineWidth = 0;
+
+                    for (i = 0; i < wordSpans.length; i++) {
+                        var wordSpan = wordSpans[i],
+                            wordSpanAdded = false,
+                            textStartPosition = 0;
+
+                        for (var c = 0; c < wordSpan.$.text.length; c++) {
+                            var charSpan = wordSpan.clone();
+                            charSpan.$.text =  wordSpan.$.text.charAt(c);
+
+                            inlineElement = Composer.InlineElement.createFromElement(charSpan, measurer);
+                            var charWidth = inlineElement.measure.width;
+
+                            if (width + charWidth < layoutWidth) {
+                                // char fits in line
+                                width += charWidth;
+                            } else {
+
+                                // word span must be split
+
+                                wordSpanClone = wordSpan.clone();
+                                wordSpanClone.$.text = wordSpanClone.$.text.substring(textStartPosition, c);
+
+                                inlineWordSpans.push(Composer.InlineElement.createFromElement(wordSpanClone, measurer));
+
+                                for (var j = 0; j < inlineWordSpans.length; j++) {
+                                    line.addInlineElement(inlineWordSpans[j]);
+                                }
+                                inlineWordSpans = [];
+
+                                wordSpanAdded = (c === wordSpan.$.text.length);
+                                textStartPosition = c;
+                                wordPosition += 2;
+
+
+                                line = new Composer.Line();
+                                lines.push(line);
+                                width = 0;
+                            }
+
+                        }
+
+                        if (!wordSpanAdded) {
+
+                            wordSpanClone = wordSpan.clone();
+                            wordSpanClone.$.text = wordSpanClone.$.text.substring(textStartPosition, c);
+
+                            inlineWordSpans.push(Composer.InlineElement.createFromElement(wordSpanClone, measurer));
+                        }
+
+                    }
+
+                    // check how many chars fit into the layout
+                    // then create a new line for each fitting chars
                 }
 
                 if (w !== words.length - 1) {
