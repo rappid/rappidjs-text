@@ -162,7 +162,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 operation.doOperation();
 
                 this._setCursorAfterOperation();
-            } else if (keyCode === 37 || keyCode === 39 || keyCode === 38 || keyCode === 40) {
+            } else if (keyCode >= 35 && keyCode <= 40) {
                 e.preventDefault();
                 e.stopPropagation();
                 // move cursor
@@ -170,6 +170,12 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 anchorIndex = this.$.selection.$.anchorIndex;
 
                 switch (keyCode) {
+                    case 35:
+                        cursorIndex = this.$.textFlow.textLength() - 1;
+                        break;
+                    case 36:
+                        cursorIndex = 0;
+                        break;
                     case 37:
                         cursorIndex--;
                         break;
@@ -185,8 +191,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 }
 
                 if ((e.altKey || e.ctrlKey) && (keyCode == 37 || keyCode == 39)) {
-                    var totalLength = this.$.textFlow.textLength();
-                    var text = this.$.textFlow.text(0, totalLength, " "),
+                    var totalLength = this.$.textFlow.textLength(),
+                        text = this.$.textFlow.text(0, totalLength, " "),
                         words = text.split(" "),
                         length = 0,
                         oldLength;
