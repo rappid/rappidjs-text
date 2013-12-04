@@ -214,8 +214,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
 
                                 wordSpanAdded = (c === wordSpan.$.text.length);
                                 textStartPosition = c;
-                                wordPosition += 2;
-
+//                                wordPosition++;
 
                                 line = new Composer.Line();
                                 lines.push(line);
@@ -225,11 +224,12 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                         }
 
                         if (!wordSpanAdded) {
-
                             wordSpanClone = wordSpan.clone();
                             wordSpanClone.$.text = wordSpanClone.$.text.substring(textStartPosition, c);
-
-                            inlineWordSpans.push(Composer.InlineElement.createFromElement(wordSpanClone, measurer));
+                            inlineElement = Composer.InlineElement.createFromElement(wordSpanClone, measurer);
+                            inlineWordSpans.push(inlineElement);
+                        } else {
+                            inlineElement = null;
                         }
 
                     }
@@ -238,7 +238,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                     // then create a new line for each fitting chars
                 }
 
-                if (w !== words.length - 1) {
+                if (inlineElement && w !== words.length - 1) {
                     // not the last word on the soft line
                     inlineElement.item.$.text += " ";
 
