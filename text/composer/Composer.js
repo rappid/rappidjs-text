@@ -204,7 +204,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
 
                                 wordSpanClone = wordSpan.clone();
                                 wordSpanClone.$.text = wordSpanClone.$.text.substring(textStartPosition, c);
-
+                                wordSpanClone.$.broken = true;
                                 inlineWordSpans.push(Composer.InlineElement.createFromElement(wordSpanClone, measurer));
 
                                 for (var j = 0; j < inlineWordSpans.length; j++) {

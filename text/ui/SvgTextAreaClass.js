@@ -466,22 +466,34 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 childLength,
                 line = -1,
                 boxedIndex = 0,
-                isIndexEndOfLine = false;
+                isIndexEndOfLine = false,
+                brokenLines = 0;
+
 
             while (i < textEl.childNodes.length && textLength <= index) {
                 child = textEl.childNodes[i];
                 childLength = child.textContent.length;
+                if (child.getAttribute("data-broken")) {
+                    brokenLines++;
+                }
                 if (child.getAttribute('y')) {
                     textLength++;
                     line++;
                 }
                 textLength += childLength;
-                if (index >= 0 && textLength === index) {
+                if (index >= 0 && textLength - brokenLines === index) {
                     isIndexEndOfLine = true;
                     break;
                 }
                 i++;
             }
+            // decrease broken lines if last child is a broken line
+            if (child && child.getAttribute("data-broken")) {
+                brokenLines--;
+            }
+            brokenLines = Math.min(line, brokenLines);
+//            console.log(index, textLength, line, brokenLines, isIndexEndOfLine);
+
             if (child) {
                 var lineHeight = parseFloat(child.getAttribute('data-height')),
                     fontSize = parseFloat(child.getAttribute("font-size"));
@@ -494,7 +506,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 } else {
                     if (isIndexEndOfLine) {
                         index = index - line - 1;
-                        boxedIndex = Math.max(Math.min(index, textEl.textContent.length - 1), 0);
+                        boxedIndex = Math.max(Math.min(index, textEl.textContent.length - 1) + brokenLines, 0);
+//                        console.log(boxedIndex);
                         try {
                             pos = this._convertPositionForIE(textEl.getEndPositionOfChar(boxedIndex));
                         } catch (e) {
@@ -502,7 +515,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                         }
                     } else {
                         index = index - line;
-                        boxedIndex = Math.max(Math.min(index, textEl.textContent.length - 1), 0);
+                        boxedIndex = Math.max(Math.min(index, textEl.textContent.length - 1) + brokenLines, 0);
+//                        console.log(boxedIndex);
                         try {
                             pos = this._convertPositionForIE(textEl.getStartPositionOfChar(boxedIndex));
                         } catch (e) {
@@ -621,6 +635,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                             for (var l = 0; l < line.children.length; l++) {
                                 var lineElement = line.children[l].item;
+
                                 tspan = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "tspan");
 
                                 if (l == 0) {
@@ -649,6 +664,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                                     style.y = y;
                                 }
                                 style["data-height"] = line.children[l].measure.lineHeight;
+                                if (lineElement.$.broken) {
+                                    style["data-broken"] = "true";
+                                }
+
                                 for (var key in style) {
                                     if (style.hasOwnProperty(key)) {
                                         tspan.setAttribute(key, style[key]);
@@ -932,7 +951,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                 }
             }
-
             if (startPos && endPos) {
                 if (Math.abs(point.x - startPos.x) > Math.abs(point.x - endPos.x)) {
                     index++;
@@ -942,7 +960,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
 
 
-            var i = 0;
+            var i = 0,
+                lastLineBroken = false;
             while (i < this.$.text.$el.childNodes.length) {
                 child = this.$.text.$el.childNodes[i];
                 y = child.getAttribute('y');
@@ -952,12 +971,16 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     if (i > 0) {
                         index++;
                     }
+                    if (i > 0 && lastLineBroken) {
+                        index--;
+                    }
 
                     if (y >= point.y || y >= Math.round(startPos.y, 2)) {
                         break;
                     }
                 }
                 i++;
+                lastLineBroken = !!child.getAttribute("data-broken");
             }
 
 
