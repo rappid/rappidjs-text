@@ -6,7 +6,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
             if (!measurer) {
                 throw new Error("No Measurer defined for Composer");
             }
-
+            this.$brokenIdCounter = 1;
             this.$measurer = measurer;
             this.callBase();
         },
@@ -14,6 +14,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
         compose: function (textFlow, layout, callback) {
 
             callback = callback || this.emptyCallback();
+            this.$brokenIdCounter = 1;
 
             var self = this;
             this.$measurer.loadAssets(textFlow, function (err) {
@@ -44,7 +45,6 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
             }
 
             // TODO: Margins, Borders, Padding
-
             var ret = new Composer.BlockElement(group),
                 child;
 
@@ -74,6 +74,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
 
             var lines = [], i,
                 ret = new Composer.BlockElement(paragraph);
+
 
             // split up to soft lines
             var paragraphText = paragraph.text(),
@@ -176,13 +177,11 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
 
                         lastLineElement = line.children[line.children.length - 1];
                         lastLineElement.item.$.text = lastLineElement.item.$.text.substr(0, lastLineElement.item.$.text.length - 1);
-
                         line = new Composer.Line();
                         lines.push(line);
                     }
 
                     lineWidth = 0;
-
                     for (i = 0; i < wordSpans.length; i++) {
                         var wordSpan = wordSpans[i],
                             wordSpanAdded = false,
@@ -204,7 +203,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
 
                                 wordSpanClone = wordSpan.clone();
                                 wordSpanClone.$.text = wordSpanClone.$.text.substring(textStartPosition, c);
-                                wordSpanClone.$.broken = true;
+                                wordSpanClone.$.broken = this.$brokenIdCounter;
                                 inlineWordSpans.push(Composer.InlineElement.createFromElement(wordSpanClone, measurer));
 
                                 for (var j = 0; j < inlineWordSpans.length; j++) {
@@ -226,11 +225,14 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                         if (!wordSpanAdded) {
                             wordSpanClone = wordSpan.clone();
                             wordSpanClone.$.text = wordSpanClone.$.text.substring(textStartPosition, c);
+                            wordSpanClone.$.broken = this.$brokenIdCounter;
                             inlineElement = Composer.InlineElement.createFromElement(wordSpanClone, measurer);
                             inlineWordSpans.push(inlineElement);
                         } else {
                             inlineElement = null;
                         }
+
+                        this.$brokenIdCounter++;
 
                     }
 
