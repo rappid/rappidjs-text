@@ -228,6 +228,9 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                             wordSpanClone.$.broken = this.$brokenIdCounter;
                             inlineElement = Composer.InlineElement.createFromElement(wordSpanClone, measurer);
                             inlineWordSpans.push(inlineElement);
+
+                            lineWidth = width;
+
                         } else {
                             inlineElement = null;
                         }
