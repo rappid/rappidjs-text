@@ -63,12 +63,13 @@ define(['text/entity/FlowGroupElement', 'js/core/List', 'text/entity/SpanElement
 
         findChildIndexAtPosition: function (textPosition) {
             var textLength = 0, childLength, ret = -1;
-            this.$.children.each(function (child, index) {
+            this.$.children.find(function (child, index) {
                 textPosition -= child.textLength();
                 if (textPosition <= 0) {
                     ret = index;
-                    this["break"]();
+                    return true;
                 }
+                return false;
             });
 
             if (textPosition > 0) {

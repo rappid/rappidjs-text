@@ -22,13 +22,15 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
         findChildIndexAtPosition: function (textPosition) {
             var textLength = 0, childLength, ret = -1;
 
-            this.$.children.each(function (child, index) {
+            this.$.children.find(function (child, index) {
+                var stop = false;
                 childLength = child.textLength();
                 if (textLength + childLength > textPosition) {
                     ret = index;
-                    this["break"]();
+                    stop = true;
                 }
                 textLength += childLength;
+                return stop;
             });
 
             if (textPosition === textLength) {
@@ -108,7 +110,7 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
             }
 
             var text = "", textLength = 0, childLength, readText = false, startIndex;
-            this.$.children.each(function (child) {
+            this.$.children.find(function (child) {
                 childLength = child.textLength();
                 if (!readText && textLength + childLength >= relativeStart) {
                     readText = true;
@@ -127,8 +129,9 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
 
                 if (relativeEnd !== -1 && textLength > relativeEnd) {
                     text = text.substring(startIndex, startIndex + relativeEnd - relativeStart);
-                    this["break"]();
+                    return true;
                 }
+                return false;
             });
 
             return text;
