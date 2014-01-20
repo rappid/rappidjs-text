@@ -70,11 +70,11 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
         },
 
         getFirstLeaf: function () {
-            var length = this.$.children.size(),
-                child;
+            var child;
 
-            for (var i = 0; i < length; i++) {
-                child = this.$.children.at(i);
+            child = this.$.children.at(0);
+
+            if (child) {
                 if (child.isLeaf) {
                     return child;
                 } else {
@@ -86,11 +86,10 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
         },
 
         getLastLeaf: function () {
-            var length = this.$.children.size(),
-                child;
+            var child;
 
-            for (var i = length - 1; i >= 0; i--) {
-                child = this.$.children.at(i);
+            child = this.$.children.at(this.$.children.size() - 1);
+            if (child) {
                 if (child.isLeaf) {
                     return child;
                 } else {
