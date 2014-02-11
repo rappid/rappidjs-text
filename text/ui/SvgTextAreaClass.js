@@ -767,6 +767,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         isFocused: function () {
+            if (this.$stage.$browser.hasTouch) {
+                return this.$.focused;
+            }
+
             return this.$.focused && (editBoxInstance.$._currentTextArea === this && editBoxInstance.$.focused);
         },
 
