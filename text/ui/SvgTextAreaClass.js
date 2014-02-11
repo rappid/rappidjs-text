@@ -735,11 +735,24 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         _afterSelectionFinished: function () {
+            this._focus();
+        },
+
+        _focus: function() {
             if (editBoxInstance) {
                 editBoxInstance.set('focused', true);
                 editBoxInstance.focus();
                 document.execCommand('selectAll', false, null);
             }
+        },
+
+        focus: function() {
+            var selection = this.$.selection;
+            if (selection) {
+                this._renderSelection(selection);
+            }
+
+            this._focus();
         },
 
         _onTextMouseDown: function (e) {
