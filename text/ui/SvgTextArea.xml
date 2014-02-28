@@ -14,6 +14,7 @@
         <div xmlns="http://www.w3.org/1999/xhtml" contenteditable="true" zIndex="-1000" position="absolute"
              onpaste="_handlePaste"
              oncut="_handleCut"
+             class="svg-text-area-input"
              onkeydown="_handleEditBoxKeyDown"
 
              onkeypress="_handleEditBoxKeyPress">
