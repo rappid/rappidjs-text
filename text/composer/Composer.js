@@ -123,7 +123,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
 
             var layoutWidth = layout.$.width,
                 measurer = this.$measurer,
-                words = softLine.split(" "),
+                words = softLine.split(/[ \u2002]/g),
                 lines = [],
                 line = new Composer.Line(),
                 lineWidth = 0,

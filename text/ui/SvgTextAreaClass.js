@@ -1,6 +1,7 @@
 define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operation/SplitParagraphOperation', 'text/operation/ApplyStyleToElementOperation', 'text/entity/TextFlow', 'text/entity/ParagraphElement', 'text/entity/SpanElement', 'text/entity/TextRange', 'text/operation/DeleteOperation', 'underscore'], function (SvgElement, InsertTextOperation, SplitParagraphOperation, ApplyStyleToElementOperation, TextFlow, ParagraphElement, SpanElement, TextRange, DeleteOperation, _) {
 
-    var editBoxInstance = null;
+    var editBoxInstance = null,
+        NONE_BREAKABLE_SPACE = " ";
 
     return SvgElement.inherit('text.ui.SvgTextAreaClass', {
 
@@ -668,7 +669,12 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                                     }
                                 }
                                 tspan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space", "preserve");
-                                tspan.textContent = lineElement.$.text;
+
+                                if(this.$stage.$browser.isIE && lineElement.$.text === " "){
+                                    tspan.textContent = NONE_BREAKABLE_SPACE; // NONE BREAKING SPACE +2002! BECAUSE OF IE BUG
+                                } else {
+                                    tspan.textContent = lineElement.$.text;
+                                }
                                 text.$el.appendChild(tspan);
                             }
 
