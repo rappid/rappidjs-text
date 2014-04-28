@@ -835,7 +835,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     if (lineLength > index) {
                         i = 0;
                         k = 0;
-                        elements = lines[l].split(" ");
+                        elements = lines[l].split(/[ \u2002]/g);
                         endPosition = startPosition;
 
                         while (i < elements.length && endPosition <= index) {
