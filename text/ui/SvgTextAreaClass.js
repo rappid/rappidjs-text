@@ -837,6 +837,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                                 startPosition = endPosition + (i > 0 ? 1 : 0);
                                 endPosition = startPosition + elements[i].length;
                                 k++;
+                            } else {
+                                endPosition++;
                             }
                             i++;
                         }
