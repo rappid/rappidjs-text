@@ -282,7 +282,9 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                 // find all leaves
                 do {
                     leaf = leaf.getNextLeaf(paragraph);
-                    leaves.push(leaf);
+                    if (leaf) {
+                        leaves.push(leaf);
+                    }
                 } while (leaf && leaf !== endLeaf);
             }
 
@@ -298,7 +300,12 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
             for (var i = 0; i < leaves.length; i++) {
                 leaf = leaves[i];
 
-                var length = leaf.textLength() - firstLeafOffset;
+                try {
+                    var length = leaf.textLength() - firstLeafOffset;
+                } catch (e) {
+                    console.log(e);
+                }
+
 
                 wordSpans.push(new Composer.WordSpan({
                     text: word.substr(wordPosition, length),
