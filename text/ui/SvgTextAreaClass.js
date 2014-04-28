@@ -738,7 +738,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             this._focus();
         },
 
-        _focus: function() {
+        _focus: function () {
             if (editBoxInstance) {
                 editBoxInstance.set('focused', true);
                 editBoxInstance.focus();
@@ -746,7 +746,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
         },
 
-        focus: function() {
+        focus: function () {
             var selection = this.$.selection;
             if (selection) {
                 this._renderSelection(selection);
@@ -939,7 +939,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     maxY = 0;
 
 
-                for (var k = 0; k <= textLength; k++) {
+                for (var k = 0; k < textLength; k++) {
                     endPos = target.$el.getEndPositionOfChar(k);
 
                     if (endPos) {
