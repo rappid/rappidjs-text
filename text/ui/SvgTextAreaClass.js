@@ -115,8 +115,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
         _handleEditBoxKeyPress: function (e) {
             e = e.domEvent;
-            if (!(e.metaKey || e.ctrlKey)) {
-                editBoxInstance.$._currentTextArea.handleKeyPress(e);
+            var currentTextArea = editBoxInstance.$._currentTextArea;
+            if (currentTextArea && !(e.metaKey || e.ctrlKey)) {
+                currentTextArea.handleKeyPress(e);
             }
         },
 
