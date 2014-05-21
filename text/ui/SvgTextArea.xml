@@ -4,6 +4,8 @@
 
     <rect cid="cursor" width="1" height="10" class="text-cursor"/>
 
+    <path cid="path" d="M0,0" id="arc" fill="none" stroke="blue" stroke-width="2" x="0" y="0"/>
+
     <text cid="text"
           xml:space="preserve"
           ondblclick="_onTextDoubleClick"

@@ -38,7 +38,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             "textAnchor": "text-anchor"
         },
 
-        $classAttributes: ['scale', 'focused', 'showSelection', 'editable', 'selectable', 'textRange', 'text', 'selection', 'selectionGroup', 'cursor', 'textFlow', 'width', 'height'],
+        $classAttributes: ['path', 'scale', 'focused', 'showSelection', 'editable', 'selectable', 'textRange', 'text', 'selection', 'selectionGroup', 'cursor', 'textFlow', 'width', 'height'],
 
         ctor: function () {
             this.$showCursor = true;
@@ -585,6 +585,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     text.$el.appendChild(node.cloneNode(true));
 
                 }
+
+                if (composedTextFlow.$path) {
+                    this.$.path.$el.setAttribute("d", composedTextFlow.$path.getAttribute("d"));
+                }
                 for (h = 0; h < composedTextFlow.$selectionGroup.childNodes.length; h++) {
                     node = composedTextFlow.$selectionGroup.childNodes[h];
                     selectionGroup.appendChild(node.cloneNode(true));
@@ -603,87 +607,174 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     tspan,
                     firstTSpans = [];
 
-                for (var i = 0; i < composedTextFlow.composed.children.length; i++) {
-                    var paragraph = composedTextFlow.composed.children[i],
-                        paragraphStyle = paragraph.item.composeStyle();
+                var firstChild = composedTextFlow.textFlow.getChildAt(0),
+                    layout = composedTextFlow.layout;
 
-                    for (var j = 0; j < paragraph.children.length; j++) {
-                        var softLine = paragraph.children[j];
+                style = firstChild ? firstChild.$.style : null;
 
-                        for (var k = 0; k < softLine.children.length; k++) {
-
-                            var line = softLine.children[k],
-                                lineHeight = line.getHeight(),
-                                textHeight = line.getTextHeight(),
-                                maxFontSize = 0,
-                                firstTspan = null;
+                if (style && (style.$.curve < 0 || style.$.curve > 0) && layout) {
 
 
-                            y += textHeight;
+                    var alpha = style.$.curve;
+                    var length = 0,
+                        height = layout.height,
+                        d = "",
+                        m = 0;
 
-                            for (var l = 0; l < line.children.length; l++) {
-                                var lineElement = line.children[l].item;
+                    for (var i = 0; i < composedTextFlow.composed.children.length; i++) {
+                        var paragraph = composedTextFlow.composed.children[i];
 
-                                tspan = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "tspan");
+                        for (var j = 0; j < paragraph.children.length; j++) {
+                            var softLine = paragraph.children[j];
 
-                                if (l == 0) {
-                                    firstTspan = tspan;
+                            for (var k = 0; k < softLine.children.length; k++) {
+
+                                var line = softLine.children[k];
+                                if (line.children.length) {
+                                    length += line.measure.width;
                                 }
-
-                                var style = this._transformStyle(lineElement.composeStyle(), this.$tSpanTransformMap);
-
-                                maxFontSize = Math.max(style["font-size"], maxFontSize);
-
-                                if (l === 0) {
-                                    // apply paragraph style
-                                    _.extend(style, this._transformStyle(paragraphStyle, this.$textTransformMap));
-
-                                    var x = 0;
-
-                                    switch (style["text-anchor"]) {
-                                        case "middle":
-                                            x = this.$.width / 2;
-                                            break;
-                                        case "end":
-                                            x = this.$.width;
-                                    }
-
-                                    style.x = x;
-                                    style.y = y;
-                                }
-                                style["data-height"] = line.children[l].measure.lineHeight;
-                                if (lineElement.$.broken) {
-                                    style["data-broken"] = lineElement.$.broken;
-                                }
-
-                                for (var key in style) {
-                                    if (style.hasOwnProperty(key)) {
-                                        tspan.setAttribute(key, style[key]);
-                                    }
-                                }
-                                tspan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space", "preserve");
-
-                                if(this.$stage.$browser.isIE && lineElement.$.text === " "){
-                                    tspan.textContent = NONE_BREAKABLE_SPACE; // NONE BREAKING SPACE +2002! BECAUSE OF IE BUG
-                                } else {
-                                    tspan.textContent = lineElement.$.text;
-                                }
-                                text.$el.appendChild(tspan);
-                            }
-
-                            y += lineHeight - textHeight;
-
-                            if (softLine.children.length && firstTspan) {
-                                firstTSpans.push({
-                                    x: firstTspan.textContent != "" ? this._convertPositionForIE(firstTspan.getStartPositionOfChar(0)).x : (line.measure.width / 2),
-                                    maxWidth: line.measure.width,
-                                    y: y,
-                                    lineHeight: lineHeight
-                                });
                             }
                         }
                     }
+
+
+                    var lx = 0,
+                        ly = 0,
+                        numPoints = 60;
+
+                    var angle = -90 - alpha * 0.5,
+                        radius = 360 / alpha * length / (Math.PI * 2),
+                        increase = alpha / numPoints;
+
+                    while (m <= numPoints) {
+                        var radians = (angle / 180) * Math.PI;
+                        x = length * 0.5 + Math.cos(radians) * radius;
+                        y = radius + 25 + Math.sin(radians) * radius;
+                        var e = d;
+                        if (m === 0) {
+                            d = e + " m " + (x - lx) + " " + (y - ly);
+                        } else {
+                            d = e + " l " + (x - lx) + " " + (y - ly);
+                        }
+                        lx = x;
+                        ly = y;
+                        m++;
+                        angle += increase;
+                        angle %= 360;
+                    }
+
+                    this.$.path.$el.setAttribute('d', d);
+
+                    while (this.$.text.$el.childNodes.length) {
+                        this.$.text.$el.removeChild(this.$.text.$el.childNodes[0]);
+                    }
+
+                    var leaf = composedTextFlow.textFlow.getFirstLeaf();
+
+                    var textPathStyle = this._transformStyle(leaf.composeStyle(), this.$tSpanTransformMap);
+
+                    var textPath = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "textPath");
+                    textPath.textContent = composedTextFlow.textFlow.text(0, -1, " ");
+                    textPath.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#" + this.$.path.$el.id);
+                    textPath.setAttribute("startOffset", 0.5);
+                    textPath.setAttribute("text-anchor", "middle");
+
+                    for (var key in textPathStyle) {
+                        if (textPathStyle.hasOwnProperty(key)) {
+                            textPath.setAttribute(key, textPathStyle[key]);
+                        }
+                    }
+
+                    this.$.text.$el.appendChild(textPath);
+
+                    composedTextFlow.$el = text.$el.cloneNode(true);
+                    composedTextFlow.$path = this.$.path.$el.cloneNode(true);
+
+                } else {
+                    for (var i = 0; i < composedTextFlow.composed.children.length; i++) {
+                        var paragraph = composedTextFlow.composed.children[i],
+                            paragraphStyle = paragraph.item.composeStyle();
+
+                        for (var j = 0; j < paragraph.children.length; j++) {
+                            var softLine = paragraph.children[j];
+
+                            for (var k = 0; k < softLine.children.length; k++) {
+
+                                var line = softLine.children[k],
+                                    lineHeight = line.getHeight(),
+                                    textHeight = line.getTextHeight(),
+                                    maxFontSize = 0,
+                                    firstTspan = null;
+
+
+                                y += textHeight;
+
+                                for (var l = 0; l < line.children.length; l++) {
+                                    var lineElement = line.children[l].item;
+
+                                    tspan = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "tspan");
+
+                                    if (l == 0) {
+                                        firstTspan = tspan;
+                                    }
+
+                                    var style = this._transformStyle(lineElement.composeStyle(), this.$tSpanTransformMap);
+
+                                    maxFontSize = Math.max(style["font-size"], maxFontSize);
+
+                                    if (l === 0) {
+                                        // apply paragraph style
+                                        _.extend(style, this._transformStyle(paragraphStyle, this.$textTransformMap));
+
+                                        var x = 0;
+
+                                        switch (style["text-anchor"]) {
+                                            case "middle":
+                                                x = this.$.width / 2;
+                                                break;
+                                            case "end":
+                                                x = this.$.width;
+                                        }
+
+                                        style.x = x;
+                                        style.y = y;
+                                    }
+                                    style["data-height"] = line.children[l].measure.lineHeight;
+                                    if (lineElement.$.broken) {
+                                        style["data-broken"] = lineElement.$.broken;
+                                    }
+
+                                    for (var key in style) {
+                                        if (style.hasOwnProperty(key)) {
+                                            tspan.setAttribute(key, style[key]);
+                                        }
+                                    }
+                                    tspan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space", "preserve");
+
+                                    if (this.$stage.$browser.isIE && lineElement.$.text === " ") {
+                                        tspan.textContent = NONE_BREAKABLE_SPACE; // NONE BREAKING SPACE +2002! BECAUSE OF IE BUG
+                                    } else {
+                                        tspan.textContent = lineElement.$.text;
+                                    }
+                                    text.$el.appendChild(tspan);
+                                }
+
+                                y += lineHeight - textHeight;
+
+                                if (softLine.children.length && firstTspan) {
+                                    firstTSpans.push({
+                                        x: firstTspan.textContent != "" ? this._convertPositionForIE(firstTspan.getStartPositionOfChar(0)).x : (line.measure.width / 2),
+                                        maxWidth: line.measure.width,
+                                        y: y,
+                                        lineHeight: lineHeight
+                                    });
+                                }
+                            }
+                        }
+                    }
+
                 }
+
 
                 for (i = 0; i < firstTSpans.length; i++) {
                     firstTspan = firstTSpans[i];
