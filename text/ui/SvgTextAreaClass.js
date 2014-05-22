@@ -644,11 +644,12 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                     var angle = -90 - alpha * 0.5,
                         radius = 360 / alpha * length / (Math.PI * 2),
-                        increase = alpha / numPoints;
+                        increase = alpha / numPoints,
+                        s = this.$.width * 0.5;
 
                     while (m <= numPoints) {
                         var radians = (angle / 180) * Math.PI;
-                        x = length * 0.5 + Math.cos(radians) * radius;
+                        x = s + Math.cos(radians) * radius;
                         y = radius + 25 + Math.sin(radians) * radius;
                         var e = d;
                         if (m === 0) {
