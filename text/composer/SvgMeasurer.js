@@ -109,7 +109,8 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
             var box;
 
             if (!this.measureCache[cacheId]) {
-                text.setAttribute("text-rendering", "geometricprecision");
+                var browser = this.svg.$stage.$browser;
+                text.setAttribute("text-rendering", browser.isFF ? "auto" : "geometricprecision");
                 text.setAttributeNS("http://www.w3.org/XML/1998/namespace", "space", "preserve");
 
                 var container = this.svg.$el;

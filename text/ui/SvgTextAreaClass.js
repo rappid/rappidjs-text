@@ -52,7 +52,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
             var browser = this.$stage.$browser;
 
-            if (browser && !((browser.os.indexOf("linux") !== -1 || browser.os.indexOf("unix") !== -1) && browser.name === "chrome")) {
+            if (browser && !((browser.os.indexOf("linux") !== -1 || browser.os.indexOf("unix") !== -1) && browser.name === "chrome" || browser.name == "firefox")) {
                 this.$.text.set("text-rendering", "geometricPrecision");
             }
         },
