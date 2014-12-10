@@ -2,7 +2,7 @@
                      onpointermove="_onTextAreaMove">
     <g cid="selectionGroup"/>
 
-    <rect cid="cursor" width="1" height="10" class="text-cursor"/>
+    <line cid="cursor" class="text-cursor"/>
 
     <text cid="text"
           xml:space="preserve"

@@ -521,6 +521,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     return {
                         x: pos.x,
                         y: pos.y,
+                        x1: pos.x,
+                        y1: pos.y,
+                        x2: pos.x,
+                        y2: pos.y + lineHeight,
                         height: lineHeight,
                         line: line,
                         tSpanIndex: i
@@ -663,7 +667,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                                 }
                                 tspan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space", "preserve");
 
-                                if(this.$stage.$browser.isIE && lineElement.$.text === " "){
+                                if (this.$stage.$browser.isIE && lineElement.$.text === " ") {
                                     tspan.textContent = NONE_BREAKABLE_SPACE; // NONE BREAKING SPACE +2002! BECAUSE OF IE BUG
                                 } else {
                                     tspan.textContent = lineElement.$.text;
