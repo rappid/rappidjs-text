@@ -1,6 +1,8 @@
-define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/SpanElement", "text/entity/ParagraphElement"], function (Base, Bindable, Layout, SpanElement, ParagraphElement) {
+define(["js/core/EventDispatcher", "js/core/Bindable", "text/entity/Layout", "text/entity/SpanElement", "text/entity/ParagraphElement", "underscore"], function (EventDispatcher, Bindable, Layout, SpanElement, ParagraphElement, _) {
 
-    var Composer = Base.inherit('text.composer.Composer', {
+    var LINEBREAK_THRESHOLD = 2;
+
+    var Composer = EventDispatcher.inherit('text.composer.Composer', {
 
         ctor: function (measurer) {
             if (!measurer) {
@@ -23,12 +25,11 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                     callback(err);
                 } else {
 
-                    var result = {
+                    var result = new Composer.ComposedTextFlow({
                         textFlow: textFlow,
                         layout: layout,
                         composed: self._compose(textFlow, layout)
-                    };
-
+                    });
                     result.measure = self.$measurer.measureComposedTextFlow(result);
 
                     callback(null, result);
@@ -154,7 +155,7 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
                     // TODO: white space width
 
 
-                } else if (wordWidth < layoutWidth) {
+                } else if (wordWidth - LINEBREAK_THRESHOLD < layoutWidth) {
                     // word must be placed on a new line
                     if (line.children.length > 0) {
                         lastLineElement = line.children[line.children.length - 1];
@@ -189,12 +190,12 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
 
                         for (var c = 0; c < wordSpan.$.text.length; c++) {
                             var charSpan = wordSpan.clone();
-                            charSpan.$.text =  wordSpan.$.text.charAt(c);
+                            charSpan.$.text = wordSpan.$.text.charAt(c);
 
                             inlineElement = Composer.InlineElement.createFromElement(charSpan, measurer);
                             var charWidth = inlineElement.measure.width;
 
-                            if (width + charWidth < layoutWidth) {
+                            if (width + charWidth - LINEBREAK_THRESHOLD < layoutWidth) {
                                 // char fits in line
                                 width += charWidth;
                             } else {
@@ -321,8 +322,13 @@ define(["js/core/Base", "js/core/Bindable", "text/entity/Layout", "text/entity/S
         }
     });
 
+    Composer.ComposedTextFlow = EventDispatcher.inherit('text.composer.Composer.ComposedTextFlow', {
+        ctor: function (attributes) {
+            _.extend(this, attributes);
+        }
+    });
 
-    Composer.Element = Base.inherit("text.composer.Composer.Element", {
+    Composer.Element = EventDispatcher.inherit("text.composer.Composer.Element", {
         ctor: function (item) {
             this.item = item;
         },
