@@ -564,6 +564,15 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
         },
 
+        _bindDomEvents: function () {
+            this.callBase();
+
+            var self = this;
+            this.dom(this.$stage.$document).bindDomEvent('pointerup', function () {
+                self._onTextMouseUp();
+            });
+        },
+
         _renderComposedTextFlow: function (composedTextFlow) {
 
             var text = this.$.text;
@@ -729,6 +738,9 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         },
 
         _onTextMouseUp: function () {
+            this.$.text.unbind('on:pointermove', this._onTextMouseMove, this);
+            this.unbind('on:pointermove', this._onTextAreaMove, this);
+
             if (!this.$.selectable) {
                 return;
             }
@@ -774,7 +786,11 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                 if (pointerEvent.shiftKey) {
                     anchorIndex = this.$.selection.$.anchorIndex;
                 }
+
+
                 this.$mouseDown = true;
+                this.$.text.bind('on:pointermove', this._onTextMouseMove, this);
+                this.bind('on:pointermove', this._onTextAreaMove, this);
 
                 this.$.selection.set({
                     activeIndex: index,

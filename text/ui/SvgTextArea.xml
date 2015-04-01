@@ -1,5 +1,4 @@
-<ui:SvgTextAreaClass xmlns:ui="text.ui" xmlns="http://www.w3.org/2000/svg" xmlns:js="js.core"
-                     onpointermove="_onTextAreaMove">
+<ui:SvgTextAreaClass xmlns:ui="text.ui" xmlns="http://www.w3.org/2000/svg" xmlns:js="js.core">
     <g cid="selectionGroup"/>
 
     <line cid="cursor" class="text-cursor"/>
@@ -8,7 +7,7 @@
           xml:space="preserve"
           ondblclick="_onTextDoubleClick"
           onpointerup="_onTextMouseUp"
-          onpointerdown="_onTextMouseDown" onpointermove="_onTextMouseMove"/>
+          onpointerdown="_onTextMouseDown"/>
 
     <js:Template name="editBox">
         <div xmlns="http://www.w3.org/1999/xhtml" contenteditable="true" zIndex="-1000" position="absolute"
