@@ -1,4 +1,4 @@
-define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operation/SplitParagraphOperation', 'text/operation/ApplyStyleToElementOperation', 'text/entity/TextFlow', 'text/entity/ParagraphElement', 'text/entity/SpanElement', 'text/entity/TextRange', 'text/operation/DeleteOperation', 'underscore'], function (SvgElement, InsertTextOperation, SplitParagraphOperation, ApplyStyleToElementOperation, TextFlow, ParagraphElement, SpanElement, TextRange, DeleteOperation, _) {
+define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operation/SplitParagraphOperation', 'text/operation/ApplyStyleToElementOperation', 'text/entity/TextFlow', 'text/entity/ParagraphElement', 'text/entity/SpanElement', 'text/entity/TextRange', 'text/operation/DeleteOperation', 'underscore', "js/core/DomElement"], function (SvgElement, InsertTextOperation, SplitParagraphOperation, ApplyStyleToElementOperation, TextFlow, ParagraphElement, SpanElement, TextRange, DeleteOperation, _, DomElement) {
 
     var editBoxInstance = null,
         NONE_BREAKABLE_SPACE = " ";
@@ -564,15 +564,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
         },
 
-        _bindDomEvents: function () {
-            this.callBase();
-
-            var self = this;
-            this.dom(this.$stage.$document).bindDomEvent('pointerup', function () {
-                self._onTextMouseUp();
-            });
-        },
-
         _renderComposedTextFlow: function (composedTextFlow) {
 
             var text = this.$.text;
@@ -737,19 +728,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             return ret;
         },
 
-        _onTextMouseUp: function () {
-            this.$.text.unbind('on:pointermove', this._onTextMouseMove, this);
-            this.unbind('on:pointermove', this._onTextAreaMove, this);
-
-            if (!this.$.selectable) {
-                return;
-            }
-
-            this._afterSelectionFinished();
-
-            this.$mouseDown = false;
-        },
-
         _afterSelectionFinished: function () {
             this._focus();
         },
@@ -778,7 +756,24 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
 
             var index = this._getCursorIndexForMousePosition(this._getMousePositionForEvent(e)),
-                anchorIndex = index;
+                anchorIndex = index,
+                self = this,
+                document = this.dom(this.$stage.$document);
+
+            if (!this.$pointerMoveHandler) {
+                this.$pointerMoveHandler = function (e) {
+                    self._onTextMouseMove(new DomElement.PointerEvent(e));
+                }
+            }
+
+            if (!this.$pointerUpHandler) {
+                this.$pointerUpHandler = function (e) {
+
+                    document.unbindDomEvent('pointermove', self.$pointerMoveHandler);
+                    document.unbindDomEvent('pointerup', self.$pointerUpHandler, true);
+                    self._onTextMouseUp(new DomElement.PointerEvent(e));
+                }
+            }
 
 
             if (index > -1) {
@@ -789,22 +784,14 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
 
                 this.$mouseDown = true;
-                this.$.text.bind('on:pointermove', this._onTextMouseMove, this);
-                this.bind('on:pointermove', this._onTextAreaMove, this);
+                document.bindDomEvent('pointermove', this.$pointerMoveHandler);
+                document.bindDomEvent('pointerup', this.$pointerUpHandler, true);
 
                 this.$.selection.set({
                     activeIndex: index,
                     anchorIndex: anchorIndex
                 });
             }
-        },
-
-        isFocused: function () {
-            if (this.$stage.$browser.hasTouch) {
-                return this.$.focused;
-            }
-
-            return this.$.focused && (editBoxInstance.$._currentTextArea === this && editBoxInstance.$.focused);
         },
 
         _onTextMouseMove: function (e) {
@@ -823,6 +810,24 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     this.$.selection.set('activeIndex', index);
                 }
             }
+        },
+
+        _onTextMouseUp: function (e) {
+            if (!this.$.selectable) {
+                return;
+            }
+
+            this._afterSelectionFinished();
+
+            this.$mouseDown = false;
+        },
+
+        isFocused: function () {
+            if (this.$stage.$browser.hasTouch) {
+                return this.$.focused;
+            }
+
+            return this.$.focused && (editBoxInstance.$._currentTextArea === this && editBoxInstance.$.focused);
         },
 
         _onTextDoubleClick: function (e) {

@@ -6,7 +6,6 @@
     <text cid="text"
           xml:space="preserve"
           ondblclick="_onTextDoubleClick"
-          onpointerup="_onTextMouseUp"
           onpointerdown="_onTextMouseDown"/>
 
     <js:Template name="editBox">
