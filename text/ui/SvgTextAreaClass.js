@@ -505,12 +505,20 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                     if (isIndexEndOfLine) {
                         index = index - realLines - 1;
                         boxedIndex = Math.max(Math.min(index, textEl.textContent.length - 1), 0);
-                        pos = this._convertPositionForIE(textEl.getEndPositionOfChar(boxedIndex));
+                        try {
+                            pos = this._convertPositionForIE(textEl.getEndPositionOfChar(boxedIndex));
+                        } catch (e) {
+                            return null;
+                        }
 
                     } else {
                         index = index - realLines;
                         boxedIndex = Math.max(Math.min(index, textEl.textContent.length - 1), 0);
-                        pos = this._convertPositionForIE(textEl.getStartPositionOfChar(boxedIndex));
+                        try {
+                            pos = this._convertPositionForIE(textEl.getStartPositionOfChar(boxedIndex));
+                        } catch (e) {
+                            return null;
+                        }
                         i--;
                     }
                 }
