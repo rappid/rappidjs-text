@@ -25,11 +25,11 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore",
             }
 
             var startLeaf = element.getLastLeaf();
+            if (startLeaf && this.$text) {
+                startLeaf.set('text', startLeaf.$.text + this.$text);
+            }
 
             var newLeaf = lastElement.getFirstLeaf();
-            if (newLeaf && this.$text) {
-                newLeaf.set('text', this.$text + newLeaf.$.text);
-            }
 
             lastElement.$.children.each(function (child) {
                 element.addChild(child);
