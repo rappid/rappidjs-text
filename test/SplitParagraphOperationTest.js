@@ -91,6 +91,8 @@ describe('text.operation.SplitParagraphOperation', function () {
             expect(textFlow.numChildren()).to.be.equal(2);
             expect(textFlow.getChildAt(0).text()).to.be.equal("A B C");
             expect(textFlow.getChildAt(1).text()).to.be.equal("D E F G");
+            expect(textFlow.getChildAt(0).$.children.size()).to.be.equal(1);
+            expect(textFlow.getChildAt(1).$.children.size()).to.be.equal(1);
         });
 
         it('should split up over more than one paragraph', function () {

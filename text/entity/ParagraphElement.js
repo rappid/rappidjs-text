@@ -100,7 +100,14 @@ define(['text/entity/FlowGroupElement', 'js/core/List', 'text/entity/SpanElement
                 relativeStart = textLength - 1;
             }
 
-            return this.callBase(relativeStart, relativeEnd);
+            var copy = this.callBase(relativeStart, relativeEnd),
+                firstLeaf = copy.getFirstLeaf();
+
+            if (copy.$.children.size() > 1 && firstLeaf.textLength() === 0) {
+                copy.removeChild(firstLeaf);
+            }
+
+            return copy;
         },
         text: function (relativeStart, relativeEnd, paragraphSeparator) {
             if (paragraphSeparator === undefined) {
