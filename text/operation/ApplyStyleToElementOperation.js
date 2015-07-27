@@ -98,7 +98,7 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                         endParent.$parent && endParent.$parent.removeChild(endParent);
                     }
 
-                    parent.mergeElements();
+                    parent && parent.mergeElements();
 
                 }
             }
