@@ -249,7 +249,17 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
 
         numChildren: function () {
             return this.$.children.size();
-        }.on(["children", "*"])
+        }.on(["children", "*"]),
+
+        clone: function () {
+            var ret = this.callBase();
+
+            ret.$.children.each(function (child) {
+                child.$parent = ret;
+            });
+
+            return ret;
+        }
 
     });
 
