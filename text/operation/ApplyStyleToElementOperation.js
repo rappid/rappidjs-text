@@ -14,127 +14,114 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
             this.callBase(flowElement);
         },
 
+        getRelativeOffset: function (paragraph, offset) {
+            var relativeStart = offset,
+                prev = paragraph.getPreviousParagraph();
+            while (prev) {
+                relativeStart -= prev.textLength();
+                prev = prev.getPreviousParagraph();
+            }
+
+            return relativeStart;
+        },
+
         doOperation: function () {
             var element = this.$targetElement,
                 absoluteStart = this.$textRange.$.absoluteStart,
                 absoluteEnd = this.$textRange.$.absoluteEnd,
+                endParagraph,
+                startParagraph,
                 firstLeaf,
                 lastLeaf;
 
             if (this.$leafStyle) {
-                if (absoluteStart !== absoluteEnd) {
-                    var parent,
-                        endParent,
-                        currentLeaf,
-                        nextLeaf,
-                        lastElement = element.splitAtPosition(absoluteEnd),
-                        styleElement;
+                firstLeaf = element.findLeaf(absoluteStart);
+                lastLeaf = element.findLeaf(absoluteEnd);
 
-                    if (absoluteStart > 0) {
-                        styleElement = element.splitAtPosition(absoluteStart);
-                    } else {
-                        styleElement = element;
-                    }
-                    firstLeaf = styleElement.getFirstLeaf();
-                    var leaf = firstLeaf;
+                if (absoluteStart === absoluteEnd && firstLeaf.textLength() == 0) {
+                    firstLeaf.applyStyle(this.$leafStyle);
+                } else if (absoluteStart !== absoluteEnd) {
+                    startParagraph = firstLeaf.$parent;
+                    endParagraph = lastLeaf.$parent;
+
+                    var relativeStart = this.getRelativeOffset(startParagraph, absoluteStart),
+                        relativeEnd = this.getRelativeOffset(endParagraph, absoluteEnd);
+
+                    var splittedEnd = relativeEnd == endParagraph.textLength() - 1 ? endParagraph : endParagraph.splitAtPosition(relativeEnd),
+                        splittedStart = relativeStart == 0 ? startParagraph : startParagraph.splitAtPosition(relativeStart);
+
+                    var leaf = splittedStart.getFirstLeaf(),
+                        tmpLeaf;
                     while (leaf) {
                         leaf.applyStyle(this.$leafStyle);
-                        leaf = leaf.getNextLeaf(styleElement);
+                        tmpLeaf = leaf;
+                        leaf = leaf.getNextLeaf(splittedStart);
+
+                        if (tmpLeaf.$parent !== startParagraph) {
+                            tmpLeaf.$parent.removeChild(tmpLeaf);
+                            startParagraph.addChild(tmpLeaf);
+                        }
                     }
 
-                    lastLeaf = element.getLastLeaf();
+                    startParagraph !== endParagraph && startParagraph.mergeElements();
 
-                    if (styleElement !== element) {
-                        styleElement.$.children.each(function (child) {
-                            if (!child.isLeaf) {
-                                element.addChild(child);
+                    leaf = endParagraph.getFirstLeaf();
+                    tmpLeaf = null;
+
+                    if (startParagraph !== endParagraph) {
+                        while (leaf) {
+                            leaf.applyStyle(this.$leafStyle);
+                            leaf = leaf.getNextLeaf(endParagraph);
+                        }
+
+                        var nextParagraph = startParagraph.getNextParagraph();
+                        while (nextParagraph !== endParagraph) {
+                            leaf = nextParagraph.getFirstLeaf();
+                            while (leaf) {
+                                leaf.applyStyle(this.$leafStyle);
+                                leaf = leaf.getNextLeaf(nextParagraph);
+                            }
+                            nextParagraph.mergeElements();
+                            nextParagraph = nextParagraph.getNextParagraph();
+                        }
+                    }
+                    if (splittedEnd !== endParagraph) {
+                        splittedEnd.$.children.each(function (child) {
+                            if (child.textLength()) {
+                                endParagraph.addChild(child);
                             }
                         });
-
-                        if (lastLeaf && firstLeaf) {
-                            parent = lastLeaf.$parent;
-                            endParent = firstLeaf.$parent;
-
-                            currentLeaf = firstLeaf;
-
-                            while (currentLeaf) {
-                                nextLeaf = currentLeaf.getNextLeaf(endParent);
-                                currentLeaf.$parent.removeChild(currentLeaf);
-                                if (currentLeaf.textLength() > 0) {
-                                    parent.addChild(currentLeaf);
-                                }
-                                currentLeaf = nextLeaf;
-                            }
-
-                            endParent.$parent && endParent.$parent.removeChild(endParent);
-                        }
                     }
 
-
-                    firstLeaf = lastElement.getFirstLeaf();
-                    lastLeaf = element.getLastLeaf();
-
-                    lastElement.$.children.each(function (child) {
-                        if (!child.isLeaf) {
-                            element.addChild(child);
-                        }
-                    });
-
-                    if (lastLeaf && firstLeaf) {
-                        parent = lastLeaf.$parent;
-                        endParent = firstLeaf.$parent;
-
-                        currentLeaf = firstLeaf;
-
-                        while (currentLeaf) {
-                            nextLeaf = currentLeaf.getNextLeaf(endParent);
-                            currentLeaf.$parent.removeChild(currentLeaf);
-                            if (currentLeaf.textLength() > 0) {
-                                parent.addChild(currentLeaf);
-                            }
-                            currentLeaf = nextLeaf;
-                        }
-
-                        endParent.$parent && endParent.$parent.removeChild(endParent);
-                    }
-
-                    parent && parent.mergeElements();
-
+                    endParagraph.mergeElements();
                 }
+
             }
 
             if (this.$paragraphStyle) {
                 firstLeaf = element.findLeaf(absoluteStart);
                 lastLeaf = element.findLeaf(absoluteEnd);
 
-                var paragraph = firstLeaf.$parent,
-                    endParagraph = lastLeaf.$parent,
-                    reachedFirstParagraph = paragraph === endParagraph;
+                var paragraph = firstLeaf.$parent;
+
+                endParagraph = lastLeaf.$parent;
 
                 if (this.$targetElement !== endParagraph && !this.$targetElement.isLeaf) {
-                    var previousParagraph = endParagraph.getPreviousParagraph();
-                    while (previousParagraph) {
-                        if (previousParagraph === paragraph) {
-                            reachedFirstParagraph = true;
-                        }
-
-                        if (!reachedFirstParagraph) {
-                            if (this.$paragraphStyle) {
-                                previousParagraph.applyStyle(this.$paragraphStyle);
-                            }
-                        }
-
+                    var previousParagraph = endParagraph;
+                    while (previousParagraph && previousParagraph !== paragraph) {
+                        previousParagraph.applyStyle(this.$paragraphStyle);
                         previousParagraph = previousParagraph.getPreviousParagraph();
                     }
+                    paragraph.applyStyle(this.$paragraphStyle);
                 }
-
-                endParagraph.applyStyle(this.$paragraphStyle);
-                paragraph.applyStyle(this.$paragraphStyle);
-
             }
 
             this.callBase();
 
+
+        },
+
+        applyLeafStyleOnParagraph: function (paragraph, style) {
 
         }
 

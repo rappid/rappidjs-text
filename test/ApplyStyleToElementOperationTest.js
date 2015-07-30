@@ -90,7 +90,7 @@ describe('text.operation.ApplyStyleToElementOperation', function () {
             expect(paragraph.getChildAt(1).composeStyle()).to.be.eql({fontWeight: "bold"});
         });
 
-        it('should apply style in specific paragraph', function(){
+        it('should apply style in specific paragraph', function () {
             var textFlow = new C.TextFlow(),
                 paragraph = new C.Paragraph(),
                 paragraph2 = new C.Paragraph(),
@@ -153,7 +153,7 @@ describe('text.operation.ApplyStyleToElementOperation', function () {
             expect(paragraph2.getChildAt(1).composeStyle()).to.be.eql(null);
         });
 
-        it('should apply style on last element without creating new element', function(){
+        it('should apply style on last element without creating new element', function () {
             var textFlow = new C.TextFlow(),
                 paragraph = new C.Paragraph(),
                 span1 = new C.Span({text: "ABC"}),
@@ -179,7 +179,7 @@ describe('text.operation.ApplyStyleToElementOperation', function () {
             expect(paragraph.text()).to.be.equal("ABCDEF");
         });
 
-        it('should apply correct original style', function(){
+        it('should apply correct original style', function () {
             var textFlow = new C.TextFlow(),
                 paragraph = new C.Paragraph(),
                 span1 = new C.Span({text: "ABC"}),
@@ -208,7 +208,7 @@ describe('text.operation.ApplyStyleToElementOperation', function () {
 
         });
 
-        it('should apply paragraph style only in one paragraph when range is 0', function(){
+        it('should apply paragraph style only in one paragraph when range is 0', function () {
             var textFlow = new C.TextFlow(),
                 paragraph = new C.Paragraph(),
                 paragraph2 = new C.Paragraph(),
@@ -234,7 +234,7 @@ describe('text.operation.ApplyStyleToElementOperation', function () {
             expect(paragraph2.composeStyle()).to.be.eql({textAlign: "left"});
         });
 
-        it('should apply paragraph style on all paragraphs that are in range', function(){
+        it('should apply paragraph style on all paragraphs that are in range', function () {
             var textFlow = new C.TextFlow(),
                 paragraph = new C.Paragraph(),
                 paragraph2 = new C.Paragraph(),
@@ -288,6 +288,91 @@ describe('text.operation.ApplyStyleToElementOperation', function () {
             expect(paragraph.numChildren()).to.eql(4);
 
         });
+
+
+        it('should apply leaf style on whole text flow and merge same elements', function () {
+            var textFlow = C.TextFlow.initializeFromText("Dude\n\nDude");
+            (new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(0, textFlow.textLength()), textFlow, {
+                color: '#00FF00'
+            }, null)).doOperation();
+
+            (new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(0, 2), textFlow, {
+                color: '#FFFF00'
+            })).doOperation();
+
+            (new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(2, 4), textFlow, {
+                color: '#FF0000'
+            })).doOperation();
+
+            expect(textFlow.getChildAt(0).numChildren()).to.eql(2);
+
+            (new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(0, textFlow.textLength()), textFlow, {
+                color: '#000000'
+            })).doOperation();
+
+            expect(textFlow.getChildAt(0).numChildren()).to.eql(1);
+        });
+
+        it('should not add empty leaf element', function () {
+            var textFlow = C.TextFlow.initializeFromText("Dude\nDude");
+            var operation = new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(5, textFlow.textLength()), textFlow, {
+                color: '#00FF00'
+            }, null);
+            operation.doOperation();
+
+            expect(textFlow.getChildAt(1).getFirstLeaf().text()).to.eql("Dude");
+
+            operation = new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(5, 5), textFlow, {
+                color: '#00FF00'
+            }, null);
+            operation.doOperation();
+
+            expect(textFlow.getChildAt(1).getFirstLeaf().text()).to.eql("Dude");
+        });
+
+        it('should set style on empty leaf', function () {
+            var textFlow = C.TextFlow.initializeFromText("");
+            var operation = new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(0, 0), textFlow, {
+                color: '#00FF00'
+            }, null);
+            operation.doOperation();
+
+            expect(textFlow.getFirstLeaf().composeStyle()).to.eql({color: '#00FF00'});
+
+            textFlow = C.TextFlow.initializeFromText("Dude");
+            operation = new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(0, 0), textFlow, {
+                color: '#00FF00'
+            }, null);
+            operation.doOperation();
+
+            expect(textFlow.getFirstLeaf().composeStyle()).to.eql(null);
+        });
+
+        it('should keep paragraphs when applying leaf style', function () {
+            var textFlow = C.TextFlow.initializeFromText("Dude\n\nDude");
+            (new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(0, textFlow.textLength()), textFlow, {
+                color: '#00FF00'
+            }, null)).doOperation();
+
+            (new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(0, 2), textFlow, {
+                color: '#FFFF00'
+            })).doOperation();
+
+            (new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(2, 4), textFlow, {
+                color: '#FF0000'
+            })).doOperation();
+
+            var lastParagraph = textFlow.getChildAt(2);
+
+            expect(textFlow.getChildAt(0).numChildren()).to.eql(2);
+
+            (new C.ApplyStyleToElementOperation(C.TextRange.createTextRange(0, 4), textFlow, {
+                color: '#000000'
+            })).doOperation();
+
+            expect(textFlow.getChildAt(2)).to.be.eql(lastParagraph);
+        });
+
 
         it('create new text flow and apply style on complete text flow should result in one paragraph with one span', function () {
             var textFlow = new C.TextFlow.initializeFromText("rAppid:js is awesome.\nWhat do you think?");
