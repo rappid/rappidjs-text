@@ -9,13 +9,13 @@ define(['text/entity/FlowElement'], function (FlowElement) {
         },
 
         getNextLeaf: function (limitElement) {
-            var parent = this.$parent;
+            var parent = this.$flowParent;
 
             function getChildOfParent(parent, child) {
                 var index = parent.getChildIndex(child), element;
                 if (index === parent.numChildren() - 1) {
-                    if (parent.$parent && parent !== limitElement) {
-                        element = getChildOfParent(parent.$parent, parent);
+                    if (parent.$flowParent && parent !== limitElement) {
+                        element = getChildOfParent(parent.$flowParent, parent);
                         if (element) {
                             if (element.isLeaf) {
                                 return element;
@@ -40,13 +40,13 @@ define(['text/entity/FlowElement'], function (FlowElement) {
         },
 
         getPreviousLeaf: function (limitElement) {
-            var parent = this.$parent;
+            var parent = this.$flowParent;
 
             function getChildOfParent(parent, child) {
                 var index = parent.getChildIndex(child), element;
                 if (index === 0) {
-                    if (parent.$parent && parent !== limitElement) {
-                        element = getChildOfParent(parent.$parent, parent);
+                    if (parent.$flowParent && parent !== limitElement) {
+                        element = getChildOfParent(parent.$flowParent, parent);
                         if (element) {
                             if (element.isLeaf) {
                                 return element;

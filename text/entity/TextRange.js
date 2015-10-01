@@ -77,8 +77,8 @@ define(["js/core/Bindable"], function (Bindable) {
         getCommonParagraphStyle: function (flowElement) {
             var firstLeaf = flowElement.findLeaf(this.$.absoluteStart),
                 lastLeaf = flowElement.findLeaf(this.$.absoluteEnd),
-                currentParagraph = firstLeaf.$parent,
-                lastParagraph = lastLeaf.$parent;
+                currentParagraph = firstLeaf.$flowParent,
+                lastParagraph = lastLeaf.$flowParent;
 
             var style = currentParagraph.$.style ? currentParagraph.$.style.clone() : null,
                 currentStyle;

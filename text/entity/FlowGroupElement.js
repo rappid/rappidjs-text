@@ -1,10 +1,18 @@
-define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (FlowElement, List, _) {
+define(['text/entity/FlowElement', 'js/core/List', 'underscore', 'js/data/TypeResolver'], function (FlowElement, List, _, TypeResolver) {
 
     var undefined;
 
+    var ChildTypeResolver = TypeResolver.inherit({
+        resolve: function (value, key) {
+            if (key == "children") {
+                return require(value.type.replace(/\./gi,"/"));
+            }
+        }
+    });
+
     return FlowElement.inherit('text.entity.FlowGroupElement', {
         schema: {
-            children: [FlowElement]
+            children: [new ChildTypeResolver()]
         },
         defaults: {
             children: List
@@ -14,7 +22,7 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
                 throw new Error("Child not instanceof FlowElement");
             }
 
-            child.$parent = this;
+            child.$flowParent = this;
 
             this.$.children.add(child, options);
         },
@@ -255,8 +263,20 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore'], function (Flow
             var ret = this.callBase();
 
             ret.$.children.each(function (child) {
-                child.$parent = ret;
+                child.$flowParent = ret;
             });
+
+            return ret;
+        },
+        parse: function(){
+            var ret = this.callBase();
+
+            if(ret.children){
+                var self = this;
+                ret.children.each(function (child) {
+                    child.$flowParent = self;
+                });
+            }
 
             return ret;
         }

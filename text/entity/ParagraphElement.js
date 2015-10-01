@@ -3,10 +3,15 @@ define(['text/entity/FlowGroupElement', 'js/core/List', 'text/entity/SpanElement
     var undefined;
 
     var Paragraph = FlowGroupElement.inherit('text.entity.ParagraphElement', {
+
+        schema: {
+            children: [SpanElement]
+        },
+
         getNextParagraph: function () {
-            var parent = this.$parent;
-            while (parent.$parent) {
-                parent = parent.$parent;
+            var parent = this.$flowParent;
+            while (parent.$flowParent) {
+                parent = parent.$flowParent;
             }
 
             var list = this._getParagraphsOfElement(parent);
@@ -19,9 +24,9 @@ define(['text/entity/FlowGroupElement', 'js/core/List', 'text/entity/SpanElement
         },
 
         getPreviousParagraph: function () {
-            var parent = this.$parent;
-            while (parent.$parent) {
-                parent = parent.$parent;
+            var parent = this.$flowParent;
+            while (parent.$flowParent) {
+                parent = parent.$flowParent;
             }
 
             var list = this._getParagraphsOfElement(parent);

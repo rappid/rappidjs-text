@@ -41,8 +41,8 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                 if (absoluteStart === absoluteEnd && firstLeaf.textLength() == 0) {
                     firstLeaf.applyStyle(this.$leafStyle);
                 } else if (absoluteStart !== absoluteEnd) {
-                    startParagraph = firstLeaf.$parent;
-                    endParagraph = lastLeaf.$parent;
+                    startParagraph = firstLeaf.$flowParent;
+                    endParagraph = lastLeaf.$flowParent;
 
                     var relativeStart = this.getRelativeOffset(startParagraph, absoluteStart),
                         relativeEnd = this.getRelativeOffset(endParagraph, absoluteEnd);
@@ -57,8 +57,8 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                         tmpLeaf = leaf;
                         leaf = leaf.getNextLeaf(splittedStart);
 
-                        if (tmpLeaf.$parent !== startParagraph) {
-                            tmpLeaf.$parent.removeChild(tmpLeaf);
+                        if (tmpLeaf.$flowParent !== startParagraph) {
+                            tmpLeaf.$flowParent.removeChild(tmpLeaf);
                             startParagraph.addChild(tmpLeaf);
                         }
                     }
@@ -102,9 +102,9 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore"]
                 firstLeaf = element.findLeaf(absoluteStart);
                 lastLeaf = element.findLeaf(absoluteEnd);
 
-                var paragraph = firstLeaf.$parent;
+                var paragraph = firstLeaf.$flowParent;
 
-                endParagraph = lastLeaf.$parent;
+                endParagraph = lastLeaf.$flowParent;
 
                 if (this.$targetElement !== endParagraph && !this.$targetElement.isLeaf) {
                     var previousParagraph = endParagraph;

@@ -35,23 +35,23 @@ define(["text/operation/FlowOperation", "text/entity/FlowElement", "underscore",
                 element.addChild(child);
             });
 
-            var parent = startLeaf.$parent;
+            var parent = startLeaf.$flowParent;
             if (lastElement) {
                 if (newLeaf && newLeaf !== startLeaf) {
-                    var endParent = newLeaf.$parent;
+                    var endParent = newLeaf.$flowParent;
 
                     var currentLeaf = newLeaf,
                         nextLeaf;
                     while (currentLeaf) {
                         nextLeaf = currentLeaf.getNextLeaf(endParent);
-                        currentLeaf.$parent.removeChild(currentLeaf);
+                        currentLeaf.$flowParent.removeChild(currentLeaf);
                         if (currentLeaf.textLength() > 0) {
                             parent.addChild(currentLeaf);
                         }
                         currentLeaf = nextLeaf;
                     }
 
-                    endParent.$parent && endParent.$parent.removeChild(endParent);
+                    endParent.$flowParent && endParent.$flowParent.removeChild(endParent);
 
                 }
                 parent.mergeElements();

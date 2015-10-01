@@ -11,8 +11,8 @@ define(['text/operation/SplitElementOperation', 'text/entity/ParagraphElement'],
 
             if(!(this.$targetElement instanceof ParagraphElement)){
                 var leaf = this.$targetElement.findLeaf(activeIndex) || this.$targetElement.getLastLeaf();
-                if(leaf && leaf.$parent){
-                    originalParagraph = leaf.$parent;
+                if(leaf && leaf.$flowParent){
+                    originalParagraph = leaf.$flowParent;
                 } else {
                     throw new Error("No Paragraph element found!");
                 }
@@ -20,12 +20,12 @@ define(['text/operation/SplitElementOperation', 'text/entity/ParagraphElement'],
 
             this.callBase();
 
-            var paragraphParent = originalParagraph.$parent;
+            var paragraphParent = originalParagraph.$flowParent;
             if(paragraphParent){
                 var firstNewLeaf = this.$newElement.getFirstLeaf();
-                if(firstNewLeaf && firstNewLeaf.$parent){
+                if(firstNewLeaf && firstNewLeaf.$flowParent){
                     var childIndex = paragraphParent.getChildIndex(originalParagraph);
-                    var currentParagraph = firstNewLeaf.$parent,
+                    var currentParagraph = firstNewLeaf.$flowParent,
                         nextParagraph;
 
                     while(currentParagraph){

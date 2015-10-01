@@ -6,6 +6,23 @@ define(['js/data/Entity', 'text/type/Style'], function (Entity, Style) {
             style: null
         },
 
+        schema: {
+            text: {
+                type: String,
+                required: false
+            },
+            style: {
+                type: Style,
+                required: false
+            },
+            type: {
+                type: String,
+                generated: true
+            }
+        },
+
+        idField: false,
+
         isLeaf: false,
 
         text: function (relativeStart, relativeEnd, paragraphSeparator) {
@@ -30,7 +47,6 @@ define(['js/data/Entity', 'text/type/Style'], function (Entity, Style) {
         },
 
         applyStyle: function (style) {
-
             if (!style) {
                 return;
             }
@@ -48,26 +64,52 @@ define(['js/data/Entity', 'text/type/Style'], function (Entity, Style) {
                     this.$.style.set(style);
                 }
             }
+        },
 
+        compose: function () {
+            var ret = this.callBase();
 
+            if (ret.style) {
+                ret.style = ret.style.compose();
+            } else {
+                delete ret.style;
+            }
+
+            if (ret.text == null) {
+                delete ret.text;
+            }
+
+            ret.type = this.factory.prototype.constructor.name;
+
+            return ret;
+        },
+
+        parse: function(data){
+            var ret = this.callBase();
+
+            if(ret.style){
+                ret.style = new Style(ret.style);
+            }
+
+            return ret;
         },
 
         composeStyle: function () {
             return this.$.style ? this.$.style.compose() : null;
         },
 
-        shallowCopy: function(relativeStart, relativeEnd){
+        shallowCopy: function (relativeStart, relativeEnd) {
             var style = this.$.style ? this.$.style.clone() : null;
 
             return new this.factory({style: style});
         },
 
-        splitAtPosition: function(position){
+        splitAtPosition: function (position) {
             return this.shallowCopy(position);
         },
 
-        notifyOperationComplete: function(operation){
-            this.trigger('operationComplete',{operation: operation});
+        notifyOperationComplete: function (operation) {
+            this.trigger('operationComplete', {operation: operation});
         }
 
     });
