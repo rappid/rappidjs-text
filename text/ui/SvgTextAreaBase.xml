@@ -1,0 +1,3 @@
+<ui:SvgTextAreaBaseClass xmlns:ui="text.ui" xmlns="http://www.w3.org/2000/svg">
+    <text cid="text" xml:space="preserve"/>
+</ui:SvgTextAreaBaseClass>

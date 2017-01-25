@@ -1,41 +1,18 @@
-define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operation/SplitParagraphOperation', 'text/operation/ApplyStyleToElementOperation', 'text/entity/TextFlow', 'text/entity/ParagraphElement', 'text/entity/SpanElement', 'text/entity/TextRange', 'text/operation/DeleteOperation', 'underscore', "js/core/DomElement"], function (SvgElement, InsertTextOperation, SplitParagraphOperation, ApplyStyleToElementOperation, TextFlow, ParagraphElement, SpanElement, TextRange, DeleteOperation, _, DomElement) {
+define(['text/ui/SvgTextAreaBaseClass', 'js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operation/SplitParagraphOperation', 'text/operation/ApplyStyleToElementOperation', 'text/entity/TextFlow', 'text/entity/ParagraphElement', 'text/entity/SpanElement', 'text/entity/TextRange', 'text/operation/DeleteOperation', 'underscore', "js/core/DomElement"], function (SvgTextAreaBaseClass, SvgElement, InsertTextOperation, SplitParagraphOperation, ApplyStyleToElementOperation, TextFlow, ParagraphElement, SpanElement, TextRange, DeleteOperation, _, DomElement) {
 
-    var editBoxInstance = null,
-        NONE_BREAKABLE_SPACE = " ";
+    var editBoxInstance = null;
 
-    return SvgElement.inherit('text.ui.SvgTextAreaClass', {
+    return SvgTextAreaBaseClass.inherit('text.ui.SvgTextAreaClass', {
 
         defaults: {
-            tagName: 'g',
-            $internalText: "",
+
             selection: TextRange,
-            composedTextFlow: null,
-            textFlow: "{composedTextFlow.textFlow}",
-            width: 100,
-            height: 100,
-            scale: 1,
+
             focused: false,
             editable: true,
             selectable: true,
             showSelection: true,
             _selectedText: null
-        },
-
-        $tSpanTransformMap: {
-            "fontFamily": "font-family",
-            "fontWeight": "font-weight",
-            "fontStyle": "font-style",
-            "fontSize": "font-size",
-            "color": "fill"
-        },
-
-        $textTransformMap: {
-            "fontFamily": "font-family",
-            "fontWeight": "font-weight",
-            "fontStyle": "font-style",
-            "fontSize": "font-size",
-            "color": "fill",
-            "textAnchor": "text-anchor"
         },
 
         $classAttributes: ['scale', 'focused', 'showSelection', 'editable', 'selectable', 'textRange', 'text', 'selection', 'selectionGroup', 'cursor', 'textFlow', 'width', 'height'],
@@ -44,17 +21,6 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             this.$showCursor = true;
             this.callBase();
             this.bind('selection', 'change', this._onTextSelectionChange, this);
-
-        },
-
-        _initializationComplete: function () {
-            this.callBase();
-
-            var browser = this.$stage.$browser;
-
-            if (browser && !((browser.os.indexOf("linux") !== -1 || browser.os.indexOf("unix") !== -1) && browser.name === "chrome" || browser.name == "firefox")) {
-                this.$.text.set("text-rendering", "geometricPrecision");
-            }
         },
 
         _onTextSelectionChange: function (e) {
@@ -572,155 +538,41 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             }
         },
 
-        _renderComposedTextFlow: function (composedTextFlow) {
+        _renderComposedTextFlow: function () {
 
-            var text = this.$.text;
-            if (!text) {
-                return;
-            }
-            while (text.$el.childNodes.length) {
-                text.$el.removeChild(text.$el.childNodes[0]);
-            }
+            if (this.$.selectionGroup) {
+                var selectionGroup = this.$.selectionGroup.$el;
 
-            var selectionGroup = this.$.selectionGroup.$el;
+                while (selectionGroup && selectionGroup.firstChild) {
+                    selectionGroup.removeChild(selectionGroup.firstChild);
+                }
 
-            while (selectionGroup && selectionGroup.firstChild) {
-                selectionGroup.removeChild(selectionGroup.firstChild);
             }
 
 
-            if (composedTextFlow && composedTextFlow.$el) {
-
-                var node;
-                for (var h = 0; h < composedTextFlow.$el.childNodes.length; h++) {
-                    node = composedTextFlow.$el.childNodes[h];
-                    text.$el.appendChild(node.cloneNode(true));
-
-                }
-                for (h = 0; h < composedTextFlow.$selectionGroup.childNodes.length; h++) {
-                    node = composedTextFlow.$selectionGroup.childNodes[h];
-                    selectionGroup.appendChild(node.cloneNode(true));
-                }
-
-            } else {
-
-
-                if (!composedTextFlow) {
-                    return;
-                }
-
-                // transform the tree into a list of paragraphs and lines
-
-                var y = 0,
-                    tspan,
-                    firstTSpans = [];
-
-                for (var i = 0; i < composedTextFlow.composed.children.length; i++) {
-                    var paragraph = composedTextFlow.composed.children[i],
-                        paragraphStyle = paragraph.item.composeStyle();
-
-                    for (var j = 0; j < paragraph.children.length; j++) {
-                        var softLine = paragraph.children[j];
-
-                        for (var k = 0; k < softLine.children.length; k++) {
-
-                            var line = softLine.children[k],
-                                lineHeight = line.getHeight(),
-                                textHeight = line.getTextHeight(),
-                                maxFontSize = 0,
-                                firstTspan = null;
-
-
-                            y += textHeight;
-
-                            for (var l = 0; l < line.children.length; l++) {
-                                var lineElement = line.children[l].item;
-
-                                tspan = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "tspan");
-
-                                if (l == 0) {
-                                    firstTspan = tspan;
-                                }
-
-                                var style = this._transformStyle(lineElement.composeStyle(), this.$tSpanTransformMap);
-
-                                maxFontSize = Math.max(style["font-size"], maxFontSize);
-
-                                if (l === 0) {
-                                    // apply paragraph style
-                                    _.extend(style, this._transformStyle(paragraphStyle, this.$textTransformMap));
-
-                                    var x = 0;
-
-                                    switch (style["text-anchor"]) {
-                                        case "middle":
-                                            x = this.$.width / 2;
-                                            break;
-                                        case "end":
-                                            x = this.$.width;
-                                    }
-
-                                    style.x = x;
-                                    style.y = y;
-                                }
-                                style["data-height"] = line.children[l].measure.lineHeight;
-                                if (lineElement.$.broken) {
-                                    style["data-broken"] = lineElement.$.broken;
-                                }
-
-                                for (var key in style) {
-                                    if (style.hasOwnProperty(key)) {
-                                        tspan.setAttribute(key, style[key]);
-                                    }
-                                }
-                                tspan.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space", "preserve");
-
-                                if (this.$stage.$browser.isIE && lineElement.$.text === " ") {
-                                    tspan.textContent = NONE_BREAKABLE_SPACE; // NONE BREAKING SPACE +2002! BECAUSE OF IE BUG
-                                } else {
-                                    tspan.textContent = lineElement.$.text;
-                                }
-                                text.$el.appendChild(tspan);
-                            }
-
-                            y += lineHeight - textHeight;
-
-                            if (softLine.children.length && firstTspan) {
-                                firstTSpans.push({
-                                    x: firstTspan.textContent != "" ? this._convertPositionForIE(firstTspan.getStartPositionOfChar(0)).x : (line.measure.width / 2),
-                                    maxWidth: line.measure.width,
-                                    y: y,
-                                    lineHeight: lineHeight
-                                });
-                            }
-                        }
-                    }
-                }
-
-                for (i = 0; i < firstTSpans.length; i++) {
-                    firstTspan = firstTSpans[i];
-                    // add empty selection element
-                    var selectionRect = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "rect");
-                    selectionRect.setAttribute("data-x", firstTspan.x);
-                    selectionRect.setAttribute("data-max-width", firstTspan.maxWidth);
-                    selectionRect.setAttribute("y", firstTspan.y - firstTspan.lineHeight);
-                    selectionRect.setAttribute("height", firstTspan.lineHeight);
-                    selectionRect.setAttribute("width", 0);
-                    selectionRect.setAttribute("class", "text-selection");
-                    selectionGroup && selectionGroup.appendChild(selectionRect);
-                }
-
-                composedTextFlow.$selectionGroup = selectionGroup.cloneNode(true);
-                composedTextFlow.$el = text.$el.cloneNode(true);
-            }
-
-            if (this.$stage.$browser.isSafari) {
-                // needed for iOS to do a proper refresh
-                text.$el.style.display = "none";
-                text.$el.style.display = "inherit";
-            }
+            this.callBase();
 
             this._renderSelection(this.$.selection);
+        },
+
+        _renderComposedTextFlowHook: function(firstTSpans, selectionGroup, composedTextFlow) {
+            for (var i = 0; i < firstTSpans.length; i++) {
+                var firstTspan = firstTSpans[i];
+                // add empty selection element
+                var selectionRect = this.$stage.$document.createElementNS(SvgElement.SVG_NAMESPACE, "rect");
+                selectionRect.setAttribute("data-x", firstTspan.x);
+                selectionRect.setAttribute("data-max-width", firstTspan.maxWidth);
+                selectionRect.setAttribute("y", firstTspan.y - firstTspan.lineHeight);
+                selectionRect.setAttribute("height", firstTspan.lineHeight);
+                selectionRect.setAttribute("width", 0);
+                selectionRect.setAttribute("class", "text-selection");
+                selectionGroup && selectionGroup.appendChild(selectionRect);
+            }
+
+            if (selectionGroup) {
+                composedTextFlow.$selectionGroup = selectionGroup.cloneNode(true);
+            }
+
         },
 
         _transformStyle: function (style, map) {
