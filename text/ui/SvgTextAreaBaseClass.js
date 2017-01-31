@@ -66,7 +66,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
                 }
 
-                if (this.$.selectionGroup) {
+                if (this.$.selectionGroup && composedTextFlow.$selectionGroup) {
                     var selectionGroup = this.$.selectionGroup.$el;
 
                     for (h = 0; h < composedTextFlow.$selectionGroup.childNodes.length; h++) {
