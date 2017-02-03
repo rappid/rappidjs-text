@@ -148,7 +148,7 @@ define(["js/core/EventDispatcher", "js/core/Bindable", "text/entity/Layout", "te
                 }
 
 
-                if (!layoutWidth || lineWidth + wordWidth <= layoutWidth) {
+                if (layout.$.autoFlow || !layoutWidth || lineWidth + wordWidth <= layoutWidth) {
                     // word fits line, add it to line
 
                     lineWidth += wordWidth;
@@ -325,6 +325,31 @@ define(["js/core/EventDispatcher", "js/core/Bindable", "text/entity/Layout", "te
     Composer.ComposedTextFlow = EventDispatcher.inherit('text.composer.Composer.ComposedTextFlow', {
         ctor: function (attributes) {
             _.extend(this, attributes);
+        },
+
+        alignmentToFactor: function(alignment) {
+            var alignmentFactor = 0;
+            switch (alignment) {
+                case "middle":
+                    alignmentFactor = 0.5;
+                    break;
+                case "end":
+                    alignmentFactor = 1;
+                    break;
+            }
+            return alignmentFactor;
+        },
+
+        getAlignmentOfWidestSpan: function() {
+            var paragraph = this.composed.getWidestChild(),
+                paragraphStyle = paragraph.item.composeStyle(),
+                softLine = paragraph.getWidestChild(),
+                line = softLine.getWidestChild(),
+                lineElement = line.children[0],
+                style = lineElement.item.composeStyle();
+
+            _.extend(style, paragraphStyle);
+            return style["textAnchor"];
         }
     });
 
@@ -356,6 +381,33 @@ define(["js/core/EventDispatcher", "js/core/Bindable", "text/entity/Layout", "te
             }
 
             return ret;
+        },
+
+        getWidth: function() {
+            if (_.isEmpty(this.children)) {
+                return 0;
+            }
+
+            var maxWidth = null;
+
+            _.each(this.children, function(child) {
+                var currentWidth = child.getWidth();
+                if (maxWidth === null || currentWidth > maxWidth) {
+                    maxWidth = currentWidth;
+                }
+            });
+
+            return maxWidth;
+        },
+
+        getWidestChild: function() {
+            if (_.isEmpty(this.children)) {
+                return null;
+            }
+
+            return _.max(this.children, function(child) {
+                return child.getWidth();
+            });
         }
     });
 
