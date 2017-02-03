@@ -123,18 +123,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
                                 if (l === 0) {
                                     // apply paragraph style
                                     _.extend(style, this._transformStyle(paragraphStyle, this.$textTransformMap));
-
-                                    var x = 0;
-
-                                    switch (style["text-anchor"]) {
-                                        case "middle":
-                                            x = this.$.width / 2;
-                                            break;
-                                        case "end":
-                                            x = this.$.width;
-                                    }
-
-                                    style.x = x;
+                                    style.x = this.$.width * composedTextFlow.alignmentToFactor(style["text-anchor"]);
                                     style.y = y;
                                 }
                                 style["data-height"] = line.children[l].measure.lineHeight;
