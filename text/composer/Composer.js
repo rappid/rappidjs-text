@@ -148,7 +148,7 @@ define(["js/core/EventDispatcher", "js/core/Bindable", "text/entity/Layout", "te
                 }
 
 
-                if (layout.$.autoFlow || !layoutWidth || lineWidth + wordWidth <= layoutWidth) {
+                if (layout.$.autoGrow || !layoutWidth || lineWidth + wordWidth <= layoutWidth) {
                     // word fits line, add it to line
 
                     lineWidth += wordWidth;
