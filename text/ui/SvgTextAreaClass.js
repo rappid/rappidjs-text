@@ -755,30 +755,6 @@ define(['text/ui/SvgTextAreaBaseClass', 'js/svg/SvgElement', 'text/operation/Ins
             }
         },
 
-        /***
-         * Converts the absolute position to relative coordinates if browser is IE
-         *
-         * @param {Object} pos
-         * @returns {Object}
-         * @private
-         */
-        _convertPositionForIE: function (pos) {
-            var stage = this.$stage;
-
-            if (stage && stage.$browser && stage.$browser.name.indexOf("ie9") > -1) {
-                // IE9 returns the cursor Position in absolute coordinates
-                var textEl = this.$.text.$el,
-                    rootPos = this.getSvgRoot().$el.getClientRects()[0];
-
-                var matrix = textEl.getScreenCTM();
-                var point = this.getSvgRoot().$el.createSVGPoint();
-                point.x = rootPos.left + pos.x;
-                point.y = rootPos.top + pos.y;
-
-                return  point.matrixTransform(matrix.inverse());
-            }
-            return pos;
-        },
         _getCursorIndexForRelativePosition: function (point) {
             var target = this.$.text,
                 num = target.$el.getCharNumAtPosition(point),
