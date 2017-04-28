@@ -41,7 +41,7 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore', 'js/data/TypeRe
                 return stop;
             });
 
-            if (textPosition === textLength) {
+            if (textPosition >= textLength) {
                 return this.$.children.size() - 1;
             }
 
