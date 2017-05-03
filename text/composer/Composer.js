@@ -102,7 +102,7 @@ define(["js/core/EventDispatcher", "js/core/Bindable", "text/entity/Layout", "te
             for (i = 0; i < lines.length; i++) {
                 var measure = lines[i]._measure();
                 height += measure.lineHeight;
-                width = Math.max(width, width);
+                width = Math.max(width, measure.width);
             }
 
             ret.children = lines;
