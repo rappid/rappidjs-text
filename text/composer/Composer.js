@@ -1,6 +1,7 @@
 define(["js/core/EventDispatcher", "js/core/Bindable", "text/entity/Layout", "text/entity/SpanElement", "text/entity/ParagraphElement", "underscore"], function (EventDispatcher, Bindable, Layout, SpanElement, ParagraphElement, _) {
 
-    var LINEBREAK_THRESHOLD = 2;
+    var LINEBREAK_THRESHOLD = 2,
+        SPACE_TO_ALIGN_THRESHOLD = 1;
 
     var Composer = EventDispatcher.inherit('text.composer.Composer', {
 
@@ -340,6 +341,7 @@ define(["js/core/EventDispatcher", "js/core/Bindable", "text/entity/Layout", "te
             return alignmentFactor;
         },
 
+
         getAlignmentOfWidestSpan: function() {
             var paragraph = this.composed.getWidestChild(),
                 paragraphStyle = paragraph.item.composeStyle(),
@@ -350,6 +352,14 @@ define(["js/core/EventDispatcher", "js/core/Bindable", "text/entity/Layout", "te
 
             _.extend(style, paragraphStyle);
             return style["textAnchor"];
+        },
+
+        alignmentMatters: function() {
+            var paragraph = this.composed.getNarrowestChild(),
+                softLine = paragraph.getNarrowestChild(),
+                line = softLine.getNarrowestChild();
+
+            return Math.abs(this.layout.width - line.getWidth()) > SPACE_TO_ALIGN_THRESHOLD;
         }
     });
 
@@ -406,6 +416,16 @@ define(["js/core/EventDispatcher", "js/core/Bindable", "text/entity/Layout", "te
             }
 
             return _.max(this.children, function(child) {
+                return child.getWidth();
+            });
+        },
+
+        getNarrowestChild: function() {
+            if (_.isEmpty(this.children)) {
+                return null;
+            }
+
+            return _.min(this.children, function(child) {
                 return child.getWidth();
             });
         }
