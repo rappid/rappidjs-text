@@ -90,7 +90,10 @@ define(["js/core/Bindable"], function (Bindable) {
                     if (!style && currentStyle) {
                         style = currentStyle.clone();
                     }
-                    style.merge(currentStyle);
+
+                    if (style) {
+                        style.merge(currentStyle);
+                    }
                 } while (currentParagraph !== lastParagraph)
 
             }
