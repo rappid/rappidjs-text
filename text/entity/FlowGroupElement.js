@@ -255,6 +255,30 @@ define(['text/entity/FlowElement', 'js/core/List', 'underscore', 'js/data/TypeRe
             return copy;
         },
 
+        getUsedStyleValues: function (key) {
+            var styleValues = [],
+                getKey = "style." + key,
+                styleValue = this.get(getKey);
+
+            if (styleValue) {
+                styleValues.push(styleValue);
+            }
+
+            if (!this.isLeaf) {
+                styleValues = _.reduce(this.$.children.$items, function (memo, child) {
+                    var grandchildren = child.$.children;
+                    if (grandchildren) {
+                        memo = _.union(memo, child.getUsedStyleValues(key));
+                    } else {
+                        memo.push(child.get(getKey));
+                    }
+                    return memo;
+                }, [], this)
+            }
+
+            return styleValues;
+        },
+
         numChildren: function () {
             return this.$.children.size();
         }.on(["children", "*"]),
