@@ -21,6 +21,10 @@ define(['js/data/Entity', 'text/type/Style'], function (Entity, Style) {
             }
         },
 
+        $excludeBindingInitialization: {
+            text: true
+        },
+
         idField: false,
 
         isLeaf: false,
