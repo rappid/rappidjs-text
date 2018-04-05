@@ -42,6 +42,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
 
             if (browser && !((browser.os.indexOf("linux") !== -1 || browser.os.indexOf("unix") !== -1) && browser.name === "chrome" || browser.name == "firefox")) {
                 this.$.text.set("text-rendering", "geometricPrecision");
+                this.$.text.set("letter-spacing", "0px");
             }
         },
 
