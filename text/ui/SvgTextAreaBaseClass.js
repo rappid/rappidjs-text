@@ -33,15 +33,16 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             "textAnchor": "text-anchor"
         },
 
-        $classAttributes: ['scale', 'focused', 'showSelection', 'selectable', 'text', 'selection', 'selectionGroup', 'textFlow', 'width', 'height'],
+        $classAttributes: ['scale', 'focused', 'showSelection', 'selectable','text', 'selection', 'selectionGroup', 'textFlow', 'width', 'height'],
 
 
         _initializationComplete: function () {
             this.callBase();
 
-            this.$.text.set("letter-spacing", "0px");
             this.$.text.set("text-rendering", this.$.textRendering);
+            this.$.text.set("letter-spacing", "0px");
         },
+
 
         _renderComposedTextFlow: function (composedTextFlow) {
 
@@ -178,13 +179,13 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
          * @returns {Object}
          * @private
          */
-        _convertPositionForIE: function (pos) {
+        _convertPositionForIE: function(pos) {
             var stage = this.$stage;
 
             if (stage && stage.$browser && stage.$browser.name.indexOf("ie9") > -1) {
                 // IE9 returns the cursor Position in absolute coordinates
                 var textEl = this.$.text.$el,
-                    rootPos = this.getSvgRoot().$el.getClientRects()[0];
+                rootPos = this.getSvgRoot().$el.getClientRects()[0];
 
                 var matrix = textEl.getScreenCTM();
                 var point = this.getSvgRoot().$el.createSVGPoint();
@@ -196,7 +197,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             return pos;
         },
 
-        _renderComposedTextFlowHook: function (firstTSpans, selectionGroup) {
+        _renderComposedTextFlowHook: function(firstTSpans, selectionGroup) {
 
         },
 
