@@ -12,7 +12,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             width: 100,
             height: 100,
             scale: 1,
-            focused: false
+            focused: false,
+            textRendering: "auto"
         },
 
         $tSpanTransformMap: {
@@ -32,20 +33,15 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             "textAnchor": "text-anchor"
         },
 
-        $classAttributes: ['scale', 'focused', 'showSelection', 'selectable','text', 'selection', 'selectionGroup', 'textFlow', 'width', 'height'],
+        $classAttributes: ['scale', 'focused', 'showSelection', 'selectable', 'text', 'selection', 'selectionGroup', 'textFlow', 'width', 'height'],
 
 
         _initializationComplete: function () {
             this.callBase();
 
-            var browser = this.$stage.$browser;
-
-            if (browser && !((browser.os.indexOf("linux") !== -1 || browser.os.indexOf("unix") !== -1) && browser.name === "chrome" || browser.name == "firefox")) {
-                this.$.text.set("text-rendering", "geometricPrecision");
-            }
+            this.$.text.set("text-rendering", this.$.textRendering);
         },
-
-
+        
         _renderComposedTextFlow: function (composedTextFlow) {
 
             var text = this.$.text;
@@ -181,13 +177,13 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
          * @returns {Object}
          * @private
          */
-        _convertPositionForIE: function(pos) {
+        _convertPositionForIE: function (pos) {
             var stage = this.$stage;
 
             if (stage && stage.$browser && stage.$browser.name.indexOf("ie9") > -1) {
                 // IE9 returns the cursor Position in absolute coordinates
                 var textEl = this.$.text.$el,
-                rootPos = this.getSvgRoot().$el.getClientRects()[0];
+                    rootPos = this.getSvgRoot().$el.getClientRects()[0];
 
                 var matrix = textEl.getScreenCTM();
                 var point = this.getSvgRoot().$el.createSVGPoint();
@@ -199,7 +195,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             return pos;
         },
 
-        _renderComposedTextFlowHook: function(firstTSpans, selectionGroup) {
+        _renderComposedTextFlowHook: function (firstTSpans, selectionGroup) {
 
         },
 
