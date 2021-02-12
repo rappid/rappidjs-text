@@ -219,7 +219,7 @@ define(["js/core/EventDispatcher", "js/core/Bindable", "text/entity/Layout", "te
 
                                 line = new Composer.Line();
                                 lines.push(line);
-                                width = 0;
+                                width = charWidth;
                             }
 
                         }

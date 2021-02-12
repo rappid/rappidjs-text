@@ -39,9 +39,10 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         _initializationComplete: function () {
             this.callBase();
 
+            this.$.text.set("letter-spacing", "0px");
             this.$.text.set("text-rendering", this.$.textRendering);
         },
-        
+
         _renderComposedTextFlow: function (composedTextFlow) {
 
             var text = this.$.text;
