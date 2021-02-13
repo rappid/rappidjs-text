@@ -12,7 +12,8 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
             width: 100,
             height: 100,
             scale: 1,
-            focused: false
+            focused: false,
+            textRendering: "auto"
         },
 
         $tSpanTransformMap: {
@@ -38,11 +39,7 @@ define(['js/svg/SvgElement', 'text/operation/InsertTextOperation', 'text/operati
         _initializationComplete: function () {
             this.callBase();
 
-            var browser = this.$stage.$browser;
-
-            if (browser && !((browser.os.indexOf("linux") !== -1 || browser.os.indexOf("unix") !== -1) && browser.name === "chrome" || browser.name == "firefox")) {
-                this.$.text.set("text-rendering", "geometricPrecision");
-            }
+            this.$.text.set("text-rendering", this.$.textRendering);
             this.$.text.set("letter-spacing", "0px");
         },
 
