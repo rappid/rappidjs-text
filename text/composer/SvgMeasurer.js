@@ -21,9 +21,8 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
             this.callBase();
         },
 
-        loadAssets: function (textFlow, callback) {
-            callback = callback || function () {
-            };
+        loadAssets: function(textFlow, callback) {
+            callback = callback || function() {};
 
             var fonts = this.getUsedFonts(textFlow);
             for (var i = 0; i < fonts.length; i++) {
@@ -33,14 +32,14 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
             var svg = this.svg;
 
             flow()
-                .parEach(fonts, function (font, cb) {
+                .parEach(fonts, function(font, cb) {
                     svg.fontManager.loadExternalFont(font.name, font.url, cb);
                 })
                 .exec(callback);
 
         },
 
-        getFontInformation: function (font) {
+        getFontInformation: function(font) {
             return {
                 url: null,
                 name: null
@@ -126,7 +125,7 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
                     y: box.y,
                     x: box.x
                 };
-                if (!span.$.text) {
+                if(!span.$.text){
                     box.width = 0;
                 }
                 container.removeChild(text);
@@ -135,7 +134,7 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
                 box = this.measureCache[cacheId];
             }
 
-            return new Metric(box.width / 100 * fontSize, (box.height - (box.height + box.y)) / 100 * fontSize);
+            return new Metric(box.width / 100 * fontSize, (box.height - (box.height + box.y))  / 100 * fontSize);
 
         }
 
