@@ -4,12 +4,12 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
 
     return Measurer.inherit("text.composer.SvgMeasurer", {
 
-        defaults: {
-            textRendering: "auto"
-        },
-
-        ctor: function(svg) {
+        ctor: function (svg, options) {
             this.svg = svg;
+
+            options = options || {};
+            this.textRendering = options.textRendering || "auto";
+
             this.measureCache = {};
 
             svg.setViewBox(0, 0, 100, 100);
@@ -21,8 +21,9 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
             this.callBase();
         },
 
-        loadAssets: function(textFlow, callback) {
-            callback = callback || function() {};
+        loadAssets: function (textFlow, callback) {
+            callback = callback || function () {
+            };
 
             var fonts = this.getUsedFonts(textFlow);
             for (var i = 0; i < fonts.length; i++) {
@@ -32,14 +33,14 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
             var svg = this.svg;
 
             flow()
-                .parEach(fonts, function(font, cb) {
+                .parEach(fonts, function (font, cb) {
                     svg.fontManager.loadExternalFont(font.name, font.url, cb);
                 })
                 .exec(callback);
 
         },
 
-        getFontInformation: function(font) {
+        getFontInformation: function (font) {
             return {
                 url: null,
                 name: null
@@ -113,7 +114,7 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
             var box;
 
             if (!this.measureCache[cacheId]) {
-                text.setAttribute("text-rendering", this.$.textRendering);
+                text.setAttribute("text-rendering", this.textRendering);
                 text.setAttributeNS("http://www.w3.org/XML/1998/namespace", "space", "preserve");
 
                 var container = this.svg.$el;
@@ -125,7 +126,7 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
                     y: box.y,
                     x: box.x
                 };
-                if(!span.$.text){
+                if (!span.$.text) {
                     box.width = 0;
                 }
                 container.removeChild(text);
@@ -134,7 +135,7 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
                 box = this.measureCache[cacheId];
             }
 
-            return new Metric(box.width / 100 * fontSize, (box.height - (box.height + box.y))  / 100 * fontSize);
+            return new Metric(box.width / 100 * fontSize, (box.height - (box.height + box.y)) / 100 * fontSize);
 
         }
 
