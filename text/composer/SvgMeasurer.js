@@ -4,8 +4,12 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
 
     return Measurer.inherit("text.composer.SvgMeasurer", {
 
-        ctor: function(svg) {
+        ctor: function (svg, options) {
             this.svg = svg;
+
+            options = options || {};
+            this.textRendering = options.textRendering || "auto";
+
             this.measureCache = {};
 
             svg.setViewBox(0, 0, 100, 100);
@@ -109,8 +113,7 @@ define(["text/composer/Measurer", "text/metric/Metric", "underscore", "flow"], f
             var box;
 
             if (!this.measureCache[cacheId]) {
-                var browser = this.svg.$stage.$browser;
-                text.setAttribute("text-rendering", browser.isFF ? "auto" : "geometricprecision");
+                text.setAttribute("text-rendering", this.textRendering);
                 text.setAttributeNS("http://www.w3.org/XML/1998/namespace", "space", "preserve");
 
                 var container = this.svg.$el;
